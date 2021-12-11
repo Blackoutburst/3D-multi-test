@@ -33,7 +33,7 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		Display display = new Display().setFullscreenMode(Display.FullScreenMode.NONE).setClearColor(new Color(76.0f / 255.0f, 124.0f / 255.0f, 156.0f / 255.0f)).create();
+		Display display = new Display().setFullscreenMode(Display.FullScreenMode.BORDERLESS).setClearColor(new Color(76.0f / 255.0f, 124.0f / 255.0f, 156.0f / 255.0f)).create();
 		Textures.loadTextures();
 		Cube.init();
 
