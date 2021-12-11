@@ -1,6 +1,7 @@
 package com.blackoutburst.game;
 
 import com.blackoutburst.bogel.core.Shader;
+import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.Texture;
 import com.blackoutburst.bogel.maths.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -17,69 +18,75 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL41.glProgramUniform3f;
 import static org.lwjgl.opengl.GL41.glProgramUniformMatrix4fv;
 
 public class Cube {
 
 	private static int vaoID;
 
+	public static final Vector3f lightColor = new Vector3f(1);
+	public static final Vector3f lightPos = new Vector3f(0, 5, 0);
+
 	protected Matrix4f model;
 	protected Texture texture;
 	protected Vector3f position;
 	protected Vector3f scale;
 	protected Vector3f rotation;
+	protected Color color;
 	
 	public static int program;
 	
 	private static final float VERTICES[] = {
-	        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-	         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-	         0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
-	         0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
-	        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+	        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f,
+	         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  0.0f,  0.0f, -1.0f,
+	         0.5f,  0.5f, -0.5f,  0.0f, 0.0f,  0.0f,  0.0f, -1.0f,
+	         0.5f,  0.5f, -0.5f,  0.0f, 0.0f,  0.0f,  0.0f, -1.0f,
+	        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f,  0.0f, -1.0f,
+	        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f,
 
-	        -0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
-	         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	         0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-	         0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-	        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-	        -0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
+	        -0.5f, -0.5f,  0.5f,  1.0f, 1.0f,  0.0f,  0.0f,  1.0f,
+	         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f,  0.0f,  1.0f,
+	         0.5f,  0.5f,  0.5f,  0.0f, 0.0f,  0.0f,  0.0f,  1.0f,
+	         0.5f,  0.5f,  0.5f,  0.0f, 0.0f,  0.0f,  0.0f,  1.0f,
+	        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,  0.0f,  0.0f,  1.0f,
+	        -0.5f, -0.5f,  0.5f,  1.0f, 1.0f,  0.0f,  0.0f,  1.0f,
 
-	        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	        -0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
-	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	        -0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
-	        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, -1.0f,  0.0f,  0.0f,
+	        -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f,  0.0f,  0.0f,
+	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, -1.0f,  0.0f,  0.0f,
+	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, -1.0f,  0.0f,  0.0f,
+	        -0.5f, -0.5f,  0.5f,  1.0f, 1.0f, -1.0f,  0.0f,  0.0f,
+	        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, -1.0f,  0.0f,  0.0f,
 
-	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	         0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
-	         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	         0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
-	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  1.0f,  0.0f,  0.0f,
+	         0.5f,  0.5f, -0.5f,  0.0f, 0.0f,  1.0f,  0.0f,  0.0f,
+	         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  1.0f,  0.0f,  0.0f,
+	         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  1.0f,  0.0f,  0.0f,
+	         0.5f, -0.5f,  0.5f,  1.0f, 1.0f,  1.0f,  0.0f,  0.0f,
+	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  1.0f,  0.0f,  0.0f,
 
-	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-	         0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-	         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-	        -0.5f, -0.5f,  0.5f,  1.0f, 1.0f,
-	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  0.0f, -1.0f,  0.0f,
+	         0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+	         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+	         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+	        -0.5f, -0.5f,  0.5f,  1.0f, 1.0f,  0.0f, -1.0f,  0.0f,
+	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  0.0f, -1.0f,  0.0f,
 
-	        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-	         0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
-	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-	        -0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-	        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+	        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f,  1.0f,  0.0f,
+	         0.5f,  0.5f, -0.5f,  0.0f, 0.0f,  0.0f,  1.0f,  0.0f,
+	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
+	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
+	        -0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  0.0f,  1.0f,  0.0f,
+	        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f,  1.0f,  0.0f
 	    };
 	 
-	public Cube(Texture texture, Vector3f position, Vector3f scale, Vector3f rotation) {
+	public Cube(Texture texture, Vector3f position, Vector3f scale, Vector3f rotation, Color color) {
 		this.texture = texture;
 		this.position = position;
 		this.scale = scale;
 		this.rotation = rotation;
+		this.color = color;
 
 		this.model = new Matrix4f();
 		Matrix4f.setIdentity(this.model);
@@ -95,12 +102,15 @@ public class Cube {
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, verticesBuffer, GL_STATIC_DRAW);
 		
-		glVertexAttribPointer(0, 3, GL_FLOAT, false, 20, 0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, false, 32, 0);
 		glEnableVertexAttribArray(0);
 		
 		// UV
-		glVertexAttribPointer(1, 2, GL_FLOAT, false, 20, 12);
+		glVertexAttribPointer(1, 2, GL_FLOAT, false, 32, 12);
 		glEnableVertexAttribArray(1);
+
+		glVertexAttribPointer(2, 3, GL_FLOAT, false, 32, 20);
+		glEnableVertexAttribArray(2);
 		
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		
@@ -131,6 +141,18 @@ public class Cube {
 		
 		loc = glGetProgramResourceLocation(Cube.program, GL_UNIFORM, "projection");
 		glProgramUniformMatrix4fv(program, loc, false, Matrix4f.getValues(Main.projection));
+
+		loc = glGetProgramResourceLocation(Cube.program, GL_UNIFORM, "lightColor");
+		glProgramUniform3f(program, loc, lightColor.x, lightColor.y, lightColor.z);
+
+		loc = glGetProgramResourceLocation(Cube.program, GL_UNIFORM, "lightPos");
+		glProgramUniform3f(program, loc, lightPos.x, lightPos.y, lightPos.z);
+
+		loc = glGetProgramResourceLocation(Cube.program, GL_UNIFORM, "viewPos");
+		glProgramUniform3f(program, loc, -Camera.position.x, -Camera.position.y, -Camera.position.z);
+
+		loc = glGetProgramResourceLocation(Cube.program, GL_UNIFORM, "color");
+		glProgramUniform3f(program, loc, color.r, color.g, color.b);
 	}
 	
 	public void draw() {
@@ -142,8 +164,11 @@ public class Cube {
 		Matrix4f.scale(this.scale, this.model, this.model);
 
 		setUniforms();
-		
+
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTexture());
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 		glUseProgram(program);
 		glBindVertexArray(vaoID);
 		

@@ -20,7 +20,7 @@ public class Camera {
 
     public static void init() {
         lastMousePosition = new Vector2f(Display.getWidth() / 2, Display.getHeight() / 2);
-        position = new Vector3f(0, 0, -5.0F);
+        position = new Vector3f(0, 2.80f, 0);
         rotation = new Vector2f(0, 0);
         view = new Matrix4f();
         view.setIdentity();
@@ -52,24 +52,24 @@ public class Camera {
         Vector3f velocity = new Vector3f();
 
         if (Keyboard.isKeyDown(Keyboard.W)) {
-            velocity.x += (float) (Math.sin(-rotation.x * Math.PI / 180));
-            velocity.z += (float) (Math.cos(-rotation.x * Math.PI / 180));
-        }
-        if (Keyboard.isKeyDown(Keyboard.S)) {
             velocity.x -= (float) (Math.sin(-rotation.x * Math.PI / 180));
             velocity.z -= (float) (Math.cos(-rotation.x * Math.PI / 180));
         }
+        if (Keyboard.isKeyDown(Keyboard.S)) {
+            velocity.x += (float) (Math.sin(-rotation.x * Math.PI / 180));
+            velocity.z += (float) (Math.cos(-rotation.x * Math.PI / 180));
+        }
         if (Keyboard.isKeyDown(Keyboard.A)) {
-            velocity.x -= (float) (Math.sin((-rotation.x - 90) * Math.PI / 180));
-            velocity.z -= (float) (Math.cos((-rotation.x - 90) * Math.PI / 180));
+            velocity.x += (float) (Math.sin((-rotation.x - 90) * Math.PI / 180));
+            velocity.z += (float) (Math.cos((-rotation.x - 90) * Math.PI / 180));
         }
         if (Keyboard.isKeyDown(Keyboard.D)) {
-            velocity.x -= (float) (Math.sin((-rotation.x + 90) * Math.PI / 180));
-            velocity.z -= (float) (Math.cos((-rotation.x + 90) * Math.PI / 180));
+            velocity.x += (float) (Math.sin((-rotation.x + 90) * Math.PI / 180));
+            velocity.z += (float) (Math.cos((-rotation.x + 90) * Math.PI / 180));
         }
 
-        if (Keyboard.isKeyDown(Keyboard.SPACE)) velocity.y -= 1;
-        if (Keyboard.isKeyDown(Keyboard.LEFT_SHIFT)) velocity.y += 1;
+        if (Keyboard.isKeyDown(Keyboard.SPACE)) velocity.y += 1;
+        if (Keyboard.isKeyDown(Keyboard.LEFT_SHIFT)) velocity.y -= 1;
         speed = Keyboard.isKeyDown(Keyboard.LEFT_CONTROL) ? 0.0075f : 0.005f;
         velocity = velocity.normalize();
 
@@ -85,6 +85,8 @@ public class Camera {
         view.setIdentity();
         Matrix4f.rotate((float) Math.toRadians(rotation.y), new Vector3f(1, 0, 0), view, view);
         Matrix4f.rotate((float) Math.toRadians(rotation.x), new Vector3f(0, 1, 0), view, view);
-        Matrix4f.translate(position, view, view);
+
+        Vector3f reverse = new Vector3f(-position.x, -position.y, -position.z);
+        Matrix4f.translate(reverse, view, view);
     }
 }
