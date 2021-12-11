@@ -20,18 +20,22 @@ public class BlockPlacement {
     private static Face face = null;
 
     private static void pickBlock() {
+        Color color = new Color();
+        double closest = 100;
         int idx = 0;
 
-        double closest = 100;
+        selected = null;
+        selectedId = -1;
+        face = null;
+
+
         for (Cube c : Main.cubes) {
             double distance = Math.sqrt(
                     Math.pow((Camera.position.x - c.position.x), 2) +
                     Math.pow((Camera.position.y - c.position.y), 2) +
                     Math.pow((Camera.position.z - c.position.z), 2));
-            Color color = new Color();
-            if (distance < 6) {
-                color = c.interact();
-            }
+
+            if (distance < 6) color = c.interact();
 
             if (color.r == 255 && color.g == 0 && color.b == 0) face = Face.FRONT;
             if (color.r == 0 && color.g == 255 && color.b == 0) face = Face.BACK;
