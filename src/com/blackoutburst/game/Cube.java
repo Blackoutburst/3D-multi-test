@@ -14,7 +14,6 @@ import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.ARBProgramInterfaceQuery.GL_UNIFORM;
 import static org.lwjgl.opengl.ARBProgramInterfaceQuery.glGetProgramResourceLocation;
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -86,22 +85,13 @@ public class Cube {
 	        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, 1.0f,
 	        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, 1.0f
 	    };
-	 
-	public Cube(Texture texture, Vector3f position, Vector3f scale, Vector3f rotation, Color color) {
-		this.texture = texture;
-		this.position = position;
-		this.scale = scale;
-		this.rotation = rotation;
-		this.color = color;
 
-		this.model = new Matrix4f();
-		Matrix4f.setIdentity(this.model);
-
+	public static void init() {
 		vaoID = glGenVertexArrays();
 		int vbo = glGenBuffers();
-		
+
 		glBindVertexArray(vaoID);
-		
+
 		FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(VERTICES.length);
 		((Buffer) verticesBuffer.put(VERTICES)).flip();
 
@@ -111,7 +101,7 @@ public class Cube {
 		// Pos
 		glVertexAttribPointer(0, 3, GL_FLOAT, false, 44, 0);
 		glEnableVertexAttribArray(0);
-		
+
 		// UV
 		glVertexAttribPointer(1, 2, GL_FLOAT, false, 44, 12);
 		glEnableVertexAttribArray(1);
@@ -123,12 +113,12 @@ public class Cube {
 		// Color
 		glVertexAttribPointer(3, 3, GL_FLOAT, false, 44, 32);
 		glEnableVertexAttribArray(3);
-		
+
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		
+
 		Shader vertexShader = Shader.loadShader(Shader.VERTEX, "cube.vert");
 		Shader fragmentShader = Shader.loadShader(Shader.FRAGMENT, "cube.frag");
-		
+
 		program = glCreateProgram();
 		glAttachShader(program, vertexShader.id);
 		glAttachShader(program, fragmentShader.id);
@@ -137,11 +127,11 @@ public class Cube {
 		glDetachShader(program, fragmentShader.id);
 		glDeleteShader(vertexShader.id);
 		glDeleteShader(fragmentShader.id);
-		
+
 		String log = glGetProgramInfoLog(program);
-		
+
 		if (log.length() != 0)
-		    System.out.println(log);
+			System.out.println(log);
 
 		Shader vertexHitShader = Shader.loadShader(Shader.VERTEX, "cubeHit.vert");
 		Shader fragmentHitShader = Shader.loadShader(Shader.FRAGMENT, "cubeHit.frag");
@@ -177,6 +167,17 @@ public class Cube {
 
 		if (log.length() != 0)
 			System.out.println(log);
+	}
+
+	public Cube(Texture texture, Vector3f position, Vector3f scale, Vector3f rotation, Color color) {
+		this.texture = texture;
+		this.position = position;
+		this.scale = scale;
+		this.rotation = rotation;
+		this.color = color;
+
+		this.model = new Matrix4f();
+		Matrix4f.setIdentity(this.model);
 	}
 
 	private void setUniforms(int program) {

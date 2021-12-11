@@ -4,7 +4,14 @@ import com.blackoutburst.bogel.graphics.Texture;
 
 public class Textures {
 
-    public static final Texture GRASS = new Texture("grass.png");
-    public static final Texture BRICKS = new Texture("stonebrick.png");
-    public static final Texture MUSH = new Texture("mush.png");
+    public static Texture GRASS;
+    public static Texture BRICKS;
+    public static Texture MUSH;
+
+    public static void loadTextures() {
+        GRASS = new Texture("grass.png");
+        BRICKS = new Texture("stonebrick.png");
+        MUSH = new Texture("mush.png");
+    }
+
 }
