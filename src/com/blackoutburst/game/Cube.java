@@ -1,49 +1,37 @@
 package com.blackoutburst.game;
 
-import static org.lwjgl.opengl.ARBProgramInterfaceQuery.GL_UNIFORM;
-import static org.lwjgl.opengl.ARBProgramInterfaceQuery.glGetProgramResourceLocation;
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.lwjgl.opengl.GL15.glBufferData;
-import static org.lwjgl.opengl.GL15.glGenBuffers;
-import static org.lwjgl.opengl.GL20.glAttachShader;
-import static org.lwjgl.opengl.GL20.glCreateProgram;
-import static org.lwjgl.opengl.GL20.glDeleteShader;
-import static org.lwjgl.opengl.GL20.glDetachShader;
-import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
-import static org.lwjgl.opengl.GL20.glGetProgramInfoLog;
-import static org.lwjgl.opengl.GL20.glLinkProgram;
-import static org.lwjgl.opengl.GL20.glUseProgram;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
-import static org.lwjgl.opengl.GL41.glProgramUniformMatrix4fv;
+import com.blackoutburst.bogel.core.Shader;
+import com.blackoutburst.bogel.graphics.Texture;
+import com.blackoutburst.bogel.maths.Vector3f;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-
-import com.blackoutburst.bogel.core.Shader;
-import com.blackoutburst.bogel.core.Time;
-import com.blackoutburst.bogel.maths.Vector2f;
-import com.blackoutburst.bogel.maths.Vector3f;
+import static org.lwjgl.opengl.ARBProgramInterfaceQuery.GL_UNIFORM;
+import static org.lwjgl.opengl.ARBProgramInterfaceQuery.glGetProgramResourceLocation;
+import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL41.glProgramUniformMatrix4fv;
 
 public class Cube {
 
 	private static int vaoID;
-	
-	private static Matrix4f projection;
-	private static Matrix4f view;
-	private static Matrix4f model;
+
+	protected Matrix4f model;
+	protected Texture texture;
+	protected Vector3f position;
+	protected Vector3f scale;
+	protected Vector3f rotation;
 	
 	public static int program;
 	
-	private static float vertices[] = {
+	private static final float VERTICES[] = {
 	        -0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
 	         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 	         0.5f,  0.5f, -0.5f,  0.0f, 0.0f,
@@ -87,30 +75,22 @@ public class Cube {
 	        -0.5f,  0.5f, -0.5f,  1.0f, 0.0f
 	    };
 	 
-	public static void init() {
-		projection = new Matrix4f();
-		projection.setIdentity();
-		Matrix4f.projectionMatrix(70, 1000, 0.01f, projection);
-		
-		view = new Matrix4f();
-		view.setIdentity();
-		
-		Matrix4f.translate(new Vector3f(0, 0, -5.0f), view, view);
-		
-		model = new Matrix4f();
-		Matrix4f.setIdentity(model);
-		Matrix4f.translate(new Vector2f(0.0f, 0.0f), model, model);
-		Matrix4f.rotate((float) Math.toRadians(0), new Vector3f(0, 0, 1), model, model);
-		Matrix4f.scale(new Vector3f(1, 1, 1), model, model);
-		
-		
+	public Cube(Texture texture, Vector3f position, Vector3f scale, Vector3f rotation) {
+		this.texture = texture;
+		this.position = position;
+		this.scale = scale;
+		this.rotation = rotation;
+
+		this.model = new Matrix4f();
+		Matrix4f.setIdentity(this.model);
+
 		vaoID = glGenVertexArrays();
 		int vbo = glGenBuffers();
 		
 		glBindVertexArray(vaoID);
 		
-		FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(vertices.length);
-		((Buffer) verticesBuffer.put(vertices)).flip();
+		FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(VERTICES.length);
+		((Buffer) verticesBuffer.put(VERTICES)).flip();
 
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, verticesBuffer, GL_STATIC_DRAW);
@@ -142,29 +122,28 @@ public class Cube {
 		    System.out.println(log);
 	}
 	
-	private static void setUniforms() {
+	private void setUniforms() {
 		int loc = glGetProgramResourceLocation(Cube.program, GL_UNIFORM, "model");
-		glProgramUniformMatrix4fv(program, loc, false, Matrix4f.getValues(model));
+		glProgramUniformMatrix4fv(program, loc, false, Matrix4f.getValues(this.model));
 		
 		loc = glGetProgramResourceLocation(Cube.program, GL_UNIFORM, "view");
-		glProgramUniformMatrix4fv(program, loc, false, Matrix4f.getValues(view));
+		glProgramUniformMatrix4fv(program, loc, false, Matrix4f.getValues(Camera.view));
 		
 		loc = glGetProgramResourceLocation(Cube.program, GL_UNIFORM, "projection");
-		glProgramUniformMatrix4fv(program, loc, false, Matrix4f.getValues(projection));
+		glProgramUniformMatrix4fv(program, loc, false, Matrix4f.getValues(Main.projection));
 	}
 	
-	public static void draw(float x, float y, float z, float size) {
-		Matrix4f.setIdentity(model);
-		Matrix4f.translate(new Vector3f(x, y, z), model, model);
-		Matrix4f.rotate((float) Math.toRadians(Time.getRuntime() * 10.0), new Vector3f(1, 0, 0), model, model);
-		Matrix4f.rotate((float) Math.toRadians(Time.getRuntime() * 10.0), new Vector3f(0, 1, 0), model, model);
-		Matrix4f.rotate((float) Math.toRadians(Time.getRuntime() * 10.0), new Vector3f(0, 0, 1), model, model);
-		Matrix4f.scale(new Vector3f(size), model, model);
-		
-		
+	public void draw() {
+		Matrix4f.setIdentity(this.model);
+		Matrix4f.translate(this.position, this.model, this.model);
+		Matrix4f.rotate(this.rotation.x, new Vector3f(1, 0, 0), this.model, this.model);
+		Matrix4f.rotate(this.rotation.y, new Vector3f(0, 1, 0), this.model, this.model);
+		Matrix4f.rotate(this.rotation.z, new Vector3f(0, 0, 1), this.model, this.model);
+		Matrix4f.scale(this.scale, this.model, this.model);
+
 		setUniforms();
 		
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, Main.texture.getTexture());
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTexture());
 		glUseProgram(program);
 		glBindVertexArray(vaoID);
 		

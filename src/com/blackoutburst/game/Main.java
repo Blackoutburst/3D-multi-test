@@ -1,25 +1,29 @@
 package com.blackoutburst.game;
 
 import com.blackoutburst.bogel.core.Display;
-import com.blackoutburst.bogel.core.Display.FullScreenMode;
-import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.Texture;
+import com.blackoutburst.bogel.maths.Vector3f;
 
 public class Main {
-	
-	public static Texture texture;
-	
+
+	public static Matrix4f projection;
+
 	public static void main(String[] args) {
-		Display display = new Display().setFullscreenMode(FullScreenMode.BORDERLESS).setDecoration(false).setTransparent(true).setClearColor(Color.TRANSPARENT).create();
-		
-		Cube.init();
-		
-		texture = new Texture("icon128.png");
+		Display display = new Display().create();
+
+		projection = new Matrix4f();
+		projection.setIdentity();
+		Matrix4f.projectionMatrix(70, 1000, 0.01f, projection);
+
+
+		Camera.init();
+		Cube cube = new Cube(new Texture("icon128.png"), new Vector3f(1), new Vector3f(1), new Vector3f(1));
+
 		while(display.isOpen()) {
 			display.clear();
 
-			Cube.draw(0, 0, -10, 2);
-			
+			cube.draw();
+
 			display.update();
 		}
 	}
