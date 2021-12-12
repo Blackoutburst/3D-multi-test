@@ -58,26 +58,45 @@ public class BlockPlacement {
         }
     }
 
+    private static String getBlockFromSlot() {
+        switch (HotBar.slot) {
+            case 0: return("BRICKS");
+            case 1: return("COBBLESTONE");
+            case 2: return("DIAMOND_BLOCK");
+            case 3: return("GLASS");
+            case 4: return("GRASS");
+            case 5: return("LOG_OAK");
+            case 6: return("NOTEBLOCK");
+            case 7: return("PLANKS_OAK");
+            case 8: return("STONEBRICKS");
+        }
+        return "BRICKS";
+    }
+
+    private static Color getBlockColorFromSlot() {
+        return (HotBar.slot == 4 ? new Color(0.09f, 0.27f, 0.06f) : Color.WHITE);
+    }
+
     private static void placeBlock() {
         if (face != null && selectedId != -1 && Mouse.getRightButton().isPressed()) {
             switch (face) {
                 case TOP:
-                    new C03PlaceBlock("BRICKS", new Vector3f(selected.position.x, selected.position.y + 1, selected.position.z), new Vector3f(1), new Vector3f(), Color.WHITE).writePacketData().sendPacket();
+                    new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x, selected.position.y + 1, selected.position.z), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData().sendPacket();
                 break;
                 case BOTTOM:
-                    new C03PlaceBlock("BRICKS", new Vector3f(selected.position.x, selected.position.y - 1, selected.position.z), new Vector3f(1), new Vector3f(), Color.WHITE).writePacketData().sendPacket();
+                    new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x, selected.position.y - 1, selected.position.z), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData().sendPacket();
                 break;
                 case FRONT:
-                    new C03PlaceBlock("BRICKS", new Vector3f(selected.position.x, selected.position.y, selected.position.z - 1), new Vector3f(1), new Vector3f(), Color.WHITE).writePacketData().sendPacket();
+                    new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x, selected.position.y, selected.position.z - 1), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData().sendPacket();
                 break;
                 case LEFT:
-                    new C03PlaceBlock("BRICKS", new Vector3f(selected.position.x - 1, selected.position.y, selected.position.z), new Vector3f(1), new Vector3f(), Color.WHITE).writePacketData().sendPacket();
+                    new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x - 1, selected.position.y, selected.position.z), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData().sendPacket();
                 break;
                 case BACK:
-                    new C03PlaceBlock("BRICKS", new Vector3f(selected.position.x, selected.position.y, selected.position.z + 1), new Vector3f(1), new Vector3f(), Color.WHITE).writePacketData().sendPacket();
+                    new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x, selected.position.y, selected.position.z + 1), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData().sendPacket();
                 break;
                 case RIGHT:
-                    new C03PlaceBlock("BRICKS", new Vector3f(selected.position.x + 1, selected.position.y, selected.position.z), new Vector3f(1), new Vector3f(), Color.WHITE).writePacketData().sendPacket();
+                    new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x + 1, selected.position.y, selected.position.z), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData().sendPacket();
                 break;
                 default: return;
             }

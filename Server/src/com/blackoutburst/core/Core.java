@@ -14,15 +14,13 @@ public class Core {
 	
 	public void init() {
 		
-		for (int x = -10; x < 10; x++) {
-			for (int z = -10; z < 10; z++) {
-				cubes.add(new Cube("GRASS", new Vector3f(x, 0, z), new Vector3f(1), new Vector3f(), new Color(0.09f, 0.27f, 0.06f)));
+		for (int x = -10; x <= 10; x++) {
+			for (int y = 0; y >= -10; y--) {
+				for (int z = -10; z <= 10; z++) {
+					cubes.add(new Cube(y == 0 ? "GRASS" : "COBBLESTONE", new Vector3f(x, y, z), new Vector3f(1), new Vector3f(), y == 0 ? new Color(0.09f, 0.27f, 0.06f) : Color.WHITE));
+				}
 			}
 		}
-		cubes.add(new Cube("BRICKS", new Vector3f(5, 1, 5), new Vector3f(1), new Vector3f(), Color.WHITE));
-		cubes.add(new Cube("BRICKS", new Vector3f(-5, 1, 5), new Vector3f(1), new Vector3f(), Color.WHITE));
-		cubes.add(new Cube("BRICKS", new Vector3f(5, 1, -5), new Vector3f(1), new Vector3f(), Color.WHITE));
-		cubes.add(new Cube("BRICKS", new Vector3f(-5, 1, -5), new Vector3f(1), new Vector3f(), Color.WHITE));
 		
 		connection = new Connection();
 		connection.startServer();

@@ -37,12 +37,20 @@ public class S04AddBlock extends PacketPlayIn implements PacketUtils {
 			color.b = buffer.readFloat();
 
 			Texture text;
-			
+
 			switch (texture) {
 				case "GRASS": text = Textures.GRASS; break;
+				case "STONEBRICKS": text = Textures.STONEBRICKS; break;
 				case "BRICKS": text = Textures.BRICKS; break;
+				case "COBBLESTONE": text = Textures.COBBLESTONE; break;
+				case "DIAMOND_BLOCK": text = Textures.DIAMOND_BLOCK; break;
+				case "GLASS": text = Textures.GLASS; break;
+				case "LOG_OAK": text = Textures.LOG_OAK; break;
+				case "NOTEBLOCK": text = Textures.NOTEBLOCK; break;
+				case "PLANKS_OAK": text = Textures.PLANKS_OAK; break;
 				default: return;
 			}
+
 			Main.cubes.add(new Cube(text, position, scale, rotation, color));
 		} catch(Exception e) {
 			malformatedError(e.toString());
