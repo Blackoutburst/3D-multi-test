@@ -33,10 +33,5 @@ public class Core {
 		while (running) {
 			connection.acceptClient();
 		}
-		clean();
-	}
-	
-	private void clean() {
-		
 	}
 }

@@ -12,6 +12,7 @@ public interface EntityNetworkController {
 		}
 		switch(type) {
 			case PLAYER: EntityManager.entities.add(new EntityPlayer(id, type, position, scale, rotation)); break;
+			default: return;
 		}
 	}
 	

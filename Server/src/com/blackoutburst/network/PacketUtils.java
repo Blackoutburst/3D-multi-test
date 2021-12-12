@@ -25,6 +25,7 @@ public interface PacketUtils {
 			case 0x01: new C01SendRotation().readPacketData(data); break;
 			case 0x02: new C02BreakBlock().readPacketData(data); break;
 			case 0x03: new C03PlaceBlock().readPacketData(data); break;
+			default: return;
 		}
 	}
 	

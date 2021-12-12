@@ -55,6 +55,7 @@ public class S00AddEntity extends PacketPlayOut implements PacketUtils {
 		
 		switch (type) {
 			case 0x00: tp = EntityTypes.PLAYER; break;
+			default: break;
 		}
 		
 		new EntityManager().addEntity(id, tp, position, scale, rotation);
