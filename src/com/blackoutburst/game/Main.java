@@ -33,7 +33,7 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		Display display = new Display().setFullscreenMode(Display.FullScreenMode.BORDERLESS).setClearColor(new Color(76.0f / 255.0f, 124.0f / 255.0f, 156.0f / 255.0f)).create();
+		Display display = new Display().setFullscreenMode(Display.FullScreenMode.NONE).setClearColor(new Color(76.0f / 255.0f, 124.0f / 255.0f, 156.0f / 255.0f)).create();
 		Textures.loadTextures();
 		Cube.init();
 
@@ -54,13 +54,11 @@ public class Main {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
 		while(display.isOpen()) {
-			// Must be between two clear
 			display.clear();
-			BlockPlacement.update();
-			display.clear();
+			Camera.update();
 
 			EntityManager.update();
-			Camera.update();
+			BlockPlacement.update();
 
 			try {
 				int l = cubes.size();

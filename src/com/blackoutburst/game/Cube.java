@@ -1,6 +1,5 @@
 package com.blackoutburst.game;
 
-import com.blackoutburst.bogel.core.Display;
 import com.blackoutburst.bogel.core.Shader;
 import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.Texture;
@@ -43,47 +42,53 @@ public class Cube {
 	public static int boxProgram;
 
 	private static final float VERTICES[] = {
-			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, 0.0f,
-	         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, 0.0f,
-	         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, 0.0f,
-	         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, 0.0f,
-	        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, 0.0f,
-	        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, 0.0f,
+			//FRONT
+			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  0.0f, 0.0f, -1.0f,  1.0f, 0.0f, 0.0f,
+	         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 0.0f, -1.0f,  1.0f, 0.0f, 0.0f,
+	         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  0.0f, 0.0f, -1.0f,  1.0f, 0.0f, 0.0f,
+	         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 0.0f, -1.0f,  1.0f, 0.0f, 0.0f,
+	        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  0.0f, 0.0f, -1.0f,  1.0f, 0.0f, 0.0f,
+	        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f, 0.0f, -1.0f,  1.0f, 0.0f, 0.0f,
 
-	        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, 0.0f,
-	         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, 0.0f,
-	         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, 0.0f,
-	         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, 0.0f,
-	        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, 0.0f,
-	        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, 0.0f,
+			//BACK
+	        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+	         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+	         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+	         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+	        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+	        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
 
-	        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, 1.0f,
-	        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, 1.0f,
-	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, 1.0f,
-	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, 1.0f,
-	        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, 1.0f,
-	        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, 1.0f,
+			//LEFT
+	        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, -1.0f, 0.0f, 0.0f,  0.0f, 0.0f, 1.0f,
+	        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, -1.0f, 0.0f, 0.0f,  0.0f, 0.0f, 1.0f,
+	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, -1.0f, 0.0f, 0.0f,  0.0f, 0.0f, 1.0f,
+	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, -1.0f, 0.0f, 0.0f,  0.0f, 0.0f, 1.0f,
+	        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, -1.0f, 0.0f, 0.0f,  0.0f, 0.0f, 1.0f,
+	        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, -1.0f, 0.0f, 0.0f,  0.0f, 0.0f, 1.0f,
 
-	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, 1.0f,
-	         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, 1.0f,
-	         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, 1.0f,
-	         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, 1.0f,
-	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, 1.0f,
-	         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, 1.0f,
+			//RIGHT
+	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f, 1.0f,
+	         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f, 1.0f,
+	         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f, 1.0f,
+	         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f, 1.0f,
+	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f, 1.0f,
+	         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 0.0f, 1.0f,
 
-	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, 0.0f,
-	         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, 0.0f,
-	         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, 0.0f,
-	         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, 0.0f,
-	        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, 0.0f,
-	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, 0.0f,
+			//BOTTOM
+	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  0.0f, -1.0f, 0.0f,  1.0f, 1.0f, 0.0f,
+	         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,  0.0f, -1.0f, 0.0f,  1.0f, 1.0f, 0.0f,
+	         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, -1.0f, 0.0f,  1.0f, 1.0f, 0.0f,
+	         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, -1.0f, 0.0f,  1.0f, 1.0f, 0.0f,
+	        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, -1.0f, 0.0f,  1.0f, 1.0f, 0.0f,
+	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  0.0f, -1.0f, 0.0f,  1.0f, 1.0f, 0.0f,
 
-	        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, 1.0f,
-	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, 1.0f,
-	         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, 1.0f,
-	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, 1.0f,
-	        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, 1.0f,
-	        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, 1.0f
+			//TOP
+	        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f, 1.0f,
+	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f, 1.0f,
+	         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f, 1.0f,
+	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f, 1.0f,
+	        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f, 1.0f,
+	        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f, 1.0f
 	    };
 
 	public static void init() {
@@ -203,33 +208,76 @@ public class Cube {
 		glProgramUniform3f(program, loc, color.r, color.g, color.b);
 	}
 
-	public Color interact() {
-		GL11.glClearColor(0,0,0,1);
-		GL11.glClear(GL_COLOR_BUFFER_BIT);
+	public Vector3f add(Vector3f init, Vector3f other) {
+		return new Vector3f(init.x + other.x, init.y + other.y, init.z + other.z);
+	}
 
-		Matrix4f.setIdentity(this.model);
-		Matrix4f.translate(this.position, this.model, this.model);
-		Matrix4f.rotate(this.rotation.x, new Vector3f(1, 0, 0), this.model, this.model);
-		Matrix4f.rotate(this.rotation.y, new Vector3f(0, 1, 0), this.model, this.model);
-		Matrix4f.rotate(this.rotation.z, new Vector3f(0, 0, 1), this.model, this.model);
-		Matrix4f.scale(this.scale, this.model, this.model);
+	public Vector3f scale(Vector3f init, float f) {
+		return new Vector3f(init.x * f, init.y * f, init.z * f);
+	}
 
-		setUniforms(hitProgram);
+	public float dot(Vector3f init, Vector3f other) {
+		return init.x * other.x + init.y * other.y + init.z * other.z;
+	}
 
-		glUseProgram(hitProgram);
-		glBindVertexArray(vaoID);
+	/**
+	 * Determines the point of intersection between a plane defined by a point and a normal vector and a line defined by a point and a direction vector.
+	 *
+	 * @param planePoint    A point on the plane.
+	 * @param planeNormal   The normal vector of the plane.
+	 * @param linePoint     A point on the line.
+	 * @param lineDirection The direction vector of the line.
+	 * @return The point of intersection between the line and the plane, null if the line is parallel to the plane.
+	 */
+	public Vector3f lineIntersection(Vector3f planePoint, Vector3f planeNormal, Vector3f linePoint, Vector3f lineDirection) {
+		if (dot(planeNormal, lineDirection.normalize()) == 0) {
+			return null;
+		}
 
-		GL11.glDrawArrays(GL_TRIANGLES, 0, 36);
+		float t = (dot(planeNormal, planePoint) - dot(planeNormal, linePoint)) / dot(planeNormal, lineDirection.normalize());
 
-		glBindVertexArray(0);
-		glUseProgram(0);
+		return add(linePoint, scale(lineDirection.normalize(), t));
+	}
 
-		glReadPixels(Display.getWidth() / 2, Display.getHeight() / 2, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-		int red = (pixels.get(0) & 0xFF);
-		int green = (pixels.get(1) & 0xFF);
-		int blue = (pixels.get(2) & 0xFF);
+	public BlockPlacement.Face interact(Vector3f ray) {
+		// Top
+		Vector3f planePoint = new Vector3f(position.x, position.y + scale.y / 2, position.z);
+		Vector3f planeNormal = new Vector3f(0.0f, 1.0f, 0.0f);
+		Vector3f a = lineIntersection(planePoint, planeNormal, Camera.position.copy(), ray.copy());
+		if (ray.y < 0f && (a.x <= position.x + scale.x / 2 && a.x >= position.x - scale.x / 2 &&
+				a.z <= position.z + scale.z / 2 && a.z >= position.z - scale.z / 2)) return (BlockPlacement.Face.TOP);
+		// Bottom
+		planePoint = new Vector3f(position.x, position.y - scale.y / 2, position.z);
+		planeNormal = new Vector3f(0.0f, -1.0f, 0.0f);
+		a = lineIntersection(planePoint, planeNormal, Camera.position.copy(), ray.copy());
+		if (ray.y > 0f && (a.x <= position.x + scale.x / 2 && a.x >= position.x - scale.x / 2 &&
+				a.z <= position.z + scale.z / 2 && a.z >= position.z - scale.z / 2)) return (BlockPlacement.Face.BOTTOM);
+		// Right
+		planePoint = new Vector3f(position.x + scale.x / 2, position.y, position.z);
+		planeNormal = new Vector3f(1.0f, 0, 0.0f);
+		a = lineIntersection(planePoint, planeNormal, Camera.position.copy(), ray.copy());
+		if (ray.x < 0f && (a.y <= position.y + scale.y / 2 && a.y >= position.y - scale.y / 2 &&
+				a.z <= position.z + scale.z / 2 && a.z >= position.z - scale.z / 2)) return (BlockPlacement.Face.RIGHT);
+		// Left
+		planePoint = new Vector3f(position.x - scale.x / 2, position.y, position.z);
+		planeNormal = new Vector3f(-1.0f, 0, 0.0f);
+		a = lineIntersection(planePoint, planeNormal, Camera.position.copy(), ray.copy());
+		if (ray.x > 0f && (a.y <= position.y + scale.y / 2 && a.y >= position.y - scale.y / 2 &&
+				a.z <= position.z + scale.z / 2 && a.z >= position.z - scale.z / 2)) return (BlockPlacement.Face.LEFT);
+		// Back
+		planePoint = new Vector3f(position.x, position.y, position.z + scale.z / 2);
+		planeNormal = new Vector3f(0.0f, 0, 1.0f);
+		a = lineIntersection(planePoint, planeNormal, Camera.position.copy(), ray.copy());
+		if (ray.z < 0f && (a.y <= position.y + scale.y / 2 && a.y >= position.y - scale.y / 2 &&
+				a.x <= position.x + scale.x / 2 && a.x >= position.x - scale.x / 2)) return (BlockPlacement.Face.BACK);
+		// Front
+		planePoint = new Vector3f(position.x, position.y, position.z - scale.z / 2);
+		planeNormal = new Vector3f(0.0f, 0, -1.0f);
+		a = lineIntersection(planePoint, planeNormal, Camera.position.copy(), ray.copy());
+		if (ray.z > 0f && (a.y <= position.y + scale.y / 2 && a.y >= position.y - scale.y / 2 &&
+				a.x <= position.x + scale.x / 2 && a.x >= position.x - scale.x / 2)) return (BlockPlacement.Face.FRONT);
 
-		return (new Color(red, green, blue));
+		return (null);
 	}
 
 	public void draw() {

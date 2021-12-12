@@ -8,7 +8,7 @@ import com.blackoutburst.network.client.C03PlaceBlock;
 
 public class BlockPlacement {
 
-    private enum Face {
+    public enum Face {
         TOP,
         BOTTOM,
         FRONT,
@@ -20,42 +20,38 @@ public class BlockPlacement {
     private static Cube selected = null;
     private static int selectedId = -1;
     private static Face face = null;
+    private static MousePicker picker = new MousePicker();
 
     private static void pickBlock() {
         Color color = new Color();
         double closest = 100;
+        Face tmpface = null;
         int idx = 0;
 
         selected = null;
         selectedId = -1;
         face = null;
 
-
+        picker.update();
         try {
             for (Cube c : Main.cubes) {
                 double distance = Math.sqrt(
-                        Math.pow((Camera.position.x - c.position.x), 2) +
-                                Math.pow((Camera.position.y - c.position.y), 2) +
-                                Math.pow((Camera.position.z - c.position.z), 2));
+                    Math.pow((Camera.position.x - c.position.x), 2) +
+                    Math.pow((Camera.position.y - c.position.y), 2) +
+                    Math.pow((Camera.position.z - c.position.z), 2));
 
-                if (distance < 6) color = c.interact();
+                if (distance < 6) tmpface = c.interact(picker.getCurrentRay());
 
-                if (color.r == 255 && color.g == 0 && color.b == 0) face = Face.FRONT;
-                if (color.r == 0 && color.g == 255 && color.b == 0) face = Face.BACK;
-                if (color.r == 0 && color.g == 0 && color.b == 255) face = Face.LEFT;
-                if (color.r == 255 && color.g == 255 && color.b == 0) face = Face.BOTTOM;
-                if (color.r == 255 && color.g == 0 && color.b == 255) face = Face.RIGHT;
-                if (color.r == 0 && color.g == 255 && color.b == 255) face = Face.TOP;
-
-                if (color.r != 0 || color.g != 0 || color.b != 0) {
+                if (tmpface != null) {
                     double dist = Math.sqrt(
-                            Math.pow((Camera.position.x - c.position.x), 2) +
-                                    Math.pow((Camera.position.y - c.position.y), 2) +
-                                    Math.pow((Camera.position.z - c.position.z), 2));
+                        Math.pow((Camera.position.x - c.position.x), 2) +
+                        Math.pow((Camera.position.y - c.position.y), 2) +
+                        Math.pow((Camera.position.z - c.position.z), 2));
                     if (dist < closest) {
                         closest = dist;
-                        selected = new Cube(null, c.position.copy(), new Vector3f(1.01f), c.rotation.copy(), new Color(1, 1, 1, 0.5f));
+                        selected = new Cube(null, c.position, new Vector3f(1.01f), c.rotation.copy(), new Color(1, 1, 1, 0.5f));
                         selectedId = idx;
+                        face = tmpface;
                     }
                 }
                 idx++;
