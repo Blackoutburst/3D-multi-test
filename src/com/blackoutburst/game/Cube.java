@@ -229,8 +229,6 @@ public class Cube {
 		int green = (pixels.get(1) & 0xFF);
 		int blue = (pixels.get(2) & 0xFF);
 
-		GL11.glClearColor(Display.clearColor.r,Display.clearColor.g, Display.clearColor.b, Display.clearColor.a);
-		GL11.glClear(GL_COLOR_BUFFER_BIT);
 		return (new Color(red, green, blue));
 	}
 

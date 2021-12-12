@@ -1,10 +1,10 @@
-package blackout.network;
+package com.blackoutburst.network;
 
-import blackout.core.Core;
-import blackout.network.client.C00SendMovement;
-import blackout.network.client.C01SendRotation;
-import blackout.network.client.C02BreakBlock;
-import blackout.network.client.C03PlaceBlock;
+import com.blackoutburst.core.Core;
+import com.blackoutburst.network.client.C00SendMovement;
+import com.blackoutburst.network.client.C01SendRotation;
+import com.blackoutburst.network.client.C02BreakBlock;
+import com.blackoutburst.network.client.C03PlaceBlock;
 
 public interface PacketUtils {
 

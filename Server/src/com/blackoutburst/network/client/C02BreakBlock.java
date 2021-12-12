@@ -1,10 +1,10 @@
-package blackout.network.client;
+package com.blackoutburst.network.client;
 
-import blackout.core.Core;
-import blackout.network.PacketBuffer;
-import blackout.network.PacketPlayIn;
-import blackout.network.PacketUtils;
-import blackout.network.server.S05RemoveBlock;
+import com.blackoutburst.core.Core;
+import com.blackoutburst.network.PacketBuffer;
+import com.blackoutburst.network.PacketPlayIn;
+import com.blackoutburst.network.PacketUtils;
+import com.blackoutburst.network.server.S05RemoveBlock;
 
 public class C02BreakBlock extends PacketPlayIn implements PacketUtils {
 

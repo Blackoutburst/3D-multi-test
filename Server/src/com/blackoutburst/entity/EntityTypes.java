@@ -1,4 +1,4 @@
-package blackout.entity;
+package com.blackoutburst.entity;
 
 public enum EntityTypes {
 	PLAYER(0x00);

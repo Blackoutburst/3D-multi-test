@@ -1,10 +1,10 @@
-package blackout.network.server;
+package com.blackoutburst.network.server;
 
-import blackout.network.Client;
-import blackout.network.Connection;
-import blackout.network.PacketBuffer;
-import blackout.network.PacketPlayOut;
-import blackout.network.PacketUtils;
+import com.blackoutburst.network.Client;
+import com.blackoutburst.network.Connection;
+import com.blackoutburst.network.PacketBuffer;
+import com.blackoutburst.network.PacketPlayOut;
+import com.blackoutburst.network.PacketUtils;
 
 public class S05RemoveBlock extends PacketPlayOut implements PacketUtils {
 

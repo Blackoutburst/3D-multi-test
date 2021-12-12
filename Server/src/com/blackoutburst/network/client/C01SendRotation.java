@@ -1,10 +1,10 @@
-package blackout.network.client;
+package com.blackoutburst.network.client;
 
-import blackout.core.Vector3f;
-import blackout.entity.EntityManager;
-import blackout.network.PacketBuffer;
-import blackout.network.PacketPlayIn;
-import blackout.network.PacketUtils;
+import com.blackoutburst.core.Vector3f;
+import com.blackoutburst.entity.EntityManager;
+import com.blackoutburst.network.PacketBuffer;
+import com.blackoutburst.network.PacketPlayIn;
+import com.blackoutburst.network.PacketUtils;
 
 public class C01SendRotation extends PacketPlayIn implements PacketUtils {
 

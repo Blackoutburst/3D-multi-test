@@ -1,11 +1,11 @@
-package blackout.network.server;
+package com.blackoutburst.network.server;
 
-import blackout.entity.EntityManager;
-import blackout.network.Client;
-import blackout.network.Connection;
-import blackout.network.PacketBuffer;
-import blackout.network.PacketPlayOut;
-import blackout.network.PacketUtils;
+import com.blackoutburst.entity.EntityManager;
+import com.blackoutburst.network.Client;
+import com.blackoutburst.network.Connection;
+import com.blackoutburst.network.PacketBuffer;
+import com.blackoutburst.network.PacketPlayOut;
+import com.blackoutburst.network.PacketUtils;
 
 public class S03DeleteEntity extends PacketPlayOut implements PacketUtils {
 

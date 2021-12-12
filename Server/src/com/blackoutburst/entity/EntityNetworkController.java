@@ -1,8 +1,8 @@
-package blackout.entity;
+package com.blackoutburst.entity;
 
-import blackout.core.Vector3f;
-import blackout.network.server.S01MoveEntity;
-import blackout.network.server.S02UpdateEntityRotation;
+import com.blackoutburst.core.Vector3f;
+import com.blackoutburst.network.server.S01MoveEntity;
+import com.blackoutburst.network.server.S02UpdateEntityRotation;
 
 public interface EntityNetworkController {
 

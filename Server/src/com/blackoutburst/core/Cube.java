@@ -1,4 +1,4 @@
-package blackout.core;
+package com.blackoutburst.core;
 
 public class Cube {
 

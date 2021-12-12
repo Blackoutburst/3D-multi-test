@@ -1,4 +1,4 @@
-package blackout.network;
+package com.blackoutburst.network;
 
 import java.io.BufferedReader;
 import java.io.OutputStream;

@@ -1,9 +1,9 @@
-package blackout.core;
+package com.blackoutburst.core;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import blackout.network.Connection;
+import com.blackoutburst.network.Connection;
 
 public class Core {
 

@@ -1,4 +1,4 @@
-package blackout.network;
+package com.blackoutburst.network;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,14 +9,14 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import blackout.core.Core;
-import blackout.core.Cube;
-import blackout.entity.Entity;
-import blackout.entity.EntityManager;
-import blackout.entity.EntityTypes;
-import blackout.network.server.S00AddEntity;
-import blackout.network.server.S03DeleteEntity;
-import blackout.network.server.S04AddBlock;
+import com.blackoutburst.core.Core;
+import com.blackoutburst.core.Cube;
+import com.blackoutburst.entity.Entity;
+import com.blackoutburst.entity.EntityManager;
+import com.blackoutburst.entity.EntityTypes;
+import com.blackoutburst.network.server.S00AddEntity;
+import com.blackoutburst.network.server.S03DeleteEntity;
+import com.blackoutburst.network.server.S04AddBlock;
 
 public class Connection implements PacketUtils {
 

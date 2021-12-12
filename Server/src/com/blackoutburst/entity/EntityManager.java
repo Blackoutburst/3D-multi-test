@@ -1,4 +1,4 @@
-package blackout.entity;
+package com.blackoutburst.entity;
 
 import java.util.ArrayList;
 import java.util.List;

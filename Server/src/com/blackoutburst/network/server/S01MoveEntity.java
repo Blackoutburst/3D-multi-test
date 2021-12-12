@@ -1,11 +1,11 @@
-package blackout.network.server;
+package com.blackoutburst.network.server;
 
-import blackout.core.Vector3f;
-import blackout.network.Client;
-import blackout.network.Connection;
-import blackout.network.PacketBuffer;
-import blackout.network.PacketPlayOut;
-import blackout.network.PacketUtils;
+import com.blackoutburst.core.Vector3f;
+import com.blackoutburst.network.Client;
+import com.blackoutburst.network.Connection;
+import com.blackoutburst.network.PacketBuffer;
+import com.blackoutburst.network.PacketPlayOut;
+import com.blackoutburst.network.PacketUtils;
 
 public class S01MoveEntity extends PacketPlayOut implements PacketUtils {
 

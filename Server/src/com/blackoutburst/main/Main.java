@@ -1,6 +1,6 @@
-package blackout.main;
+package com.blackoutburst.main;
 
-import blackout.core.Core;
+import com.blackoutburst.core.Core;
 
 public class Main {
 

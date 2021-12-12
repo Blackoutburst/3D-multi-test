@@ -1,4 +1,4 @@
-package blackout.network;
+package com.blackoutburst.network;
 
 public class PacketBuffer implements PacketUtils {
 	

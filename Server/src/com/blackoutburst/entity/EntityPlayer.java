@@ -1,6 +1,6 @@
-package blackout.entity;
+package com.blackoutburst.entity;
 
-import blackout.core.Vector3f;
+import com.blackoutburst.core.Vector3f;
 
 public class EntityPlayer extends Entity {
 

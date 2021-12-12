@@ -1,4 +1,4 @@
-package blackout.core;
+package com.blackoutburst.core;
 
 /**
  * <h1>Vector3f</h1>

@@ -1,13 +1,13 @@
-package blackout.network.client;
+package com.blackoutburst.network.client;
 
-import blackout.core.Color;
-import blackout.core.Core;
-import blackout.core.Cube;
-import blackout.core.Vector3f;
-import blackout.network.PacketBuffer;
-import blackout.network.PacketPlayIn;
-import blackout.network.PacketUtils;
-import blackout.network.server.S04AddBlock;
+import com.blackoutburst.core.Color;
+import com.blackoutburst.core.Core;
+import com.blackoutburst.core.Cube;
+import com.blackoutburst.core.Vector3f;
+import com.blackoutburst.network.PacketBuffer;
+import com.blackoutburst.network.PacketPlayIn;
+import com.blackoutburst.network.PacketUtils;
+import com.blackoutburst.network.server.S04AddBlock;
 
 public class C03PlaceBlock extends PacketPlayIn implements PacketUtils {
 
