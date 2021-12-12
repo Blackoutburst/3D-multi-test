@@ -41,13 +41,11 @@ public class BlockPlacement {
 
                 if (distance < 6) tmpface = c.interact(picker.getCurrentRay());
 
-                if (tmpface != null) {
-                    if (distance < closest) {
-                        closest = distance;
-                        selected = new Cube(null, c.position, new Vector3f(1.01f), c.rotation.copy(), new Color(1, 1, 1, 0.5f));
-                        selectedId = idx;
-                        face = tmpface;
-                    }
+                if (tmpface != null && distance < closest) {
+                    closest = distance;
+                    selected = new Cube(null, c.position, new Vector3f(1.01f), c.rotation.copy(), new Color(1, 1, 1, 0.5f));
+                    selectedId = idx;
+                    face = tmpface;
                 }
                 idx++;
             }

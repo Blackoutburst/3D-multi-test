@@ -34,6 +34,7 @@ public class S00AddEntity extends PacketPlayIn implements PacketUtils {
 			
 			switch (type) {
 				case 0x00: tp = EntityTypes.PLAYER; break;
+				default: return;
 			}
 			
 			new EntityManager().addEntity(id, tp, position, scale, rotation);
