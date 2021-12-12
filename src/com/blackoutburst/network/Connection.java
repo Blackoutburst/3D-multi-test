@@ -1,4 +1,4 @@
-package com.blackout.network;
+package com.blackoutburst.network;
 
 import com.blackoutburst.game.EntityManager;
 
@@ -9,7 +9,7 @@ import java.net.Socket;
 
 public class Connection implements PacketUtils {
 
-	private final String IP = "ip";
+	private final String IP = "localhost";
 	private final short PORT = 25565;
 	
 	public Socket socket = null;

@@ -1,8 +1,8 @@
-package com.blackout.network;
+package com.blackoutburst.network;
 
 
-import com.blackout.network.server.*;
 import com.blackoutburst.game.Main;
+import com.blackoutburst.network.server.*;
 
 public interface PacketUtils {
 

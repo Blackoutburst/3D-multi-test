@@ -1,10 +1,10 @@
-package com.blackout.network.client;
+package com.blackoutburst.network.client;
 
-import com.blackout.network.PacketBuffer;
-import com.blackout.network.PacketPlayOut;
-import com.blackout.network.PacketUtils;
 import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.maths.Vector3f;
+import com.blackoutburst.network.PacketBuffer;
+import com.blackoutburst.network.PacketPlayOut;
+import com.blackoutburst.network.PacketUtils;
 
 public class C03PlaceBlock extends PacketPlayOut implements PacketUtils {
 

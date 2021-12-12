@@ -1,10 +1,10 @@
-package com.blackout.network.server;
+package com.blackoutburst.network.server;
 
-import com.blackout.network.PacketBuffer;
-import com.blackout.network.PacketPlayIn;
-import com.blackout.network.PacketUtils;
 import com.blackoutburst.bogel.maths.Vector3f;
 import com.blackoutburst.game.EntityManager;
+import com.blackoutburst.network.PacketBuffer;
+import com.blackoutburst.network.PacketPlayIn;
+import com.blackoutburst.network.PacketUtils;
 
 public class S01MoveEntity extends PacketPlayIn implements PacketUtils {
 

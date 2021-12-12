@@ -1,4 +1,4 @@
-package com.blackout.network;
+package com.blackoutburst.network;
 
 public abstract class PacketPlayIn {
 

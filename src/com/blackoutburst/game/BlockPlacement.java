@@ -1,10 +1,10 @@
 package com.blackoutburst.game;
 
-import com.blackout.network.client.C02BreakBlock;
-import com.blackout.network.client.C03PlaceBlock;
 import com.blackoutburst.bogel.core.Mouse;
 import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.maths.Vector3f;
+import com.blackoutburst.network.client.C02BreakBlock;
+import com.blackoutburst.network.client.C03PlaceBlock;
 
 public class BlockPlacement {
 

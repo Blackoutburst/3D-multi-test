@@ -1,6 +1,6 @@
 package com.blackoutburst.game;
 
-import com.blackout.network.Connection;
+import com.blackoutburst.network.Connection;
 import com.blackoutburst.bogel.core.Display;
 import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.Shape;

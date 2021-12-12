@@ -1,14 +1,14 @@
-package com.blackout.network.server;
+package com.blackoutburst.network.server;
 
-import com.blackout.network.PacketBuffer;
-import com.blackout.network.PacketPlayIn;
-import com.blackout.network.PacketUtils;
 import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.Texture;
 import com.blackoutburst.bogel.maths.Vector3f;
 import com.blackoutburst.game.Cube;
 import com.blackoutburst.game.Main;
 import com.blackoutburst.game.Textures;
+import com.blackoutburst.network.PacketBuffer;
+import com.blackoutburst.network.PacketPlayIn;
+import com.blackoutburst.network.PacketUtils;
 
 public class S04AddBlock extends PacketPlayIn implements PacketUtils {
 

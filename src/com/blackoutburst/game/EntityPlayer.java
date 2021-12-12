@@ -1,9 +1,9 @@
 package com.blackoutburst.game;
 
 
-import com.blackout.network.client.C00SendMovement;
-import com.blackout.network.client.C01SendRotation;
 import com.blackoutburst.bogel.maths.Vector3f;
+import com.blackoutburst.network.client.C00SendMovement;
+import com.blackoutburst.network.client.C01SendRotation;
 
 public class EntityPlayer extends Entity {
 
