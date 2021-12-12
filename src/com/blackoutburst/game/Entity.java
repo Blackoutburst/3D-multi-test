@@ -7,6 +7,8 @@ public abstract class Entity {
 	protected int id;
 	protected EntityTypes type;
 	protected Vector3f position;
+	protected Vector3f lastPosition;
+	protected Vector3f newPosition;
 	protected Vector3f scale;
 	protected Vector3f rotation;
 	protected Vector3f velocity;
@@ -15,6 +17,8 @@ public abstract class Entity {
 		this.id = id;
 		this.type = type;
 		this.position = position;
+		this.lastPosition = position.copy();
+		this.newPosition = position.copy();
 		this.scale = scale;
 		this.rotation = rotation;
 		this.velocity = new Vector3f();

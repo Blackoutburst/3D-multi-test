@@ -1,10 +1,10 @@
 package com.blackoutburst.game;
 
-import com.blackoutburst.network.Connection;
 import com.blackoutburst.bogel.core.Display;
 import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.Shape;
 import com.blackoutburst.bogel.maths.Vector2f;
+import com.blackoutburst.network.Connection;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
