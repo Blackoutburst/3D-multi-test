@@ -8,18 +8,16 @@ import com.blackoutburst.network.server.S05RemoveBlock;
 
 public class C02BreakBlock extends PacketPlayIn implements PacketUtils {
 
-	private int id;
-	
 	@Override
 	public void readPacketData(String data) {
 		try {
 			PacketBuffer buffer = new PacketBuffer(data);
 
-			id = buffer.readInt();
+			int id = buffer.readInt();
 			
-			Core.cubes.remove(this.id);
+			Core.cubes.remove(id);
 			
-			new S05RemoveBlock(this.id).writePacketData().sendPacketToAll();
+			new S05RemoveBlock(id).writePacketData().sendPacketToAll();
 		} catch(Exception e) {
 			malformatedError(e.toString());
 		}
