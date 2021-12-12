@@ -18,6 +18,5 @@ public class EntityPlayer extends Entity {
 	}
 
 	@Override
-	protected void render() {
-	}
+	protected void render() {}
 }

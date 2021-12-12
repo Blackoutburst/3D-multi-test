@@ -23,7 +23,6 @@ public class BlockPlacement {
     private static MousePicker picker = new MousePicker();
 
     private static void pickBlock() {
-        Color color = new Color();
         double closest = 100;
         Face tmpface = null;
         int idx = 0;
@@ -43,12 +42,8 @@ public class BlockPlacement {
                 if (distance < 6) tmpface = c.interact(picker.getCurrentRay());
 
                 if (tmpface != null) {
-                    double dist = Math.sqrt(
-                        Math.pow((Camera.position.x - c.position.x), 2) +
-                        Math.pow((Camera.position.y - c.position.y), 2) +
-                        Math.pow((Camera.position.z - c.position.z), 2));
-                    if (dist < closest) {
-                        closest = dist;
+                    if (distance < closest) {
+                        closest = distance;
                         selected = new Cube(null, c.position, new Vector3f(1.01f), c.rotation.copy(), new Color(1, 1, 1, 0.5f));
                         selectedId = idx;
                         face = tmpface;
@@ -86,6 +81,7 @@ public class BlockPlacement {
                 case RIGHT:
                     new C03PlaceBlock("BRICKS", new Vector3f(selected.position.x + 1, selected.position.y, selected.position.z), new Vector3f(1), new Vector3f(), Color.WHITE).writePacketData().sendPacket();
                 break;
+                default: return;
             }
         }
     }

@@ -8,7 +8,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.Buffer;
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.ARBProgramInterfaceQuery.GL_UNIFORM;
@@ -27,8 +26,6 @@ public class Cube {
 
 	public static final Vector3f lightColor = new Vector3f(1);
 	public static final Vector3f lightPos = new Vector3f(0, 5, 0);
-
-	private static ByteBuffer pixels = BufferUtils.createByteBuffer(1 * 1 * 3);
 
 	protected Matrix4f model;
 	protected Texture texture;

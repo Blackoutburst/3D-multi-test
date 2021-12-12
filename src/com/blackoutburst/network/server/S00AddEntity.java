@@ -9,24 +9,17 @@ import com.blackoutburst.network.PacketUtils;
 
 public class S00AddEntity extends PacketPlayIn implements PacketUtils {
 
-	private int id;
-	private int type;
-	private Vector3f position;
-	private Vector3f scale;
-	private Vector3f rotation;
-	
 	@Override
 	public void readPacketData(String data) {
 		try {
-
-			position = new Vector3f();
-			scale = new Vector3f();
-			rotation = new Vector3f();
+			Vector3f position = new Vector3f();
+			Vector3f scale = new Vector3f();
+			Vector3f rotation = new Vector3f();
 
 			PacketBuffer buffer = new PacketBuffer(data);
 
-			id = buffer.readInt();
-			type = buffer.readInt();
+			int id = buffer.readInt();
+			int type = buffer.readInt();
 			position.x =  buffer.readFloat();
 			position.y =  buffer.readFloat();
 			position.z =  buffer.readFloat();

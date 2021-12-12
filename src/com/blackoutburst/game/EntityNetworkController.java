@@ -11,7 +11,8 @@ public interface EntityNetworkController {
 		}
 
 		switch(type) {
-			case PLAYER: EntityManager.entities.add(new EntityOtherPlayer(id, type, position, scale, rotation));
+			case PLAYER: EntityManager.entities.add(new EntityOtherPlayer(id, type, position, scale, rotation)); break;
+			default: return;
 		}
 	}
 	

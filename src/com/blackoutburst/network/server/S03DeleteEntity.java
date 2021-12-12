@@ -7,14 +7,12 @@ import com.blackoutburst.network.PacketUtils;
 
 public class S03DeleteEntity extends PacketPlayIn implements PacketUtils {
 
-	private int id;
-	
 	@Override
 	public void readPacketData(String data) {
 		try {
 			PacketBuffer buffer = new PacketBuffer(data);
 
-			id = buffer.readInt();
+			int id = buffer.readInt();
 			
 			new EntityManager().deleteEntity(id);
 		} catch(Exception e) {

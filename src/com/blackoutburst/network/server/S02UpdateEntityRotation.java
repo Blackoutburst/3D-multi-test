@@ -8,17 +8,14 @@ import com.blackoutburst.network.PacketUtils;
 
 public class S02UpdateEntityRotation extends PacketPlayIn implements PacketUtils {
 
-	private int id;
-	private Vector3f rotation;
-	
 	@Override
 	public void readPacketData(String data) {
 		try {
-			rotation = new Vector3f();
+			Vector3f rotation = new Vector3f();
 
 			PacketBuffer buffer = new PacketBuffer(data);
 
-			id = buffer.readInt();
+			int id = buffer.readInt();
 			rotation.x = buffer.readFloat();
 			rotation.y = buffer.readFloat();
 			rotation.z = buffer.readFloat();

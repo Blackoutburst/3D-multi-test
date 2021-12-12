@@ -12,23 +12,17 @@ import com.blackoutburst.network.PacketUtils;
 
 public class S04AddBlock extends PacketPlayIn implements PacketUtils {
 
-	private String texture;
-	private Vector3f position;
-	private Vector3f scale;
-	private Vector3f rotation;
-	private Color color;
-	
 	@Override
 	public void readPacketData(String data) {
 		try {
-			position = new Vector3f();
-			scale = new Vector3f();
-			rotation = new Vector3f();
-			color = new Color();
+			Vector3f position = new Vector3f();
+			Vector3f scale = new Vector3f();
+			Vector3f rotation = new Vector3f();
+			Color color = new Color();
 
 			PacketBuffer buffer = new PacketBuffer(data);
 
-			texture = buffer.readString();
+			String texture = buffer.readString();
 			position.x =  buffer.readFloat();
 			position.y =  buffer.readFloat();
 			position.z =  buffer.readFloat();

@@ -25,6 +25,7 @@ public interface PacketUtils {
 			case 0x03: new S03DeleteEntity().readPacketData(data); break;
 			case 0x04: new S04AddBlock().readPacketData(data); break;
 			case 0x05: new S05RemoveBlock().readPacketData(data); break;
+			default: return;
 		}
 	}
 	
