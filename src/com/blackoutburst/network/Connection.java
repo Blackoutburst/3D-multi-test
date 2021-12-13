@@ -9,7 +9,7 @@ import java.net.Socket;
 
 public class Connection implements PacketUtils {
 
-	private final String IP = "localhost";
+	private final String IP = "10.101.54.93";
 	private final short PORT = 25565;
 	
 	public Socket socket = null;

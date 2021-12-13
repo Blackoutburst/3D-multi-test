@@ -129,8 +129,10 @@ public class World {
 	}
 
 	private static void setUniforms() {
+		Matrix4f model = new Matrix4f();
+
 		int loc = glGetProgramResourceLocation(program, GL_UNIFORM, "model");
-		glProgramUniformMatrix4fv(program, loc, false, Matrix4f.getValues(new Matrix4f().setIdentity()));
+		glProgramUniformMatrix4fv(program, loc, false, Matrix4f.getValues(model.setIdentity()));
 		
 		loc = glGetProgramResourceLocation(program, GL_UNIFORM, "view");
 		glProgramUniformMatrix4fv(program, loc, false, Matrix4f.getValues(Camera.view));
@@ -146,6 +148,8 @@ public class World {
 
 		loc = glGetProgramResourceLocation(program, GL_UNIFORM, "viewPos");
 		glProgramUniform3f(program, loc, -Camera.position.x, -Camera.position.y, -Camera.position.z);
+
+		model = null;
 	}
 
 	private static void setCubeOffset(int cubesNumber) {
@@ -153,7 +157,7 @@ public class World {
 
 		int idx = 0;
 		for (int i = 0; i < cubesNumber; i++) {
-			if (cubes.get(i) == null) break;
+			try {cubes.get(i);} catch(Exception e) {break;}
 			if (cubes.get(i) == null) break;
 			translation[idx] = cubes.get(i).position.x;
 			translation[idx + 1] = cubes.get(i).position.y;
@@ -177,6 +181,11 @@ public class World {
 		glVertexAttribDivisorARB(4, 1);
 		glBindVertexArray(0);
 
+		glDeleteBuffers(instanceVBO);
+
+		offsetBuffer.clear();
+
+		offsetBuffer = null;
 		translation = null;
 	}
 
@@ -209,6 +218,11 @@ public class World {
 		glVertexAttribDivisorARB(3, 1);
 		glBindVertexArray(0);
 
+		glDeleteBuffers(instanceVBO);
+
+		offsetBuffer.clear();
+
+		offsetBuffer = null;
 		color = null;
 	}
 
@@ -240,6 +254,11 @@ public class World {
 		glVertexAttribDivisorARB(5, 1);
 		glBindVertexArray(0);
 
+		glDeleteBuffers(instanceVBO);
+
+		offsetBuffer.clear();
+
+		offsetBuffer = null;
 		uvo = null;
 	}
 

@@ -76,6 +76,8 @@ public class Camera {
         position.x += velocity.x * Time.getDelta() * speed;
         position.y += velocity.y * Time.getDelta() * speed;
         position.z += velocity.z * Time.getDelta() * speed;
+
+        velocity = null;
     }
 
     public static void update() {
@@ -83,10 +85,17 @@ public class Camera {
         move();
 
         view.setIdentity();
-        Matrix4f.rotate((float) Math.toRadians(rotation.y), new Vector3f(1, 0, 0), view, view);
-        Matrix4f.rotate((float) Math.toRadians(rotation.x), new Vector3f(0, 1, 0), view, view);
+
+        Vector3f yaw = new Vector3f(1, 0, 0);
+        Vector3f pitch = new Vector3f(0, 1, 0);
+
+        Matrix4f.rotate((float) Math.toRadians(rotation.y), yaw, view, view);
+        Matrix4f.rotate((float) Math.toRadians(rotation.x), pitch, view, view);
 
         Vector3f reverse = new Vector3f(-position.x, -position.y, -position.z);
         Matrix4f.translate(reverse, view, view);
+
+        yaw = null;
+        pitch = null;
     }
 }

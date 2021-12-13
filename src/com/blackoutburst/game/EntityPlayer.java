@@ -13,8 +13,14 @@ public class EntityPlayer extends Entity {
 
 	@Override
 	protected void update() {
-		new C00SendMovement(id, Camera.position).writePacketData().sendPacket();
-		new C01SendRotation(id, new Vector3f(0, (float)Math.toRadians(-Camera.rotation.x), 0)).writePacketData().sendPacket();
+		C00SendMovement movement = new C00SendMovement(id, Camera.position).writePacketData();
+		C01SendRotation rotation = new C01SendRotation(id, new Vector3f(0, (float)Math.toRadians(-Camera.rotation.x), 0)).writePacketData();
+
+		movement.sendPacket();
+		rotation.sendPacket();
+
+		movement = null;
+		rotation = null;
 	}
 
 	@Override

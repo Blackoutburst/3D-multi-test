@@ -51,6 +51,9 @@ public class Main {
 
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
+
+		System.gc();
+
 		while(display.isOpen()) {
 			display.clear();
 			Camera.update();
@@ -66,6 +69,7 @@ public class Main {
 
 			cursor.draw();
 			HotBar.render();
+
 			display.update();
 		}
 

@@ -2,7 +2,6 @@ package com.blackoutburst.game;
 
 import com.blackoutburst.bogel.core.Mouse;
 import com.blackoutburst.bogel.graphics.Color;
-import com.blackoutburst.bogel.maths.Vector2f;
 import com.blackoutburst.bogel.maths.Vector3f;
 import com.blackoutburst.network.client.C02BreakBlock;
 import com.blackoutburst.network.client.C03PlaceBlock;
@@ -44,18 +43,27 @@ public class BlockPlacement {
 
                 if (tmpface != null && distance < closest) {
                     closest = distance;
-                    selected = new Cube(null, c.position, new Vector3f(1.01f), c.rotation.copy(), new Color(1, 1, 1, 0.5f), new Vector2f());
+
+                    Vector3f scale = new Vector3f(1.01f);
+                    Color color = new Color(1, 1, 1, 0.5f);
+
+                    selected = new Cube(null, c.position, scale, c.rotation.copy(), color, null);
+                    scale = null;
+                    color = null;
                     selectedId = idx;
                     face = tmpface;
                 }
                 idx++;
             }
         } catch (Exception e) {}
+        tmpface = null;
     }
 
     private static void breakBlock() {
         if (selectedId != -1 && Mouse.getLeftButton().isPressed()) {
-            new C02BreakBlock(selectedId).writePacketData().sendPacket();
+            C02BreakBlock packet = new C02BreakBlock(selectedId).writePacketData();
+            packet.sendPacket();
+            packet = null;
         }
     }
 
@@ -80,27 +88,35 @@ public class BlockPlacement {
 
     private static void placeBlock() {
         if (face != null && selectedId != -1 && Mouse.getRightButton().isPressed()) {
+            C03PlaceBlock packet = null;
             switch (face) {
                 case TOP:
-                    new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x, selected.position.y + 1, selected.position.z), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData().sendPacket();
+                    packet = new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x, selected.position.y + 1, selected.position.z), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData();
+                    packet.sendPacket();
                 break;
                 case BOTTOM:
-                    new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x, selected.position.y - 1, selected.position.z), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData().sendPacket();
+                    packet = new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x, selected.position.y - 1, selected.position.z), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData();
+                    packet.sendPacket();
                 break;
                 case FRONT:
-                    new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x, selected.position.y, selected.position.z - 1), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData().sendPacket();
+                    packet = new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x, selected.position.y, selected.position.z - 1), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData();
+                    packet.sendPacket();
                 break;
                 case LEFT:
-                    new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x - 1, selected.position.y, selected.position.z), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData().sendPacket();
+                    packet = new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x - 1, selected.position.y, selected.position.z), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData();
+                    packet.sendPacket();
                 break;
                 case BACK:
-                    new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x, selected.position.y, selected.position.z + 1), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData().sendPacket();
+                    packet = new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x, selected.position.y, selected.position.z + 1), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData();
+                    packet.sendPacket();
                 break;
                 case RIGHT:
-                    new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x + 1, selected.position.y, selected.position.z), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData().sendPacket();
+                    packet = new C03PlaceBlock(getBlockFromSlot(), new Vector3f(selected.position.x + 1, selected.position.y, selected.position.z), new Vector3f(1), new Vector3f(), getBlockColorFromSlot()).writePacketData();
+                    packet.sendPacket();
                 break;
                 default: return;
             }
+            packet = null;
         }
     }
 
