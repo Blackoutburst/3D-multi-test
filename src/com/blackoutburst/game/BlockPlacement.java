@@ -6,6 +6,10 @@ import com.blackoutburst.bogel.maths.Vector3f;
 import com.blackoutburst.network.client.C02BreakBlock;
 import com.blackoutburst.network.client.C03PlaceBlock;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class BlockPlacement {
 
     public enum Face {
@@ -34,25 +38,24 @@ public class BlockPlacement {
 
         PICKER.update();
 
-        try {
-            for (Cube c : World.cubes) {
-                double distance = Math.sqrt(
-                    Math.pow((Camera.position.x - c.position.x), 2) +
-                    Math.pow((Camera.position.y - c.position.y), 2) +
-                    Math.pow((Camera.position.z - c.position.z), 2));
+        final List<Cube> sync = new ArrayList<>(World.cubes);
+        for (Cube c : sync) {
+            double distance = Math.sqrt(
+                Math.pow((Camera.position.x - c.position.x), 2) +
+                Math.pow((Camera.position.y - c.position.y), 2) +
+                Math.pow((Camera.position.z - c.position.z), 2));
 
-                if (distance < 7) tmpface = c.interact(PICKER.getCurrentRay());
+            if (distance < 7) tmpface = c.interact(PICKER.getCurrentRay());
 
-                if (tmpface != null && distance < closest) {
-                    closest = distance;
+            if (tmpface != null && distance < closest) {
+                closest = distance;
 
-                    selected = new Cube(null, c.position, new Vector3f(1.01f), c.rotation.copy(), new Color(1, 1, 1, 0.5f), null);
-                    selectedId = idx;
-                    face = tmpface;
-                }
-                idx++;
+                selected = new Cube(null, c.position, new Vector3f(1.01f), c.rotation.copy(), new Color(1, 1, 1, 0.5f), null);
+                selectedId = idx;
+                face = tmpface;
             }
-        } catch (Exception ignored) {}
+            idx++;
+        }
     }
 
     private static void breakBlock() {

@@ -7,6 +7,7 @@ import org.lwjgl.BufferUtils;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.lwjgl.opengl.ARBInstancedArrays.glVertexAttribDivisorARB;
@@ -149,16 +150,14 @@ public class World {
 		glProgramUniform3f(program, loc, -Camera.position.x, -Camera.position.y, -Camera.position.z);
 	}
 
-	private static void setCubeOffset(int cubesNumber) {
+	private static void setCubeOffset(int cubesNumber, List<Cube> sync) {
 		final float[] translation = new float[cubesNumber * 3];
 
 		int idx = 0;
 		for (int i = 0; i < cubesNumber; i++) {
-			try {cubes.get(i);} catch(Exception e) {break;}
-			if (cubes.get(i) == null) break;
-			translation[idx] = cubes.get(i).position.x;
-			translation[idx + 1] = cubes.get(i).position.y;
-			translation[idx + 2] = cubes.get(i).position.z;
+			translation[idx] = sync.get(i).position.x;
+			translation[idx + 1] = sync.get(i).position.y;
+			translation[idx + 2] = sync.get(i).position.z;
 			idx += 3;
 		}
 
@@ -183,16 +182,14 @@ public class World {
 		offsetBuffer.clear();
 	}
 
-	private static void setCubeColor(int cubesNumber) {
+	private static void setCubeColor(int cubesNumber, List<Cube> sync) {
 		final float[] color = new float[cubesNumber * 3];
 
 		int idx = 0;
 		for (int i = 0; i < cubesNumber; i++) {
-			try {cubes.get(i);} catch(Exception e) {break;}
-			if (cubes.get(i) == null) break;
-			color[idx] = cubes.get(i).color.r;
-			color[idx + 1] = cubes.get(i).color.g;
-			color[idx + 2] = cubes.get(i).color.b;
+			color[idx] = sync.get(i).color.r;
+			color[idx + 1] = sync.get(i).color.g;
+			color[idx + 2] = sync.get(i).color.b;
 			idx += 3;
 		}
 
@@ -217,15 +214,13 @@ public class World {
 		offsetBuffer.clear();
 	}
 
-	private static void setCubeTextureOffset(int cubesNumber) {
+	private static void setCubeTextureOffset(int cubesNumber, List<Cube> sync) {
 		final float[] uvo = new float[cubesNumber * 2];
 
 		int idx = 0;
 		for (int i = 0; i < cubesNumber; i++) {
-			try {cubes.get(i);} catch(Exception e) {break;}
-			if (cubes.get(i) == null) break;
-			uvo[idx] = cubes.get(i).textureOffset.x;
-			uvo[idx + 1] = cubes.get(i).textureOffset.y;
+			uvo[idx] = sync.get(i).textureOffset.x;
+			uvo[idx + 1] = sync.get(i).textureOffset.y;
 			idx += 2;
 		}
 
@@ -252,10 +247,11 @@ public class World {
 
 	public static void draw() {
 		final int cubesNumber = cubes.size();
+		final List<Cube> sync = new ArrayList<>(World.cubes);
 
-		setCubeOffset(cubesNumber);
-		setCubeColor(cubesNumber);
-		setCubeTextureOffset(cubesNumber);
+		setCubeOffset(cubesNumber, sync);
+		setCubeColor(cubesNumber, sync);
+		setCubeTextureOffset(cubesNumber, sync);
 		setUniforms();
 
 		glBindTexture(GL_TEXTURE_2D, Textures.ATLAS.getTexture());
