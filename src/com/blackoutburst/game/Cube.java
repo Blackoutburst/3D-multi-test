@@ -3,6 +3,7 @@ package com.blackoutburst.game;
 import com.blackoutburst.bogel.core.Shader;
 import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.Texture;
+import com.blackoutburst.bogel.maths.Vector2f;
 import com.blackoutburst.bogel.maths.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -32,6 +33,7 @@ public class Cube {
 	protected Vector3f position;
 	protected Vector3f scale;
 	protected Vector3f rotation;
+	protected Vector2f textureOffset;
 	protected Color color;
 	
 	public static int program;
@@ -148,12 +150,13 @@ public class Cube {
 			System.out.println(log);
 	}
 
-	public Cube(Texture texture, Vector3f position, Vector3f scale, Vector3f rotation, Color color) {
+	public Cube(Texture texture, Vector3f position, Vector3f scale, Vector3f rotation, Color color, Vector2f textureOffset) {
 		this.texture = texture;
 		this.position = position;
 		this.scale = scale;
 		this.rotation = rotation;
 		this.color = color;
+		this.textureOffset = textureOffset;
 
 		this.model = new Matrix4f();
 		Matrix4f.setIdentity(this.model);

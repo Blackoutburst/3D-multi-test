@@ -1,6 +1,7 @@
 package com.blackoutburst.game;
 
 import com.blackoutburst.bogel.graphics.Color;
+import com.blackoutburst.bogel.maths.Vector2f;
 import com.blackoutburst.bogel.maths.Vector3f;
 
 public class EntityOtherPlayer extends Entity {
@@ -15,6 +16,6 @@ public class EntityOtherPlayer extends Entity {
 
 	@Override
 	protected void render() {
-		new Cube(Textures.MUSH, position, scale, rotation, Color.WHITE).draw();
+		new Cube(Textures.MUSH, position, scale, rotation, Color.WHITE, new Vector2f()).draw();
 	}
 }

@@ -34,52 +34,52 @@ public class World {
 
 	private static final float VERTICES[] = {
 			//FRONT
-			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  0.0f, 0.0f, -1.0f,
-	         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 0.0f, -1.0f,
-	         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  0.0f, 0.0f, -1.0f,
-	         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 0.0f, -1.0f,
-	        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  0.0f, 0.0f, -1.0f,
-	        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f, 0.0f, -1.0f,
+			-0.5f, -0.5f, -0.5f,  0, 0,  0.0f, 0.0f, -1.0f,
+	         0.5f,  0.5f, -0.5f,  1, 1,  0.0f, 0.0f, -1.0f,
+	         0.5f, -0.5f, -0.5f,  1, 0,  0.0f, 0.0f, -1.0f,
+	         0.5f,  0.5f, -0.5f,  1, 1,  0.0f, 0.0f, -1.0f,
+	        -0.5f, -0.5f, -0.5f,  0, 0,  0.0f, 0.0f, -1.0f,
+	        -0.5f,  0.5f, -0.5f,  0, 1,  0.0f, 0.0f, -1.0f,
 
 			//BACK
-	        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, 0.0f, 1.0f,
-	         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, 0.0f, 1.0f,
-	         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
-	         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
-	        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,  0.0f, 0.0f, 1.0f,
-	        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, 0.0f, 1.0f,
+	        -0.5f, -0.5f,  0.5f,  0, 0,  0.0f, 0.0f, 1.0f,
+	         0.5f, -0.5f,  0.5f,  1, 0,  0.0f, 0.0f, 1.0f,
+	         0.5f,  0.5f,  0.5f,  1, 1,  0.0f, 0.0f, 1.0f,
+	         0.5f,  0.5f,  0.5f,  1, 1,  0.0f, 0.0f, 1.0f,
+	        -0.5f,  0.5f,  0.5f,  0, 1,  0.0f, 0.0f, 1.0f,
+	        -0.5f, -0.5f,  0.5f,  0, 0,  0.0f, 0.0f, 1.0f,
 
 			//LEFT
-	        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-	        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, -1.0f, 0.0f, 0.0f,
-	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, -1.0f, 0.0f, 0.0f,
-	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, -1.0f, 0.0f, 0.0f,
-	        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-	        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+	        -0.5f,  0.5f,  0.5f,  1, 0, -1.0f, 0.0f, 0.0f,
+	        -0.5f,  0.5f, -0.5f,  1, 1, -1.0f, 0.0f, 0.0f,
+	        -0.5f, -0.5f, -0.5f,  0, 1, -1.0f, 0.0f, 0.0f,
+	        -0.5f, -0.5f, -0.5f,  0, 1, -1.0f, 0.0f, 0.0f,
+	        -0.5f, -0.5f,  0.5f,  0, 0, -1.0f, 0.0f, 0.0f,
+	        -0.5f,  0.5f,  0.5f,  1, 0, -1.0f, 0.0f, 0.0f,
 
 			//RIGHT
-	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  1.0f, 0.0f, 0.0f,
-	         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  1.0f, 0.0f, 0.0f,
-	         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  1.0f, 0.0f, 0.0f,
-	         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  1.0f, 0.0f, 0.0f,
-	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  1.0f, 0.0f, 0.0f,
-	         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
+	         0.5f,  0.5f,  0.5f,  1, 0,  1.0f, 0.0f, 0.0f,
+	         0.5f, -0.5f, -0.5f,  0, 1,  1.0f, 0.0f, 0.0f,
+	         0.5f,  0.5f, -0.5f,  1, 1,  1.0f, 0.0f, 0.0f,
+	         0.5f, -0.5f, -0.5f,  0, 1,  1.0f, 0.0f, 0.0f,
+	         0.5f,  0.5f,  0.5f,  1, 0,  1.0f, 0.0f, 0.0f,
+	         0.5f, -0.5f,  0.5f,  0, 0,  1.0f, 0.0f, 0.0f,
 
 			//BOTTOM
-	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  0.0f, -1.0f, 0.0f,
-	         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,  0.0f, -1.0f, 0.0f,
-	         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, -1.0f, 0.0f,
-	         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, -1.0f, 0.0f,
-	        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, -1.0f, 0.0f,
-	        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  0.0f, -1.0f, 0.0f,
+	        -0.5f, -0.5f, -0.5f,  0, 1,  0.0f, -1.0f, 0.0f,
+	         0.5f, -0.5f, -0.5f,  1, 1,  0.0f, -1.0f, 0.0f,
+	         0.5f, -0.5f,  0.5f,  1, 0,  0.0f, -1.0f, 0.0f,
+	         0.5f, -0.5f,  0.5f,  1, 0,  0.0f, -1.0f, 0.0f,
+	        -0.5f, -0.5f,  0.5f,  0, 0,  0.0f, -1.0f, 0.0f,
+	        -0.5f, -0.5f, -0.5f,  0, 1,  0.0f, -1.0f, 0.0f,
 
 			//TOP
-	        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-	         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-	         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-	        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-	        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+	        -0.5f,  0.5f, -0.5f,  0, 1,  0.0f, 1.0f, 0.0f,
+	         0.5f,  0.5f,  0.5f,  1, 0,  0.0f, 1.0f, 0.0f,
+	         0.5f,  0.5f, -0.5f,  1, 1,  0.0f, 1.0f, 0.0f,
+	         0.5f,  0.5f,  0.5f,  1, 0,  0.0f, 1.0f, 0.0f,
+	        -0.5f,  0.5f, -0.5f,  0, 1,  0.0f, 1.0f, 0.0f,
+	        -0.5f,  0.5f,  0.5f,  0, 0,  0.0f, 1.0f, 0.0f,
 	    };
 
 	public static void init() {
@@ -178,13 +178,74 @@ public class World {
 		translation = null;
 	}
 
+	private static void setCubeColor(int cubesNumber) {
+		float[] color = new float[cubesNumber * 3];
+
+		int idx = 0;
+		for (int i = 0; i < cubesNumber; i++) {
+			color[idx] = cubes.get(i).color.r;
+			color[idx + 1] = cubes.get(i).color.g;
+			color[idx + 2] = cubes.get(i).color.b;
+			idx += 3;
+		}
+
+		int instanceVBO = glGenBuffers();
+		FloatBuffer offsetBuffer = BufferUtils.createFloatBuffer(color.length);
+		((Buffer) offsetBuffer.put(color)).flip();
+
+		glBindVertexArray(vaoID);
+		glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+		glBufferData(GL_ARRAY_BUFFER, offsetBuffer, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(3);
+		glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+		glVertexAttribPointer(3, 3, GL_FLOAT, false, 0, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glVertexAttribDivisorARB(3, 1);
+		glBindVertexArray(0);
+
+		color = null;
+	}
+
+	private static void setCubeTextureOffset(int cubesNumber) {
+		float[] uvo = new float[cubesNumber * 2];
+
+		int idx = 0;
+		for (int i = 0; i < cubesNumber; i++) {
+			uvo[idx] = cubes.get(i).textureOffset.x;
+			uvo[idx + 1] = cubes.get(i).textureOffset.y;
+			idx += 2;
+		}
+
+		int instanceVBO = glGenBuffers();
+		FloatBuffer offsetBuffer = BufferUtils.createFloatBuffer(uvo.length);
+		((Buffer) offsetBuffer.put(uvo)).flip();
+
+		glBindVertexArray(vaoID);
+		glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+		glBufferData(GL_ARRAY_BUFFER, offsetBuffer, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		glEnableVertexAttribArray(5);
+		glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+		glVertexAttribPointer(5, 2, GL_FLOAT, false, 0, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glVertexAttribDivisorARB(5, 1);
+		glBindVertexArray(0);
+
+		uvo = null;
+	}
+
 	public static void draw() {
 		int cubesNumber = cubes.size();
 
 		setCubeOffset(cubesNumber);
+		setCubeColor(cubesNumber);
+		setCubeTextureOffset(cubesNumber);
 		setUniforms();
 
-		glBindTexture(GL_TEXTURE_2D, Textures.LOG_OAK.getTexture());
+		glBindTexture(GL_TEXTURE_2D, Textures.ATLAS.getTexture());
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 

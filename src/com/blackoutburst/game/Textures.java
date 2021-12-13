@@ -14,6 +14,7 @@ public class Textures {
     public static Texture NOTEBLOCK;
     public static Texture PLANKS_OAK;
     public static Texture MUSH;
+    public static Texture ATLAS;
 
     public static void loadTextures() {
         GRASS = new Texture("grass.png");
@@ -26,6 +27,7 @@ public class Textures {
         NOTEBLOCK = new Texture("noteblock.png");
         PLANKS_OAK = new Texture("planks_oak.png");
         MUSH = new Texture("mush.png");
+        ATLAS = new Texture("atlas.png");
     }
 
 }

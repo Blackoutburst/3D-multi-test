@@ -2,13 +2,15 @@
 
 #define ambientStrength 0.5
 #define specularStrength 0.2
+#define atlasSize 8
 
-precision mediump float;
+precision highp float;
 
 in vec3 vertPos;
 in vec2 uv;
 in vec3 normals;
 in vec3 vcolor;
+in vec2 uvOffset;
 
 uniform sampler2D text;
 uniform vec3 lightColor;
@@ -35,5 +37,7 @@ void main() {
 
     vec3 result = (ambient + diffuse + specular) * vcolor;
 
-	FragColor = vec4(result, 1.0) * texture(text, uv);
+    vec2 atlasUV = (uv + uvOffset) / vec2(atlasSize);
+
+	FragColor = vec4(result, 1.0) * texture(text, atlasUV);
 } 

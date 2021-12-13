@@ -2,6 +2,7 @@ package com.blackoutburst.game;
 
 import com.blackoutburst.bogel.core.Mouse;
 import com.blackoutburst.bogel.graphics.Color;
+import com.blackoutburst.bogel.maths.Vector2f;
 import com.blackoutburst.bogel.maths.Vector3f;
 import com.blackoutburst.network.client.C02BreakBlock;
 import com.blackoutburst.network.client.C03PlaceBlock;
@@ -43,7 +44,7 @@ public class BlockPlacement {
 
                 if (tmpface != null && distance < closest) {
                     closest = distance;
-                    selected = new Cube(null, c.position, new Vector3f(1.01f), c.rotation.copy(), new Color(1, 1, 1, 0.5f));
+                    selected = new Cube(null, c.position, new Vector3f(1.01f), c.rotation.copy(), new Color(1, 1, 1, 0.5f), new Vector2f());
                     selectedId = idx;
                     face = tmpface;
                 }
