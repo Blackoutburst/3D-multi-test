@@ -33,7 +33,7 @@ public class BlockPlacement {
 
         picker.update();
         try {
-            for (Cube c : Main.cubes) {
+            for (Cube c : World.cubes) {
                 double distance = Math.sqrt(
                     Math.pow((Camera.position.x - c.position.x), 2) +
                     Math.pow((Camera.position.y - c.position.y), 2) +

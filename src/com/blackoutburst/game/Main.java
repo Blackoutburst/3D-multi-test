@@ -8,15 +8,11 @@ import com.blackoutburst.network.Connection;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Main {
 
 	public static Connection connection = null;
 	private static Thread connectionThread = null;
 
-	public static List<Cube> cubes = new ArrayList<>();
 	public static Matrix4f projection;
 
 	private static void startConnectionThread() {
@@ -37,6 +33,7 @@ public class Main {
 		Display display = new Display().setFullscreenMode(Display.FullScreenMode.NONE).setClearColor(new Color(76.0f / 255.0f, 124.0f / 255.0f, 156.0f / 255.0f)).create();
 		Textures.loadTextures();
 		Cube.init();
+		World.init();
 
 		connection = new Connection();
 		connection.connect();
@@ -63,7 +60,7 @@ public class Main {
 			HotBar.update();
 
 			try {
-				Cube.drawMap(cubes.size());
+				World.draw();
 			} catch(Exception e) {}
 
 			EntityManager.render();
