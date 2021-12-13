@@ -16,7 +16,7 @@ public class Main {
 	public static Connection connection = null;
 	private static Thread connectionThread = null;
 
-	public static List<Cube> cubes = new ArrayList<Cube>();
+	public static List<Cube> cubes = new ArrayList<>();
 	public static Matrix4f projection;
 
 	private static void startConnectionThread() {
@@ -63,9 +63,7 @@ public class Main {
 			HotBar.update();
 
 			try {
-				int l = cubes.size();
-				for (int i = 0; i < l; i++)
-					cubes.get(i).draw();
+				Cube.drawMap(cubes.size());
 			} catch(Exception e) {}
 
 			EntityManager.render();
