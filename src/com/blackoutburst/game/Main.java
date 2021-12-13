@@ -59,9 +59,7 @@ public class Main {
 			BlockPlacement.update();
 			HotBar.update();
 
-			try {
-				World.draw();
-			} catch(Exception e) {}
+			World.draw();
 
 			EntityManager.render();
 			BlockPlacement.drawBoundingBox();

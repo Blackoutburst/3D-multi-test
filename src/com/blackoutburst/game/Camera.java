@@ -70,7 +70,7 @@ public class Camera {
 
         if (Keyboard.isKeyDown(Keyboard.SPACE)) velocity.y += 1;
         if (Keyboard.isKeyDown(Keyboard.LEFT_SHIFT)) velocity.y -= 1;
-        speed = Keyboard.isKeyDown(Keyboard.LEFT_CONTROL) ? 0.0075f : 0.005f;
+        speed = Keyboard.isKeyDown(Keyboard.LEFT_CONTROL) ? 0.01f : 0.0075f;
         velocity = velocity.normalize();
 
         position.x += velocity.x * Time.getDelta() * speed;

@@ -40,7 +40,7 @@ public class BlockPlacement {
                     Math.pow((Camera.position.y - c.position.y), 2) +
                     Math.pow((Camera.position.z - c.position.z), 2));
 
-                if (distance < 6) tmpface = c.interact(picker.getCurrentRay());
+                if (distance < 7) tmpface = c.interact(picker.getCurrentRay());
 
                 if (tmpface != null && distance < closest) {
                     closest = distance;

@@ -153,6 +153,8 @@ public class World {
 
 		int idx = 0;
 		for (int i = 0; i < cubesNumber; i++) {
+			if (cubes.get(i) == null) break;
+			if (cubes.get(i) == null) break;
 			translation[idx] = cubes.get(i).position.x;
 			translation[idx + 1] = cubes.get(i).position.y;
 			translation[idx + 2] = cubes.get(i).position.z;
@@ -183,6 +185,8 @@ public class World {
 
 		int idx = 0;
 		for (int i = 0; i < cubesNumber; i++) {
+			try {cubes.get(i);} catch(Exception e) {break;}
+			if (cubes.get(i) == null) break;
 			color[idx] = cubes.get(i).color.r;
 			color[idx + 1] = cubes.get(i).color.g;
 			color[idx + 2] = cubes.get(i).color.b;
@@ -213,6 +217,8 @@ public class World {
 
 		int idx = 0;
 		for (int i = 0; i < cubesNumber; i++) {
+			try {cubes.get(i);} catch(Exception e) {break;}
+			if (cubes.get(i) == null) break;
 			uvo[idx] = cubes.get(i).textureOffset.x;
 			uvo[idx + 1] = cubes.get(i).textureOffset.y;
 			idx += 2;
