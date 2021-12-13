@@ -16,14 +16,14 @@ public class S04AddBlock extends PacketPlayIn implements PacketUtils {
 	@Override
 	public void readPacketData(String data) {
 		try {
-			Vector3f position = new Vector3f();
-			Vector3f scale = new Vector3f();
-			Vector3f rotation = new Vector3f();
-			Color color = new Color();
+			final Vector3f position = new Vector3f();
+			final Vector3f scale = new Vector3f();
+			final Vector3f rotation = new Vector3f();
+			final Color color = new Color();
 
-			PacketBuffer buffer = new PacketBuffer(data);
+			final PacketBuffer buffer = new PacketBuffer(data);
 
-			String texture = buffer.readString();
+			final String texture = buffer.readString();
 			position.x =  buffer.readFloat();
 			position.y =  buffer.readFloat();
 			position.z =  buffer.readFloat();
@@ -37,8 +37,8 @@ public class S04AddBlock extends PacketPlayIn implements PacketUtils {
 			color.g = buffer.readFloat();
 			color.b = buffer.readFloat();
 
-			Texture text;
-			Vector2f offset = new Vector2f();
+			final Texture text;
+			final Vector2f offset = new Vector2f();
 
 			switch (texture) {
 				case "GRASS": text = Textures.GRASS; offset.set(5, 0); break;

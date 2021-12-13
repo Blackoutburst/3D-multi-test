@@ -6,7 +6,6 @@ import com.blackoutburst.bogel.graphics.Shape;
 import com.blackoutburst.bogel.maths.Vector2f;
 import com.blackoutburst.network.Connection;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 
 public class Main {
 
@@ -31,7 +30,9 @@ public class Main {
 
 	public static void main(String[] args) {
 		Display display = new Display().setFullscreenMode(Display.FullScreenMode.BORDERLESS).setClearColor(new Color(76.0f / 255.0f, 124.0f / 255.0f, 156.0f / 255.0f)).create();
+
 		Textures.loadTextures();
+
 		Cube.init();
 		World.init();
 
@@ -47,12 +48,7 @@ public class Main {
 
 		Camera.init();
 
-		Shape cursor = new Shape(Shape.ShapeType.CIRCLE, new Vector2f(Display.getWidth() / 2, Display.getHeight() / 2), new Vector2f(10), new Color(1,1,1,0.5f));
-
-		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glCullFace(GL11.GL_BACK);
-
-		System.gc();
+		final Shape cursor = new Shape(Shape.ShapeType.CIRCLE, new Vector2f(Display.getWidth() / 2.0f, Display.getHeight() / 2.0f), new Vector2f(10), new Color(1,1,1,0.5f));
 
 		while(display.isOpen()) {
 			display.clear();

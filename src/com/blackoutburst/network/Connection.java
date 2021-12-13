@@ -6,25 +6,25 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class Connection implements PacketUtils {
 
-	private final String IP = "10.101.54.93";
-	private final short PORT = 25565;
-	
 	public Socket socket = null;
 	public BufferedReader in = null;
 	public OutputStream out = null;
 	
 	public void connect() {
+		final String IP = "localhost";
+		final short PORT = 25565;
 		try {
 			socket = new Socket(IP, PORT);
-			in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
 			out = socket.getOutputStream();
-			EntityManager.init(Integer.valueOf(in.readLine()));
+			EntityManager.init(Integer.parseInt(in.readLine()));
 			System.out.println("Connected");
 		} catch (Exception e) {
-			System.err.println("Connection error :"+e.toString());
+			System.err.println("Connection error :"+e);
 		}
 	}
 	
@@ -34,9 +34,9 @@ public class Connection implements PacketUtils {
 		Thread connectionThread = new Thread(new Runnable(){
 			public synchronized void run(){
 				try {
-					out.write(data.getBytes("UTF-8"));
+					out.write(data.getBytes(StandardCharsets.UTF_8));
 				} catch (Exception e) {
-					System.err.println("Error while writing data :"+e.toString());
+					System.err.println("Error while writing data :"+e);
 				}	
 			}
 		});
@@ -58,7 +58,7 @@ public class Connection implements PacketUtils {
 			sort(str.charAt(0), str);
 		} catch (Exception e) {
 			close();
-			System.err.println("Error while reading data :"+e.toString());
+			System.err.println("Error while reading data :"+e);
 		}			
 	}
 	
@@ -68,7 +68,7 @@ public class Connection implements PacketUtils {
 			in.close();
 			out.close();
 		} catch (Exception e) {
-			System.err.println("Error while closing the connection :"+e.toString());
+			System.err.println("Error while closing the connection :"+e);
 		}
 	}
 	

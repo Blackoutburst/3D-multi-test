@@ -6,7 +6,6 @@ import com.blackoutburst.bogel.graphics.Texture;
 import com.blackoutburst.bogel.maths.Vector2f;
 import com.blackoutburst.bogel.maths.Vector3f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
@@ -25,8 +24,8 @@ public class Cube {
 
 	private static int vaoID;
 
-	public static final Vector3f lightColor = new Vector3f(1);
-	public static final Vector3f lightPos = new Vector3f(0, 5, 0);
+	public static final Vector3f LIGHT_COLOR = new Vector3f(1);
+	public static final Vector3f LIGHT_POSITION = new Vector3f(0, 5, 0);
 
 	protected Matrix4f model;
 	protected Texture texture;
@@ -39,7 +38,7 @@ public class Cube {
 	public static int program;
 	public static int boxProgram;
 
-	private static final float VERTICES[] = {
+	private static final float[] VERTICES = new float[] {
 			//FRONT
 			-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  0.0f, 0.0f, -1.0f,
 	         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 0.0f, -1.0f,
@@ -91,7 +90,8 @@ public class Cube {
 
 	public static void init() {
 		vaoID = glGenVertexArrays();
-		int vbo = glGenBuffers();
+
+		final int vbo = glGenBuffers();
 
 		glBindVertexArray(vaoID);
 
@@ -115,8 +115,8 @@ public class Cube {
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		Shader vertexShader = Shader.loadShader(Shader.VERTEX, "cube.vert");
-		Shader fragmentShader = Shader.loadShader(Shader.FRAGMENT, "cube.frag");
+		final Shader vertexShader = Shader.loadShader(Shader.VERTEX, "cube.vert");
+		final Shader fragmentShader = Shader.loadShader(Shader.FRAGMENT, "cube.frag");
 
 		program = glCreateProgram();
 		glAttachShader(program, vertexShader.id);
@@ -132,8 +132,8 @@ public class Cube {
 		if (log.length() != 0)
 			System.out.println(log);
 
-		Shader vertexBoxShader = Shader.loadShader(Shader.VERTEX, "boundingBox.vert");
-		Shader fragmentBoxShader = Shader.loadShader(Shader.FRAGMENT, "boundingBox.frag");
+		final Shader vertexBoxShader = Shader.loadShader(Shader.VERTEX, "boundingBox.vert");
+		final Shader fragmentBoxShader = Shader.loadShader(Shader.FRAGMENT, "boundingBox.frag");
 
 		boxProgram = glCreateProgram();
 		glAttachShader(boxProgram, vertexBoxShader.id);
@@ -173,10 +173,10 @@ public class Cube {
 		glProgramUniformMatrix4fv(program, loc, false, Matrix4f.getValues(Main.projection));
 
 		loc = glGetProgramResourceLocation(program, GL_UNIFORM, "lightColor");
-		glProgramUniform3f(program, loc, lightColor.x, lightColor.y, lightColor.z);
+		glProgramUniform3f(program, loc, LIGHT_COLOR.x, LIGHT_COLOR.y, LIGHT_COLOR.z);
 
 		loc = glGetProgramResourceLocation(program, GL_UNIFORM, "lightPos");
-		glProgramUniform3f(program, loc, lightPos.x, lightPos.y, lightPos.z);
+		glProgramUniform3f(program, loc, LIGHT_POSITION.x, LIGHT_POSITION.y, LIGHT_POSITION.z);
 
 		loc = glGetProgramResourceLocation(program, GL_UNIFORM, "viewPos");
 		glProgramUniform3f(program, loc, -Camera.position.x, -Camera.position.y, -Camera.position.z);
@@ -267,18 +267,18 @@ public class Cube {
 
 		setUniforms(program);
 
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getTexture());
+		glBindTexture(GL_TEXTURE_2D, texture.getTexture());
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 		glUseProgram(program);
 		glBindVertexArray(vaoID);
 		
-		GL11.glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 		
 		glBindVertexArray(0);
 		glUseProgram(0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	public void drawBoundingbox() {
@@ -291,13 +291,10 @@ public class Cube {
 
 		setUniforms(boxProgram);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
 		glUseProgram(boxProgram);
 		glBindVertexArray(vaoID);
 
-		GL11.glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		glBindVertexArray(0);
 		glUseProgram(0);

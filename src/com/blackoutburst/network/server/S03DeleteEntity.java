@@ -10,9 +10,9 @@ public class S03DeleteEntity extends PacketPlayIn implements PacketUtils {
 	@Override
 	public void readPacketData(String data) {
 		try {
-			PacketBuffer buffer = new PacketBuffer(data);
+			final PacketBuffer buffer = new PacketBuffer(data);
 
-			int id = buffer.readInt();
+			final int id = buffer.readInt();
 			
 			new EntityManager().deleteEntity(id);
 		} catch(Exception e) {

@@ -1,6 +1,5 @@
 package com.blackoutburst.game;
 
-import com.blackoutburst.bogel.core.Display;
 import com.blackoutburst.bogel.core.Keyboard;
 import com.blackoutburst.bogel.core.Mouse;
 import com.blackoutburst.bogel.core.Time;
@@ -16,10 +15,9 @@ public class Camera {
     private static Vector2f lastMousePosition;
 
     private static final float SENSITIVITY = 0.1f;
-    private static float speed = 0.005f;
 
     public static void init() {
-        lastMousePosition = new Vector2f(Display.getWidth() / 2, Display.getHeight() / 2);
+        lastMousePosition = Mouse.getPosition().copy();
         position = new Vector3f(0, 2.80f, 0);
         rotation = new Vector2f(0, 0);
         view = new Matrix4f();
@@ -29,10 +27,11 @@ public class Camera {
     }
 
     private static void rotate() {
-        Vector2f mousePosition = Mouse.getPosition();
+        final Vector2f mousePosition = Mouse.getPosition();
 
         float xOffset = mousePosition.x - lastMousePosition.x;
         float yOffset = lastMousePosition.y - mousePosition.y;
+
         lastMousePosition.x = mousePosition.x;
         lastMousePosition.y = mousePosition.y;
 
@@ -42,14 +41,13 @@ public class Camera {
         rotation.x += xOffset;
         rotation.y += yOffset;
 
-        if(rotation.y > 89.0f)
-            rotation.y =  89.0f;
-        if(rotation.y < -89.0f)
-            rotation.y = -89.0f;
+        if (rotation.y > 89.0f) rotation.y =  89.0f;
+        if (rotation.y < -89.0f) rotation.y = -89.0f;
     }
 
     private static void move() {
         Vector3f velocity = new Vector3f();
+        float speed;
 
         if (Keyboard.isKeyDown(Keyboard.W)) {
             velocity.x -= (float) (Math.sin(-rotation.x * Math.PI / 180));
@@ -70,14 +68,14 @@ public class Camera {
 
         if (Keyboard.isKeyDown(Keyboard.SPACE)) velocity.y += 1;
         if (Keyboard.isKeyDown(Keyboard.LEFT_SHIFT)) velocity.y -= 1;
+
         speed = Keyboard.isKeyDown(Keyboard.LEFT_CONTROL) ? 0.01f : 0.0075f;
+
         velocity = velocity.normalize();
 
         position.x += velocity.x * Time.getDelta() * speed;
         position.y += velocity.y * Time.getDelta() * speed;
         position.z += velocity.z * Time.getDelta() * speed;
-
-        velocity = null;
     }
 
     public static void update() {
@@ -86,16 +84,10 @@ public class Camera {
 
         view.setIdentity();
 
-        Vector3f yaw = new Vector3f(1, 0, 0);
-        Vector3f pitch = new Vector3f(0, 1, 0);
+        Matrix4f.rotate((float) Math.toRadians(rotation.y), new Vector3f(1, 0, 0), view, view);
+        Matrix4f.rotate((float) Math.toRadians(rotation.x), new Vector3f(0, 1, 0), view, view);
 
-        Matrix4f.rotate((float) Math.toRadians(rotation.y), yaw, view, view);
-        Matrix4f.rotate((float) Math.toRadians(rotation.x), pitch, view, view);
-
-        Vector3f reverse = new Vector3f(-position.x, -position.y, -position.z);
+        final Vector3f reverse = new Vector3f(-position.x, -position.y, -position.z);
         Matrix4f.translate(reverse, view, view);
-
-        yaw = null;
-        pitch = null;
     }
 }

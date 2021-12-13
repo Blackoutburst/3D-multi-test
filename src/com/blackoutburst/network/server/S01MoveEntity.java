@@ -11,11 +11,11 @@ public class S01MoveEntity extends PacketPlayIn implements PacketUtils {
 	@Override
 	public void readPacketData(String data) {
 		try {
-			Vector3f position = new Vector3f();
+			final Vector3f position = new Vector3f();
 
-			PacketBuffer buffer = new PacketBuffer(data);
+			final PacketBuffer buffer = new PacketBuffer(data);
 
-			int id = buffer.readInt();
+			final int id = buffer.readInt();
 			position.x = buffer.readFloat();
 			position.y = buffer.readFloat();
 			position.z = buffer.readFloat();

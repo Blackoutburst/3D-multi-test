@@ -50,7 +50,6 @@ public class Matrix4f extends Matrix implements Serializable {
 
 	public float m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33;
 
-	
 	public static Matrix4f projectionMatrix(float FOV, float FAR_PLANE, float NEAR_PLANE, Matrix4f m){
 		float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
 		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);

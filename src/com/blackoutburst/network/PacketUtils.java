@@ -6,8 +6,8 @@ import com.blackoutburst.network.server.*;
 
 public interface PacketUtils {
 
-	public static final char SEPARATOR = 0x1F;
-	public static final char END = 0x0A;
+	char SEPARATOR = 0x1F;
+	char END = 0x0A;
 	
 	default void malformatedError(String e) {
 		System.out.println("Malformated packet unable to read it: " + e);
@@ -25,7 +25,7 @@ public interface PacketUtils {
 			case 0x03: new S03DeleteEntity().readPacketData(data); break;
 			case 0x04: new S04AddBlock().readPacketData(data); break;
 			case 0x05: new S05RemoveBlock().readPacketData(data); break;
-			default: return;
+			default:
 		}
 	}
 	

@@ -27,12 +27,12 @@ public class World {
 
 	private static int vaoID;
 
-	private static final Vector3f lightColor = new Vector3f(1);
-	private static final Vector3f lightPos = new Vector3f(0, 5, 0);
+	private static final Vector3f LIGHT_COLOR = new Vector3f(1);
+	private static final Vector3f LIGHT_POSITION = new Vector3f(0, 5, 0);
 
 	public static int program;
 
-	private static final float VERTICES[] = {
+	private static final float[] VERTICES = new float[] {
 			//FRONT
 			-0.5f, -0.5f, -0.5f,  0, 0,  0.0f, 0.0f, -1.0f,
 	         0.5f,  0.5f, -0.5f,  1, 1,  0.0f, 0.0f, -1.0f,
@@ -83,15 +83,14 @@ public class World {
 	    };
 
 	public static void init() {
-		Shader vertexShader = Shader.loadShader(Shader.VERTEX, "cubeWorld.vert");
-		Shader fragmentShader = Shader.loadShader(Shader.FRAGMENT, "cubeWorld.frag");
+		final Shader vertexShader = Shader.loadShader(Shader.VERTEX, "cubeWorld.vert");
+		final Shader fragmentShader = Shader.loadShader(Shader.FRAGMENT, "cubeWorld.frag");
 
 		vaoID = glGenVertexArrays();
 
-		int vbo = glGenBuffers();
+		final int vbo = glGenBuffers();
 
-
-		FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(VERTICES.length);
+		final FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(VERTICES.length);
 		((Buffer) verticesBuffer.put(VERTICES)).flip();
 
 		glBindVertexArray(vaoID);
@@ -122,7 +121,7 @@ public class World {
 		glDeleteShader(vertexShader.id);
 		glDeleteShader(fragmentShader.id);
 
-		String log = glGetProgramInfoLog(program);
+		final String log = glGetProgramInfoLog(program);
 
 		if (log.length() != 0)
 			System.out.println(log);
@@ -141,19 +140,17 @@ public class World {
 		glProgramUniformMatrix4fv(program, loc, false, Matrix4f.getValues(Main.projection));
 
 		loc = glGetProgramResourceLocation(program, GL_UNIFORM, "lightColor");
-		glProgramUniform3f(program, loc, lightColor.x, lightColor.y, lightColor.z);
+		glProgramUniform3f(program, loc, LIGHT_COLOR.x, LIGHT_COLOR.y, LIGHT_COLOR.z);
 
 		loc = glGetProgramResourceLocation(program, GL_UNIFORM, "lightPos");
-		glProgramUniform3f(program, loc, lightPos.x, lightPos.y, lightPos.z);
+		glProgramUniform3f(program, loc, LIGHT_POSITION.x, LIGHT_POSITION.y, LIGHT_POSITION.z);
 
 		loc = glGetProgramResourceLocation(program, GL_UNIFORM, "viewPos");
 		glProgramUniform3f(program, loc, -Camera.position.x, -Camera.position.y, -Camera.position.z);
-
-		model = null;
 	}
 
 	private static void setCubeOffset(int cubesNumber) {
-		float[] translation = new float[cubesNumber * 3];
+		final float[] translation = new float[cubesNumber * 3];
 
 		int idx = 0;
 		for (int i = 0; i < cubesNumber; i++) {
@@ -165,8 +162,8 @@ public class World {
 			idx += 3;
 		}
 
-		int instanceVBO = glGenBuffers();
-		FloatBuffer offsetBuffer = BufferUtils.createFloatBuffer(translation.length);
+		final int instanceVBO = glGenBuffers();
+		final FloatBuffer offsetBuffer = BufferUtils.createFloatBuffer(translation.length);
 		((Buffer) offsetBuffer.put(translation)).flip();
 
 		glBindVertexArray(vaoID);
@@ -184,13 +181,10 @@ public class World {
 		glDeleteBuffers(instanceVBO);
 
 		offsetBuffer.clear();
-
-		offsetBuffer = null;
-		translation = null;
 	}
 
 	private static void setCubeColor(int cubesNumber) {
-		float[] color = new float[cubesNumber * 3];
+		final float[] color = new float[cubesNumber * 3];
 
 		int idx = 0;
 		for (int i = 0; i < cubesNumber; i++) {
@@ -202,8 +196,8 @@ public class World {
 			idx += 3;
 		}
 
-		int instanceVBO = glGenBuffers();
-		FloatBuffer offsetBuffer = BufferUtils.createFloatBuffer(color.length);
+		final int instanceVBO = glGenBuffers();
+		final FloatBuffer offsetBuffer = BufferUtils.createFloatBuffer(color.length);
 		((Buffer) offsetBuffer.put(color)).flip();
 
 		glBindVertexArray(vaoID);
@@ -221,13 +215,10 @@ public class World {
 		glDeleteBuffers(instanceVBO);
 
 		offsetBuffer.clear();
-
-		offsetBuffer = null;
-		color = null;
 	}
 
 	private static void setCubeTextureOffset(int cubesNumber) {
-		float[] uvo = new float[cubesNumber * 2];
+		final float[] uvo = new float[cubesNumber * 2];
 
 		int idx = 0;
 		for (int i = 0; i < cubesNumber; i++) {
@@ -238,8 +229,8 @@ public class World {
 			idx += 2;
 		}
 
-		int instanceVBO = glGenBuffers();
-		FloatBuffer offsetBuffer = BufferUtils.createFloatBuffer(uvo.length);
+		final int instanceVBO = glGenBuffers();
+		final FloatBuffer offsetBuffer = BufferUtils.createFloatBuffer(uvo.length);
 		((Buffer) offsetBuffer.put(uvo)).flip();
 
 		glBindVertexArray(vaoID);
@@ -257,13 +248,10 @@ public class World {
 		glDeleteBuffers(instanceVBO);
 
 		offsetBuffer.clear();
-
-		offsetBuffer = null;
-		uvo = null;
 	}
 
 	public static void draw() {
-		int cubesNumber = cubes.size();
+		final int cubesNumber = cubes.size();
 
 		setCubeOffset(cubesNumber);
 		setCubeColor(cubesNumber);

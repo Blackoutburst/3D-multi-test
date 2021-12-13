@@ -7,8 +7,8 @@ import com.blackoutburst.network.PacketUtils;
 
 public class C00SendMovement extends PacketPlayOut implements PacketUtils {
 
-	private int id;
-	private Vector3f position;
+	private final int id;
+	private final Vector3f position;
 
 	public C00SendMovement(int id, Vector3f position) {
 		this.ID = 0x00;

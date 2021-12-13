@@ -8,11 +8,11 @@ import com.blackoutburst.network.PacketUtils;
 
 public class C03PlaceBlock extends PacketPlayOut implements PacketUtils {
 
-	private String texture;
-	private Vector3f position;
-	private Vector3f scale;
-	private Vector3f rotation;
-	private Color color;
+	private final String texture;
+	private final Vector3f position;
+	private final Vector3f scale;
+	private final Vector3f rotation;
+	private final Color color;
 
 	public C03PlaceBlock(String texture, Vector3f position, Vector3f scale, Vector3f rotation, Color color) {
 		this.ID = 0x03;

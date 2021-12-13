@@ -7,8 +7,8 @@ import com.blackoutburst.network.PacketUtils;
 
 public class C01SendRotation extends PacketPlayOut implements PacketUtils {
 
-	private int id;
-	private Vector3f rotation;
+	private final int id;
+	private final Vector3f rotation;
 	
 	public C01SendRotation(int id, Vector3f rotation) {
 		this.ID = 0x01;

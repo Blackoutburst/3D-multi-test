@@ -7,7 +7,7 @@ import com.blackoutburst.network.PacketUtils;
 
 public class C02BreakBlock extends PacketPlayOut implements PacketUtils {
 
-	private int id;
+	private final int id;
 
 	public C02BreakBlock(int id) {
 		this.ID = 0x02;

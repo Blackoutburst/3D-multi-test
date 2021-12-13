@@ -2,7 +2,7 @@ package com.blackoutburst.network;
 
 public class PacketBuffer implements PacketUtils {
 	
-	protected String data = "";
+	protected String data;
 	
 	public PacketBuffer() {
 		this.data = "";
@@ -13,24 +13,20 @@ public class PacketBuffer implements PacketUtils {
 		subHead();
 	}
 	
-	public PacketBuffer writeInt(int val) {
-		data += String.valueOf(val) + String.valueOf(SEPARATOR);
-		return (this);
+	public void writeInt(int val) {
+		data += val + String.valueOf(SEPARATOR);
 	}
 	
-	public PacketBuffer writeFloat(float val) {
-		data += String.valueOf(val) + String.valueOf(SEPARATOR);
-		return (this);
+	public void writeFloat(float val) {
+		data += val + String.valueOf(SEPARATOR);
 	}
 	
-	public PacketBuffer writeChar(char val) {
-		data += String.valueOf(val) + String.valueOf(SEPARATOR);
-		return (this);
+	public void writeChar(char val) {
+		data += val + String.valueOf(SEPARATOR);
 	}
 	
-	public PacketBuffer writeString(String val) {
-		data += String.valueOf(val) + String.valueOf(SEPARATOR);
-		return (this);
+	public void writeString(String val) {
+		data += val + SEPARATOR;
 	}
 	
 	public String getData() {
@@ -38,72 +34,68 @@ public class PacketBuffer implements PacketUtils {
 	}
 	
 	public int readInt() {
-		String val[] = this.data.split(String.valueOf(SEPARATOR));
+		String[] val = this.data.split(String.valueOf(SEPARATOR));
 		subHead();
 		
 		if (val.length == 0) return (-1);
 		
 		try {
-			int ret = Integer.valueOf(val[0]);
-			return (ret);
+			return (Integer.parseInt(val[0]));
 		} catch (Exception e) {
 			return (-1);
 		}
 	}
 	
 	public float readFloat() {
-		String val[] = this.data.split(String.valueOf(SEPARATOR));
+		String[] val = this.data.split(String.valueOf(SEPARATOR));
 		subHead();
 		
 		if (val.length == 0) return (-1);
 		
 		try {
-			float ret = Float.valueOf(val[0]);
-			return (ret);
+			return (Float.parseFloat(val[0]));
 		} catch (Exception e) {
 			return (-1);
 		}
 	}
 	
 	public char readChar() {
-		String val[] = this.data.split(String.valueOf(SEPARATOR));
+		String[] val = this.data.split(String.valueOf(SEPARATOR));
 		subHead();
 		
 		if (val.length == 0) return (0);
 		
 		try {
-			char ret = val[0].charAt(0);
-			return (ret);
+			return (val[0].charAt(0));
 		} catch (Exception e) {
 			return (0);
 		}
 	}
 	
 	public String readString() {
-		String val[] = this.data.split(String.valueOf(SEPARATOR));
+		String[] val = this.data.split(String.valueOf(SEPARATOR));
 		subHead();
 		
 		if (val.length == 0) return ("");
 		
 		try {
-			String ret = String.valueOf(val[0]);
-			return (ret);
+			return (String.valueOf(val[0]));
 		} catch (Exception e) {
 			return ("");
 		}
 	}
 	
 	private void subHead() {
-		String str[] = data.split("((?<="+SEPARATOR+")|(?="+SEPARATOR+"))");
-		String newData = "";
+		String[] str = data.split("((?<="+SEPARATOR+")|(?="+SEPARATOR+"))");
+		StringBuilder newData = new StringBuilder();
 		
 		try {
 			for(int i = 2; i < str.length; i++) {
-				newData += str[i];
+				newData.append(str[i]);
 			}
-		} catch (Exception e) {}
+		} catch (Exception ignored) {}
 		
-		this.data = newData;
+		this.data = newData.toString();
 	}
 	
 }

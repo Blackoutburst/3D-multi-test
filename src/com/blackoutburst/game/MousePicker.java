@@ -9,7 +9,7 @@ public class MousePicker {
 
     private Vector3f currentRay;
 
-    private Matrix4f projectionMatrix;
+    final private Matrix4f projectionMatrix;
     private Matrix4f viewMatrix;
 
     public MousePicker() {
@@ -28,15 +28,14 @@ public class MousePicker {
     }
 
     private Vector3f calculateRay() {
-        final float mouseX = Display.getWidth() / 2;
-        final float mouseY = Display.getHeight() / 2;
+        final float mouseX = Display.getWidth() / 2.0f;
+        final float mouseY = Display.getHeight() / 2.0f;
 
         final Vector2f normMouseCoord = normalizeScreenCoord(mouseX, mouseY);
         final Vector4f clipCoord = new Vector4f(normMouseCoord.x, normMouseCoord.y, -1f, 1f);
         final Vector4f eyeCoord = toEyeCoord(clipCoord);
-        final Vector3f worldRay = toWorldCoord(eyeCoord);
 
-        return (worldRay);
+        return (toWorldCoord(eyeCoord));
     }
 
     private Vector3f toWorldCoord(Vector4f eyeCoord) {

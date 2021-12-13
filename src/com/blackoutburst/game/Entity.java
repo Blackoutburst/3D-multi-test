@@ -44,28 +44,12 @@ public abstract class Entity {
 		this.position = position;
 	}
 
-	public Vector3f getScale() {
-		return scale;
-	}
-
-	public void setScale(Vector3f scale) {
-		this.scale = scale;
-	}
-
 	public Vector3f getRotation() {
 		return rotation;
 	}
 
 	public void setRotation(Vector3f rotation) {
 		this.rotation = rotation;
-	}
-
-	public Vector3f getVelocity() {
-		return velocity;
-	}
-
-	public void setVelocity(Vector3f velocity) {
-		this.velocity = velocity;
 	}
 
 	public EntityTypes getType() {

@@ -12,14 +12,14 @@ public class S00AddEntity extends PacketPlayIn implements PacketUtils {
 	@Override
 	public void readPacketData(String data) {
 		try {
-			Vector3f position = new Vector3f();
-			Vector3f scale = new Vector3f();
-			Vector3f rotation = new Vector3f();
+			final Vector3f position = new Vector3f();
+			final Vector3f scale = new Vector3f();
+			final Vector3f rotation = new Vector3f();
 
-			PacketBuffer buffer = new PacketBuffer(data);
+			final PacketBuffer buffer = new PacketBuffer(data);
 
-			int id = buffer.readInt();
-			int type = buffer.readInt();
+			final int id = buffer.readInt();
+			final int type = buffer.readInt();
 			position.x =  buffer.readFloat();
 			position.y =  buffer.readFloat();
 			position.z =  buffer.readFloat();
@@ -30,7 +30,7 @@ public class S00AddEntity extends PacketPlayIn implements PacketUtils {
 			rotation.y =  buffer.readFloat();
 			rotation.z =  buffer.readFloat();
 
-			EntityTypes tp = null;
+			final EntityTypes tp;
 			
 			switch (type) {
 				case 0x00: tp = EntityTypes.PLAYER; break;

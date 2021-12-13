@@ -11,11 +11,11 @@ public class S02UpdateEntityRotation extends PacketPlayIn implements PacketUtils
 	@Override
 	public void readPacketData(String data) {
 		try {
-			Vector3f rotation = new Vector3f();
+			final Vector3f rotation = new Vector3f();
 
-			PacketBuffer buffer = new PacketBuffer(data);
+			final PacketBuffer buffer = new PacketBuffer(data);
 
-			int id = buffer.readInt();
+			final int id = buffer.readInt();
 			rotation.x = buffer.readFloat();
 			rotation.y = buffer.readFloat();
 			rotation.z = buffer.readFloat();
