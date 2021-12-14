@@ -1,6 +1,6 @@
-#version 410
+#version 460 core
 
-#define ambientStrength 0.5
+#define ambientStrength 1.0
 #define specularStrength 0.2
 #define atlasSize 8
 

@@ -1,4 +1,4 @@
-#version 410
+#version 460 core
 
 #define ambientStrength 0.5
 #define specularStrength 0.2

@@ -1,5 +1,6 @@
 package com.blackoutburst.game;
 
+import com.blackoutburst.bogel.core.Core;
 import com.blackoutburst.bogel.core.Display;
 import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.RenderManager;
@@ -63,10 +64,8 @@ public class Main {
 			HotBar.update();
 
 			// Draw 3D
-
-			World.draw();
-
 			EntityManager.render();
+			World.draw();
 			BlockPlacement.drawBoundingBox();
 
 			// Draw 2D
@@ -76,6 +75,8 @@ public class Main {
 			HotBar.render();
 
 			RenderManager.enableDepth();
+
+			System.out.println(Core.getFPS());
 
 			display.update();
 		}

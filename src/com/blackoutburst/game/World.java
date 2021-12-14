@@ -6,22 +6,20 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.lwjgl.opengl.ARBInstancedArrays.glVertexAttribDivisorARB;
 import static org.lwjgl.opengl.ARBProgramInterfaceQuery.GL_UNIFORM;
 import static org.lwjgl.opengl.ARBProgramInterfaceQuery.glGetProgramResourceLocation;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
-import static org.lwjgl.opengl.GL31.glDrawArraysInstanced;
-import static org.lwjgl.opengl.GL41.glProgramUniform3f;
-import static org.lwjgl.opengl.GL41.glProgramUniformMatrix4fv;
+import static org.lwjgl.opengl.GL11C.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL15C.*;
+import static org.lwjgl.opengl.GL20C.*;
+import static org.lwjgl.opengl.GL30C.glBindVertexArray;
+import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
+import static org.lwjgl.opengl.GL31C.glDrawArraysInstanced;
+import static org.lwjgl.opengl.GL41C.glProgramUniform3f;
+import static org.lwjgl.opengl.GL41C.glProgramUniformMatrix4fv;
 
 public class World {
 
@@ -253,7 +251,6 @@ public class World {
 			sync = new ArrayList<>(World.cubes);
 		} catch (Exception ignored) {}
 
-
 		List<Cube> glass = new ArrayList<>();
 
 		int j = sync.size();
@@ -271,11 +268,10 @@ public class World {
 			}
 		}
 
-		Collections.sort(glass, new DistanceComparator());
+		glass.sort(new DistanceComparator());
 
-		for (Cube b : glass) {
-			sync.add(b);
-		}
+		sync.addAll(glass);
+
 		glass.clear();
 
 		final int cubesNumber = sync.size();
@@ -286,8 +282,8 @@ public class World {
 		setUniforms();
 
 		glBindTexture(GL_TEXTURE_2D, Textures.ATLAS.getTexture());
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		glUseProgram(program);
 		glBindVertexArray(vaoID);

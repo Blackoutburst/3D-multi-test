@@ -12,13 +12,13 @@ import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.ARBProgramInterfaceQuery.GL_UNIFORM;
 import static org.lwjgl.opengl.ARBProgramInterfaceQuery.glGetProgramResourceLocation;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
-import static org.lwjgl.opengl.GL41.glProgramUniform3f;
-import static org.lwjgl.opengl.GL41.glProgramUniformMatrix4fv;
+import static org.lwjgl.opengl.GL11C.GL_TRIANGLES;
+import static org.lwjgl.opengl.GL15C.*;
+import static org.lwjgl.opengl.GL20C.*;
+import static org.lwjgl.opengl.GL30C.glBindVertexArray;
+import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
+import static org.lwjgl.opengl.GL41C.glProgramUniform3f;
+import static org.lwjgl.opengl.GL41C.glProgramUniformMatrix4fv;
 
 public class Cube {
 
@@ -36,7 +36,7 @@ public class Cube {
 	protected Color color;
 	protected boolean transparent;
 	protected double distance;
-	
+
 	public static int program;
 	public static int boxProgram;
 
