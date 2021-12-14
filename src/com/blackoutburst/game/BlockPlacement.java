@@ -79,9 +79,8 @@ public class BlockPlacement {
             case 6: return("NOTEBLOCK");
             case 7: return("PLANKS_OAK");
             case 8: return("STONEBRICKS");
-            default: break;
+            default: return ("NULL");
         }
-        return "BRICKS";
     }
 
     private static Color getBlockColorFromSlot() {

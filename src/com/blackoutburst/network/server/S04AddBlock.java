@@ -37,24 +37,23 @@ public class S04AddBlock extends PacketPlayIn implements PacketUtils {
 			color.g = buffer.readFloat();
 			color.b = buffer.readFloat();
 
-			final Texture text;
 			final Vector2f offset = new Vector2f();
 			final boolean transparent;
 
 			switch (texture) {
-				case "GRASS": text = Textures.GRASS; offset.set(5, 0); transparent = false; break;
-				case "STONEBRICKS": text = Textures.STONEBRICKS; offset.set(0, 0); transparent = false; break;
-				case "BRICKS": text = Textures.BRICKS; offset.set(1, 1); transparent = false; break;
-				case "COBBLESTONE": text = Textures.COBBLESTONE; offset.set(0, 1); transparent = false; break;
-				case "DIAMOND_BLOCK": text = Textures.DIAMOND_BLOCK; offset.set(7, 0); transparent = false; break;
-				case "GLASS": text = Textures.GLASS; offset.set(6, 0); transparent = true; break;
-				case "LOG_OAK": text = Textures.LOG_OAK; offset.set(4, 0); transparent = false; break;
-				case "NOTEBLOCK": text = Textures.NOTEBLOCK; offset.set(2, 0); transparent = false; break;
-				case "PLANKS_OAK": text = Textures.PLANKS_OAK; offset.set(1, 0); transparent = false; break;
-				default: return;
+				case "GRASS": offset.set(5, 0); transparent = false; break;
+				case "STONEBRICKS": offset.set(0, 0); transparent = false; break;
+				case "BRICKS": offset.set(1, 1); transparent = false; break;
+				case "COBBLESTONE": offset.set(0, 1); transparent = false; break;
+				case "DIAMOND_BLOCK": offset.set(7, 0); transparent = false; break;
+				case "GLASS": offset.set(6, 0); transparent = true; break;
+				case "LOG_OAK": offset.set(4, 0); transparent = false; break;
+				case "NOTEBLOCK": offset.set(2, 0); transparent = false; break;
+				case "PLANKS_OAK": offset.set(1, 0); transparent = false; break;
+				default: offset.set(7, 7); transparent = false; break;
 			}
 
-			World.cubes.add(new Cube(text, position, scale, rotation, color, offset, transparent));
+			World.cubes.add(new Cube(null, position, scale, rotation, color, offset, transparent));
 		} catch(Exception e) {
 			malformatedError(e.toString());
 		}
