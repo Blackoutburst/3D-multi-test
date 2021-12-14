@@ -262,26 +262,6 @@ public class World {
 		for (int i = 0; i < j; i++) {
 			Cube c = sync.get(i);
 
-
-			Vector3f top = new Vector3f(c.position.x, c.position.y + 1, c.position.z);
-			Vector3f bottom = new Vector3f(c.position.x, c.position.y - 1, c.position.z);
-
-			Vector3f back = new Vector3f(c.position.x, c.position.y, c.position.z + 1);
-			Vector3f front = new Vector3f(c.position.x, c.position.y, c.position.z - 1);
-
-			Vector3f right = new Vector3f(c.position.x + 1, c.position.y, c.position.z);
-			Vector3f left = new Vector3f(c.position.x - 1, c.position.y, c.position.z);
-
-			boolean draw = true;
-
-			if (drawCubes.get(Main.toIntVector(top)) != null && drawCubes.get(Main.toIntVector(bottom)) != null &&
-					drawCubes.get(Main.toIntVector(back)) != null && drawCubes.get(Main.toIntVector(front)) != null &&
-					drawCubes.get(Main.toIntVector(right)) != null && drawCubes.get(Main.toIntVector(left)) != null) {
-				draw = false;
-			}
-
-			drawCubes.put(Main.toIntVector(c.position), draw);
-
 			if (drawCubes.get(Main.toIntVector(c.position)) == null || !drawCubes.get(Main.toIntVector(c.position))) {
 				sync.remove(c);
 				j--;
