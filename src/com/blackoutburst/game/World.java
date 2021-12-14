@@ -250,10 +250,6 @@ public class World {
 	}
 
 	public static void draw() {
-		// Draw everything
-		//final List<Cube> tmp = new ArrayList<>(cubes);
-
-		// Optimised draw break delta time for some reasons
 		final List<Cube> tmp = new ArrayList<>(toDraw);
 		final int cubesNumber = tmp.size();
 

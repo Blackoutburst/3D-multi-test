@@ -1,7 +1,6 @@
 package com.blackoutburst.network.server;
 
 import com.blackoutburst.bogel.graphics.Color;
-import com.blackoutburst.bogel.graphics.Texture;
 import com.blackoutburst.bogel.maths.Vector2f;
 import com.blackoutburst.bogel.maths.Vector3f;
 import com.blackoutburst.game.*;
@@ -68,44 +67,37 @@ public class S04AddBlock extends PacketPlayIn implements PacketUtils {
 				Vector3f right = new Vector3f(c.getPosition().x + 1, c.getPosition().y, c.getPosition().z);
 				Vector3f left = new Vector3f(c.getPosition().x - 1, c.getPosition().y, c.getPosition().z);
 
-				boolean draw = true;
+				boolean draw = World.drawCubes.get(Main.toIntVector(top)) == null || World.drawCubes.get(Main.toIntVector(bottom)) == null ||
+						World.drawCubes.get(Main.toIntVector(back)) == null || World.drawCubes.get(Main.toIntVector(front)) == null ||
+						World.drawCubes.get(Main.toIntVector(right)) == null || World.drawCubes.get(Main.toIntVector(left)) == null;
 
-				if (World.drawCubes.get(Main.toIntVector(top)) != null && World.drawCubes.get(Main.toIntVector(bottom)) != null &&
-						World.drawCubes.get(Main.toIntVector(back)) != null && World.drawCubes.get(Main.toIntVector(front)) != null &&
-						World.drawCubes.get(Main.toIntVector(right)) != null && World.drawCubes.get(Main.toIntVector(left)) != null) {
-					draw = false;
-				}
 				World.drawCubes.put(Main.toIntVector(c.getPosition()), draw);
 			}
 
 			List<Cube> glass = new ArrayList<>();
 			List<Cube> tmp = new ArrayList<>();
 
-			try {
-				int j = World.cubes.size();
-				for (int i = 0; i < j; i++) {
-					Cube c = World.cubes.get(i);
-					if (c.isTransparent()) {
-						c.setDistance(Math.pow((Camera.position.x - c.getPosition().x), 2) +
-								Math.pow((Camera.position.y - c.getPosition().y), 2) +
-								Math.pow((Camera.position.z - c.getPosition().z), 2));
-						glass.add(c);
-						continue;
-					}
-
-					if (World.drawCubes.get(Main.toIntVector(c.getPosition())) == null || !World.drawCubes.get(Main.toIntVector(c.getPosition()))) {
-						continue;
-					}
-					tmp.add(c);
+			int j = World.cubes.size();
+			for (int i = 0; i < j; i++) {
+				Cube c = World.cubes.get(i);
+				if (c.isTransparent()) {
+					c.setDistance(Math.pow((Camera.position.x - c.getPosition().x), 2) +
+							Math.pow((Camera.position.y - c.getPosition().y), 2) +
+							Math.pow((Camera.position.z - c.getPosition().z), 2));
+					glass.add(c);
+					continue;
 				}
-				glass.sort(new DistanceComparator());
-				tmp.addAll(glass);
-				glass.clear();
 
-				World.toDraw = new ArrayList<>(tmp);
-			} catch (Exception ignored) {
-				World.toDraw = new ArrayList<>(World.cubes);
+				if (World.drawCubes.get(Main.toIntVector(c.getPosition())) == null || !World.drawCubes.get(Main.toIntVector(c.getPosition()))) {
+					continue;
+				}
+				tmp.add(c);
 			}
+			glass.sort(new DistanceComparator());
+			tmp.addAll(glass);
+			glass.clear();
+
+			World.toDraw = new ArrayList<>(tmp);
 		} catch(Exception e) {
 			malformatedError(e.toString());
 		}

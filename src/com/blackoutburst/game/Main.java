@@ -2,6 +2,7 @@ package com.blackoutburst.game;
 
 import com.blackoutburst.bogel.core.Core;
 import com.blackoutburst.bogel.core.Display;
+import com.blackoutburst.bogel.core.Time;
 import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.RenderManager;
 import com.blackoutburst.bogel.graphics.Shape;
@@ -32,7 +33,9 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		Display display = new Display().setFullscreenMode(Display.FullScreenMode.BORDERLESS).setClearColor(new Color(76.0f / 255.0f, 124.0f / 255.0f, 156.0f / 255.0f)).create().setVSync(false);
+		Display display = new Display().setFullscreenMode(Display.FullScreenMode.BORDERLESS)
+				.setClearColor(new Color(76.0f / 255.0f, 124.0f / 255.0f, 156.0f / 255.0f))
+				.create();
 
 		Textures.loadTextures();
 
@@ -76,7 +79,6 @@ public class Main {
 			HotBar.render();
 
 			RenderManager.enableDepth();
-			System.out.println("FPS: "+Core.getFPS()+" Blocks: "+World.cubes.size()+" Render: "+World.toDraw.size());
 
 			display.update();
 		}
