@@ -1,5 +1,6 @@
 package com.blackoutburst.game;
 
+import com.blackoutburst.bogel.core.Core;
 import com.blackoutburst.bogel.core.Shader;
 import com.blackoutburst.bogel.maths.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -26,14 +27,13 @@ import static org.lwjgl.opengl.GL41C.glProgramUniformMatrix4fv;
 public class World {
 
 	public static List<Cube> cubes = new ArrayList<>();
+	public static List<Cube> toDraw = new ArrayList<>();
 	public static Map<String, Boolean> drawCubes = new HashMap<>();
 
 	private static int vaoID;
 
 	private static final Vector3f LIGHT_COLOR = new Vector3f(1);
 	private static final Vector3f LIGHT_POSITION = new Vector3f(0, 5, 0);
-
-	private static List<Cube> sync = new ArrayList<>(World.cubes);
 
 	public static int program;
 
@@ -154,14 +154,14 @@ public class World {
 		glProgramUniform3f(program, loc, -Camera.position.x, -Camera.position.y, -Camera.position.z);
 	}
 
-	private static void setCubeOffset(int cubesNumber, List<Cube> sync) {
+	private static void setCubeOffset(int cubesNumber, List<Cube> toDraw) {
 		final float[] translation = new float[cubesNumber * 3];
 
 		int idx = 0;
 		for (int i = 0; i < cubesNumber; i++) {
-			translation[idx] = sync.get(i).position.x;
-			translation[idx + 1] = sync.get(i).position.y;
-			translation[idx + 2] = sync.get(i).position.z;
+			translation[idx] = toDraw.get(i).position.x;
+			translation[idx + 1] = toDraw.get(i).position.y;
+			translation[idx + 2] = toDraw.get(i).position.z;
 			idx += 3;
 		}
 
@@ -186,14 +186,14 @@ public class World {
 		offsetBuffer.clear();
 	}
 
-	private static void setCubeColor(int cubesNumber, List<Cube> sync) {
+	private static void setCubeColor(int cubesNumber, List<Cube> toDraw) {
 		final float[] color = new float[cubesNumber * 3];
 
 		int idx = 0;
 		for (int i = 0; i < cubesNumber; i++) {
-			color[idx] = sync.get(i).color.r;
-			color[idx + 1] = sync.get(i).color.g;
-			color[idx + 2] = sync.get(i).color.b;
+			color[idx] = toDraw.get(i).color.r;
+			color[idx + 1] = toDraw.get(i).color.g;
+			color[idx + 2] = toDraw.get(i).color.b;
 			idx += 3;
 		}
 
@@ -218,13 +218,13 @@ public class World {
 		offsetBuffer.clear();
 	}
 
-	private static void setCubeTextureOffset(int cubesNumber, List<Cube> sync) {
+	private static void setCubeTextureOffset(int cubesNumber, List<Cube> toDraw) {
 		final float[] uvo = new float[cubesNumber * 2];
 
 		int idx = 0;
 		for (int i = 0; i < cubesNumber; i++) {
-			uvo[idx] = sync.get(i).textureOffset.x;
-			uvo[idx + 1] = sync.get(i).textureOffset.y;
+			uvo[idx] = toDraw.get(i).textureOffset.x;
+			uvo[idx + 1] = toDraw.get(i).textureOffset.y;
 			idx += 2;
 		}
 
@@ -250,48 +250,16 @@ public class World {
 	}
 
 	public static void draw() {
-		try {
-			sync = new ArrayList<>(World.cubes);
-		} catch (Exception ignored) {}
+		// Draw everything
+		//final List<Cube> tmp = new ArrayList<>(cubes);
 
-		List<Cube> glass = new ArrayList<>();
+		// Optimised draw break delta time for some reasons
+		final List<Cube> tmp = new ArrayList<>(toDraw);
+		final int cubesNumber = tmp.size();
 
-
-
-		int j = sync.size();
-		for (int i = 0; i < j; i++) {
-			Cube c = sync.get(i);
-
-			if (drawCubes.get(Main.toIntVector(c.position)) == null || !drawCubes.get(Main.toIntVector(c.position))) {
-				sync.remove(c);
-				j--;
-				i--;
-				continue;
-			}
-
-			if (c.isTransparent()) {
-				c.distance = Math.pow((Camera.position.x - c.position.x), 2) +
-								Math.pow((Camera.position.y - c.position.y), 2) +
-								Math.pow((Camera.position.z - c.position.z), 2);
-
-				glass.add(c);
-				sync.remove(c);
-				j--;
-				i--;
-			}
-		}
-
-		glass.sort(new DistanceComparator());
-
-		sync.addAll(glass);
-
-		glass.clear();
-
-		final int cubesNumber = sync.size();
-
-		setCubeOffset(cubesNumber, sync);
-		setCubeColor(cubesNumber, sync);
-		setCubeTextureOffset(cubesNumber, sync);
+		setCubeOffset(cubesNumber, tmp);
+		setCubeColor(cubesNumber, tmp);
+		setCubeTextureOffset(cubesNumber, tmp);
 		setUniforms();
 
 		glBindTexture(GL_TEXTURE_2D, Textures.ATLAS.getTexture());

@@ -18,25 +18,21 @@ public class Main {
 	public static Matrix4f projection;
 
 	private static void startConnectionThread() {
-		connectionThread = new Thread(new Runnable(){
-			public synchronized void run(){
-				while (!connection.socket.isClosed()) {
-					connection.read();
-				}
+		connectionThread = new Thread(() -> {
+			while (!connection.socket.isClosed()) {
+				connection.read();
 			}
 		});
 		connectionThread.setDaemon(true);
 		connectionThread.setName("Connection input thread");
 		connectionThread.start();
 	}
-
-
 	public static String toIntVector(Vector3f vec) {
 		return ((int)(vec.x)+","+(int)(vec.y)+","+(int)(vec.z));
 	}
 
 	public static void main(String[] args) {
-		Display display = new Display().setFullscreenMode(Display.FullScreenMode.BORDERLESS).setClearColor(new Color(76.0f / 255.0f, 124.0f / 255.0f, 156.0f / 255.0f)).create();
+		Display display = new Display().setFullscreenMode(Display.FullScreenMode.BORDERLESS).setClearColor(new Color(76.0f / 255.0f, 124.0f / 255.0f, 156.0f / 255.0f)).create().setVSync(false);
 
 		Textures.loadTextures();
 
@@ -69,8 +65,8 @@ public class Main {
 			HotBar.update();
 
 			// Draw 3D
-			EntityManager.render();
 			World.draw();
+			EntityManager.render();
 			BlockPlacement.drawBoundingBox();
 
 			// Draw 2D
@@ -80,6 +76,7 @@ public class Main {
 			HotBar.render();
 
 			RenderManager.enableDepth();
+			System.out.println("FPS: "+Core.getFPS()+" Blocks: "+World.cubes.size()+" Render: "+World.toDraw.size());
 
 			display.update();
 		}

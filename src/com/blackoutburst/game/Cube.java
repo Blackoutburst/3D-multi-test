@@ -315,4 +315,8 @@ public class Cube {
 	public boolean isTransparent() {
 		return transparent;
 	}
+
+	public void setDistance(double distance) {
+		this.distance = distance;
+	}
 }

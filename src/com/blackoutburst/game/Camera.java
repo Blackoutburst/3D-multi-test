@@ -73,9 +73,9 @@ public class Camera {
 
         velocity = velocity.normalize();
 
-        position.x += velocity.x * Time.getDelta() * speed;
-        position.y += velocity.y * Time.getDelta() * speed;
-        position.z += velocity.z * Time.getDelta() * speed;
+        position.x += velocity.x * speed * Time.getDelta();
+        position.y += velocity.y * speed * Time.getDelta();
+        position.z += velocity.z * speed * Time.getDelta();
     }
 
     public static void update() {

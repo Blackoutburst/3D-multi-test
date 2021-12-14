@@ -4,13 +4,13 @@ import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.Texture;
 import com.blackoutburst.bogel.maths.Vector2f;
 import com.blackoutburst.bogel.maths.Vector3f;
-import com.blackoutburst.game.Cube;
-import com.blackoutburst.game.Main;
-import com.blackoutburst.game.Textures;
-import com.blackoutburst.game.World;
+import com.blackoutburst.game.*;
 import com.blackoutburst.network.PacketBuffer;
 import com.blackoutburst.network.PacketPlayIn;
 import com.blackoutburst.network.PacketUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class S04AddBlock extends PacketPlayIn implements PacketUtils {
 
@@ -76,6 +76,35 @@ public class S04AddBlock extends PacketPlayIn implements PacketUtils {
 					draw = false;
 				}
 				World.drawCubes.put(Main.toIntVector(c.getPosition()), draw);
+			}
+
+			List<Cube> glass = new ArrayList<>();
+			List<Cube> tmp = new ArrayList<>();
+
+			try {
+				int j = World.cubes.size();
+				for (int i = 0; i < j; i++) {
+					Cube c = World.cubes.get(i);
+					if (c.isTransparent()) {
+						c.setDistance(Math.pow((Camera.position.x - c.getPosition().x), 2) +
+								Math.pow((Camera.position.y - c.getPosition().y), 2) +
+								Math.pow((Camera.position.z - c.getPosition().z), 2));
+						glass.add(c);
+						continue;
+					}
+
+					if (World.drawCubes.get(Main.toIntVector(c.getPosition())) == null || !World.drawCubes.get(Main.toIntVector(c.getPosition()))) {
+						continue;
+					}
+					tmp.add(c);
+				}
+				glass.sort(new DistanceComparator());
+				tmp.addAll(glass);
+				glass.clear();
+
+				World.toDraw = new ArrayList<>(tmp);
+			} catch (Exception ignored) {
+				World.toDraw = new ArrayList<>(World.cubes);
 			}
 		} catch(Exception e) {
 			malformatedError(e.toString());
