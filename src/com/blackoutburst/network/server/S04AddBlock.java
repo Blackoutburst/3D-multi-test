@@ -98,6 +98,7 @@ public class S04AddBlock extends PacketPlayIn implements PacketUtils {
 			glass.clear();
 
 			World.toDraw = new ArrayList<>(tmp);
+			tmp.clear();
 		} catch(Exception e) {
 			malformatedError(e.toString());
 		}

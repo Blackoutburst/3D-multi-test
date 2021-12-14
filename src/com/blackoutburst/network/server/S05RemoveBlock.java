@@ -66,6 +66,7 @@ public class S05RemoveBlock extends PacketPlayIn implements PacketUtils {
 			glass.clear();
 
 			World.toDraw = new ArrayList<>(tmp);
+			tmp.clear();
 		} catch(Exception e) {
 			malformatedError(e.toString());
 		}

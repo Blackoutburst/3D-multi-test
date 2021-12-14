@@ -2,6 +2,7 @@ package com.blackoutburst.game;
 
 import com.blackoutburst.bogel.core.Core;
 import com.blackoutburst.bogel.core.Display;
+import com.blackoutburst.bogel.core.Keyboard;
 import com.blackoutburst.bogel.core.Time;
 import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.RenderManager;
@@ -35,7 +36,7 @@ public class Main {
 	public static void main(String[] args) {
 		Display display = new Display().setFullscreenMode(Display.FullScreenMode.BORDERLESS)
 				.setClearColor(new Color(76.0f / 255.0f, 124.0f / 255.0f, 156.0f / 255.0f))
-				.create();
+				.create().setVSync(true);
 
 		Textures.loadTextures();
 
@@ -57,6 +58,7 @@ public class Main {
 		final Shape cursor = new Shape(Shape.ShapeType.CIRCLE, new Vector2f(Display.getWidth() / 2.0f, Display.getHeight() / 2.0f), new Vector2f(10), new Color(1,1,1,0.5f));
 
 		while(display.isOpen()) {
+
 			// Clean
 			display.clear();
 
