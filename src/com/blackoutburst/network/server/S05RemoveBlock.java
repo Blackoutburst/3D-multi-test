@@ -45,32 +45,27 @@ public class S05RemoveBlock extends PacketPlayIn implements PacketUtils {
 			List<Cube> glass = new ArrayList<>();
 			List<Cube> tmp = new ArrayList<>();
 
-			try {
-
-				int j = World.cubes.size();
-				for (int i = 0; i < j; i++) {
-					Cube c = World.cubes.get(i);
-					if (c.isTransparent()) {
-						c.setDistance(Math.pow((Camera.position.x - c.getPosition().x), 2) +
-								Math.pow((Camera.position.y - c.getPosition().y), 2) +
-								Math.pow((Camera.position.z - c.getPosition().z), 2));
-						glass.add(c);
-						continue;
-					}
-
-					if (World.drawCubes.get(Main.toIntVector(c.getPosition())) == null || !World.drawCubes.get(Main.toIntVector(c.getPosition()))) {
-						continue;
-					}
-					tmp.add(c);
+			int j = World.cubes.size();
+			for (int i = 0; i < j; i++) {
+				Cube c = World.cubes.get(i);
+				if (c.isTransparent()) {
+					c.setDistance(Math.pow((Camera.position.x - c.getPosition().x), 2) +
+							Math.pow((Camera.position.y - c.getPosition().y), 2) +
+							Math.pow((Camera.position.z - c.getPosition().z), 2));
+					glass.add(c);
+					continue;
 				}
-				glass.sort(new DistanceComparator());
-				tmp.addAll(glass);
-				glass.clear();
 
-				World.toDraw = new ArrayList<>(tmp);
-			} catch (Exception ignored) {
-				World.toDraw = new ArrayList<>(World.cubes);
+				if (World.drawCubes.get(Main.toIntVector(c.getPosition())) == null || !World.drawCubes.get(Main.toIntVector(c.getPosition()))) {
+					continue;
+				}
+				tmp.add(c);
 			}
+			glass.sort(new DistanceComparator());
+			tmp.addAll(glass);
+			glass.clear();
+
+			World.toDraw = new ArrayList<>(tmp);
 		} catch(Exception e) {
 			malformatedError(e.toString());
 		}
