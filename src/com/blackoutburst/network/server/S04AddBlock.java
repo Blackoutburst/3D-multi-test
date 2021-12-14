@@ -5,6 +5,7 @@ import com.blackoutburst.bogel.graphics.Texture;
 import com.blackoutburst.bogel.maths.Vector2f;
 import com.blackoutburst.bogel.maths.Vector3f;
 import com.blackoutburst.game.Cube;
+import com.blackoutburst.game.Main;
 import com.blackoutburst.game.Textures;
 import com.blackoutburst.game.World;
 import com.blackoutburst.network.PacketBuffer;
@@ -54,6 +55,7 @@ public class S04AddBlock extends PacketPlayIn implements PacketUtils {
 			}
 
 			World.cubes.add(new Cube(null, position, scale, rotation, color, offset, transparent));
+
 		} catch(Exception e) {
 			malformatedError(e.toString());
 		}

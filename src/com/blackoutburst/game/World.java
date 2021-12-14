@@ -7,7 +7,9 @@ import org.lwjgl.BufferUtils;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.lwjgl.opengl.ARBInstancedArrays.glVertexAttribDivisorARB;
 import static org.lwjgl.opengl.ARBProgramInterfaceQuery.GL_UNIFORM;
@@ -24,6 +26,7 @@ import static org.lwjgl.opengl.GL41C.glProgramUniformMatrix4fv;
 public class World {
 
 	public static List<Cube> cubes = new ArrayList<>();
+	public static Map<String, Boolean> drawCubes = new HashMap<>();
 
 	private static int vaoID;
 
@@ -253,9 +256,39 @@ public class World {
 
 		List<Cube> glass = new ArrayList<>();
 
+
+
 		int j = sync.size();
 		for (int i = 0; i < j; i++) {
 			Cube c = sync.get(i);
+
+
+			Vector3f top = new Vector3f(c.position.x, c.position.y + 1, c.position.z);
+			Vector3f bottom = new Vector3f(c.position.x, c.position.y - 1, c.position.z);
+
+			Vector3f back = new Vector3f(c.position.x, c.position.y, c.position.z + 1);
+			Vector3f front = new Vector3f(c.position.x, c.position.y, c.position.z - 1);
+
+			Vector3f right = new Vector3f(c.position.x + 1, c.position.y, c.position.z);
+			Vector3f left = new Vector3f(c.position.x - 1, c.position.y, c.position.z);
+
+			boolean draw = true;
+
+			if (drawCubes.get(Main.toIntVector(top)) != null && drawCubes.get(Main.toIntVector(bottom)) != null &&
+					drawCubes.get(Main.toIntVector(back)) != null && drawCubes.get(Main.toIntVector(front)) != null &&
+					drawCubes.get(Main.toIntVector(right)) != null && drawCubes.get(Main.toIntVector(left)) != null) {
+				draw = false;
+			}
+
+			drawCubes.put(Main.toIntVector(c.position), draw);
+
+			if (drawCubes.get(Main.toIntVector(c.position)) == null || !drawCubes.get(Main.toIntVector(c.position))) {
+				sync.remove(c);
+				j--;
+				i--;
+				continue;
+			}
+
 			if (c.isTransparent()) {
 				c.distance = Math.pow((Camera.position.x - c.position.x), 2) +
 								Math.pow((Camera.position.y - c.position.y), 2) +

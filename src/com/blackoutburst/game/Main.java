@@ -6,6 +6,7 @@ import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.RenderManager;
 import com.blackoutburst.bogel.graphics.Shape;
 import com.blackoutburst.bogel.maths.Vector2f;
+import com.blackoutburst.bogel.maths.Vector3f;
 import com.blackoutburst.network.Connection;
 import org.lwjgl.glfw.GLFW;
 
@@ -29,6 +30,10 @@ public class Main {
 		connectionThread.start();
 	}
 
+
+	public static String toIntVector(Vector3f vec) {
+		return ((int)(vec.x)+","+(int)(vec.y)+","+(int)(vec.z));
+	}
 
 	public static void main(String[] args) {
 		Display display = new Display().setFullscreenMode(Display.FullScreenMode.BORDERLESS).setClearColor(new Color(76.0f / 255.0f, 124.0f / 255.0f, 156.0f / 255.0f)).create();
@@ -75,8 +80,6 @@ public class Main {
 			HotBar.render();
 
 			RenderManager.enableDepth();
-
-			System.out.println(Core.getFPS());
 
 			display.update();
 		}
