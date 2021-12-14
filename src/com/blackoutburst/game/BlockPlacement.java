@@ -7,7 +7,6 @@ import com.blackoutburst.network.client.C02BreakBlock;
 import com.blackoutburst.network.client.C03PlaceBlock;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class BlockPlacement {
@@ -27,6 +26,8 @@ public class BlockPlacement {
 
     private static final MousePicker PICKER = new MousePicker();
 
+    private static List<Cube> sync = new ArrayList<>(World.cubes);
+
     private static void pickBlock() {
         double closest = 100;
         Face tmpface = null;
@@ -38,7 +39,10 @@ public class BlockPlacement {
 
         PICKER.update();
 
-        final List<Cube> sync = new ArrayList<>(World.cubes);
+        try {
+            sync = new ArrayList<>(World.cubes);
+        } catch(Exception ignored) {}
+
         for (Cube c : sync) {
             double distance = Math.sqrt(
                 Math.pow((Camera.position.x - c.position.x), 2) +
@@ -50,7 +54,7 @@ public class BlockPlacement {
             if (tmpface != null && distance < closest) {
                 closest = distance;
 
-                selected = new Cube(null, c.position, new Vector3f(1.01f), c.rotation.copy(), new Color(1, 1, 1, 0.5f), null);
+                selected = new Cube(null, c.position, new Vector3f(1.01f), c.rotation.copy(), new Color(1, 1, 1, 0.5f), null, false);
                 selectedId = idx;
                 face = tmpface;
             }

@@ -18,7 +18,7 @@ public class Camera {
 
     public static void init() {
         lastMousePosition = Mouse.getPosition().copy();
-        position = new Vector3f(0, 0f, 0);
+        position = new Vector3f(0, 2.80f, 0);
         rotation = new Vector2f(0, 0);
         view = new Matrix4f();
         view.setIdentity();

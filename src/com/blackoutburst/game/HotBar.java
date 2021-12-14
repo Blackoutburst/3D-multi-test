@@ -1,6 +1,7 @@
 package com.blackoutburst.game;
 
 import com.blackoutburst.bogel.core.Display;
+import com.blackoutburst.bogel.core.Keyboard;
 import com.blackoutburst.bogel.core.Mouse;
 import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.Shape;
@@ -29,6 +30,16 @@ public class HotBar {
         if (Mouse.getScroll() > 0) slot--;
         if (slot < 0) slot = 8;
         if (slot > 8) slot = 0;
+
+        if (Keyboard.isKeyDown(Keyboard.NUM1)) slot = 0;
+        if (Keyboard.isKeyDown(Keyboard.NUM2)) slot = 1;
+        if (Keyboard.isKeyDown(Keyboard.NUM3)) slot = 2;
+        if (Keyboard.isKeyDown(Keyboard.NUM4)) slot = 3;
+        if (Keyboard.isKeyDown(Keyboard.NUM5)) slot = 4;
+        if (Keyboard.isKeyDown(Keyboard.NUM6)) slot = 5;
+        if (Keyboard.isKeyDown(Keyboard.NUM7)) slot = 6;
+        if (Keyboard.isKeyDown(Keyboard.NUM8)) slot = 7;
+        if (Keyboard.isKeyDown(Keyboard.NUM9)) slot = 8;
 
         SELECTOR.setPosition(HALF + 50 * (slot - 4), SELECTOR.getPosition().y);
     }

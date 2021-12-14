@@ -34,6 +34,8 @@ public class Cube {
 	protected Vector3f rotation;
 	protected Vector2f textureOffset;
 	protected Color color;
+	protected boolean transparent;
+	protected double distance;
 	
 	public static int program;
 	public static int boxProgram;
@@ -150,13 +152,15 @@ public class Cube {
 			System.out.println(log);
 	}
 
-	public Cube(Texture texture, Vector3f position, Vector3f scale, Vector3f rotation, Color color, Vector2f textureOffset) {
+	public Cube(Texture texture, Vector3f position, Vector3f scale, Vector3f rotation, Color color, Vector2f textureOffset, boolean transparent) {
 		this.texture = texture;
 		this.position = position;
 		this.scale = scale;
 		this.rotation = rotation;
 		this.color = color;
 		this.textureOffset = textureOffset;
+		this.transparent = transparent;
+		this.distance = 0;
 
 		this.model = new Matrix4f();
 		Matrix4f.setIdentity(this.model);
@@ -298,5 +302,9 @@ public class Cube {
 
 		glBindVertexArray(0);
 		glUseProgram(0);
+	}
+
+	public boolean isTransparent() {
+		return transparent;
 	}
 }

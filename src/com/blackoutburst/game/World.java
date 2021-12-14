@@ -6,6 +6,7 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +31,8 @@ public class World {
 
 	private static final Vector3f LIGHT_COLOR = new Vector3f(1);
 	private static final Vector3f LIGHT_POSITION = new Vector3f(0, 5, 0);
+
+	private static List<Cube> sync = new ArrayList<>(World.cubes);
 
 	public static int program;
 
@@ -246,8 +249,36 @@ public class World {
 	}
 
 	public static void draw() {
-		final int cubesNumber = cubes.size();
-		final List<Cube> sync = new ArrayList<>(World.cubes);
+		try {
+			sync = new ArrayList<>(World.cubes);
+		} catch (Exception ignored) {}
+
+
+		List<Cube> glass = new ArrayList<>();
+
+		int j = sync.size();
+		for (int i = 0; i < j; i++) {
+			Cube c = sync.get(i);
+			if (c.isTransparent()) {
+				c.distance = Math.pow((Camera.position.x - c.position.x), 2) +
+								Math.pow((Camera.position.y - c.position.y), 2) +
+								Math.pow((Camera.position.z - c.position.z), 2);
+
+				glass.add(c);
+				sync.remove(c);
+				j--;
+				i--;
+			}
+		}
+
+		Collections.sort(glass, new DistanceComparator());
+
+		for (Cube b : glass) {
+			sync.add(b);
+		}
+		glass.clear();
+
+		final int cubesNumber = sync.size();
 
 		setCubeOffset(cubesNumber, sync);
 		setCubeColor(cubesNumber, sync);

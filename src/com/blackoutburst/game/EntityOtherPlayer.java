@@ -16,6 +16,6 @@ public class EntityOtherPlayer extends Entity {
 
 	@Override
 	protected void render() {
-		new Cube(Textures.MUSH, position, scale, rotation, Color.WHITE, new Vector2f()).draw();
+		new Cube(Textures.MUSH, position, scale, rotation, Color.WHITE, new Vector2f(), false).draw();
 	}
 }
