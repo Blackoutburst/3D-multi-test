@@ -1,9 +1,6 @@
 package com.blackoutburst.game;
 
-import com.blackoutburst.bogel.core.Core;
 import com.blackoutburst.bogel.core.Display;
-import com.blackoutburst.bogel.core.Keyboard;
-import com.blackoutburst.bogel.core.Time;
 import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.RenderManager;
 import com.blackoutburst.bogel.graphics.Shape;

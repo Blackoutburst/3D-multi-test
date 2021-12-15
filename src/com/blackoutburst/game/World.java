@@ -1,6 +1,5 @@
 package com.blackoutburst.game;
 
-import com.blackoutburst.bogel.core.Core;
 import com.blackoutburst.bogel.core.Shader;
 import com.blackoutburst.bogel.maths.Vector3f;
 import org.lwjgl.BufferUtils;
