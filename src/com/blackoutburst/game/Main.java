@@ -70,8 +70,8 @@ public class Main {
 			HotBar.update();
 
 			// Draw 3D
-			World.draw();
 			EntityManager.render();
+			World.draw();
 			BlockPlacement.drawBoundingBox();
 
 			// Draw 2D

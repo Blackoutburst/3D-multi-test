@@ -183,7 +183,7 @@ public class World {
 
 		glDeleteBuffers(instanceVBO);
 
-		offsetBuffer.clear();
+		((Buffer)offsetBuffer).clear();
 	}
 
 	private static void setCubeColor(int cubesNumber, List<Cube> toDraw) {
@@ -215,7 +215,7 @@ public class World {
 
 		glDeleteBuffers(instanceVBO);
 
-		offsetBuffer.clear();
+		((Buffer)offsetBuffer).clear();
 	}
 
 	private static void setCubeTextureOffset(int cubesNumber, List<Cube> toDraw) {
@@ -246,7 +246,7 @@ public class World {
 
 		glDeleteBuffers(instanceVBO);
 
-		offsetBuffer.clear();
+		((Buffer)offsetBuffer).clear();
 	}
 
 	public static void draw() {

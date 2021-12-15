@@ -15,7 +15,7 @@ public class Connection implements PacketUtils {
 	public OutputStream out = null;
 	
 	public void connect() {
-		final String IP = "localhost";
+		final String IP = "192.168.8.164";
 		final short PORT = 25565;
 		try {
 			socket = new Socket(IP, PORT);

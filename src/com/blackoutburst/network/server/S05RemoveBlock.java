@@ -32,14 +32,12 @@ public class S05RemoveBlock extends PacketPlayIn implements PacketUtils {
 				Vector3f right = new Vector3f(c.getPosition().x + 1, c.getPosition().y, c.getPosition().z);
 				Vector3f left = new Vector3f(c.getPosition().x - 1, c.getPosition().y, c.getPosition().z);
 
-				boolean draw = true;
+				boolean draw = World.drawCubes.get(Main.toIntVector(top)) == null || World.drawCubes.get(Main.toIntVector(bottom)) == null ||
+						World.drawCubes.get(Main.toIntVector(back)) == null || World.drawCubes.get(Main.toIntVector(front)) == null ||
+						World.drawCubes.get(Main.toIntVector(right)) == null || World.drawCubes.get(Main.toIntVector(left)) == null;
 
-				if (World.drawCubes.get(Main.toIntVector(top)) != null && World.drawCubes.get(Main.toIntVector(bottom)) != null &&
-						World.drawCubes.get(Main.toIntVector(back)) != null && World.drawCubes.get(Main.toIntVector(front)) != null &&
-						World.drawCubes.get(Main.toIntVector(right)) != null && World.drawCubes.get(Main.toIntVector(left)) != null) {
-					draw = false;
-				}
-				World.drawCubes.put(Main.toIntVector(c.getPosition()), draw);
+				if (!c.isTransparent())
+					World.drawCubes.put(Main.toIntVector(c.getPosition()), draw);
 			}
 
 			List<Cube> glass = new ArrayList<>();

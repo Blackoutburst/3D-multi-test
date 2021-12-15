@@ -54,7 +54,9 @@ public class S04AddBlock extends PacketPlayIn implements PacketUtils {
 			}
 
 			World.cubes.add(new Cube(null, position, scale, rotation, color, offset, transparent));
-			World.drawCubes.put(Main.toIntVector(position), true);
+
+			if (!transparent)
+				World.drawCubes.put(Main.toIntVector(position), true);
 
 			for (Cube c : World.cubes) {
 
@@ -71,7 +73,8 @@ public class S04AddBlock extends PacketPlayIn implements PacketUtils {
 						World.drawCubes.get(Main.toIntVector(back)) == null || World.drawCubes.get(Main.toIntVector(front)) == null ||
 						World.drawCubes.get(Main.toIntVector(right)) == null || World.drawCubes.get(Main.toIntVector(left)) == null;
 
-				World.drawCubes.put(Main.toIntVector(c.getPosition()), draw);
+				if (!c.isTransparent())
+					World.drawCubes.put(Main.toIntVector(c.getPosition()), draw);
 			}
 
 			List<Cube> glass = new ArrayList<>();
