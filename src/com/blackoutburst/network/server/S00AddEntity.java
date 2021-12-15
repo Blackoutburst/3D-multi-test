@@ -39,7 +39,7 @@ public class S00AddEntity extends PacketPlayIn implements PacketUtils {
 			
 			new EntityManager().addEntity(id, tp, position, scale, rotation);
 		} catch(Exception e) {
-			malformatedError(e.toString());
+			malformedError(e.toString());
 		}
 	}
 }

@@ -22,7 +22,7 @@ public class S01MoveEntity extends PacketPlayIn implements PacketUtils {
 
 			new EntityManager().moveEntity(id, position);
 		} catch(Exception e) {
-			malformatedError(e.toString());
+			malformedError(e.toString());
 		}
 	}
 }

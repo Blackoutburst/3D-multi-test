@@ -16,7 +16,7 @@ public class S03DeleteEntity extends PacketPlayIn implements PacketUtils {
 			
 			new EntityManager().deleteEntity(id);
 		} catch(Exception e) {
-			malformatedError(e.toString());
+			malformedError(e.toString());
 		}
 	}
 }

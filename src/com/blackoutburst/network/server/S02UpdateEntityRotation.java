@@ -22,7 +22,7 @@ public class S02UpdateEntityRotation extends PacketPlayIn implements PacketUtils
 			
 			new EntityManager().updateRotation(id, rotation);
 		} catch(Exception e) {
-			malformatedError(e.toString());
+			malformedError(e.toString());
 		}
 	}
 }

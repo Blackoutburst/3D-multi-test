@@ -8,9 +8,9 @@ public interface PacketUtils {
 
 	char SEPARATOR = 0x1F;
 	char END = 0x0A;
-	
-	default void malformatedError(String e) {
-		System.out.println("Malformated packet unable to read it: " + e);
+
+	default void malformedError(String e) {
+		System.out.println("MalformedError packet unable to read it: " + e);
 	}
 	
 	default void send(PacketBuffer buffer) {

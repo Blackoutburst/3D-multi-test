@@ -103,7 +103,7 @@ public class S04AddBlock extends PacketPlayIn implements PacketUtils {
 			World.toDraw = new ArrayList<>(tmp);
 			tmp.clear();
 		} catch(Exception e) {
-			malformatedError(e.toString());
+			malformedError(e.toString());
 		}
 	}
 }
