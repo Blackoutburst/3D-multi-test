@@ -2,9 +2,7 @@
 
 #define ambientStrength 1.0
 #define specularStrength 0.2
-#define atlasSize 8
-
-precision highp float;
+#define atlasSize 8.0
 
 in vec3 vertPos;
 in vec2 uv;
