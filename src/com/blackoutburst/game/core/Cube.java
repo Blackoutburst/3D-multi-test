@@ -2,10 +2,8 @@ package com.blackoutburst.game.core;
 
 import com.blackoutburst.bogel.core.Shader;
 import com.blackoutburst.bogel.core.ShaderProgram;
-import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.Texture;
 import com.blackoutburst.bogel.maths.Matrix4f;
-import com.blackoutburst.bogel.maths.Vector2f;
 import com.blackoutburst.bogel.maths.Vector3f;
 import com.blackoutburst.game.main.Main;
 import org.lwjgl.BufferUtils;
@@ -22,20 +20,11 @@ import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
 public class Cube {
 
     private static int vaoID;
-
-    public static final Vector3f LIGHT_COLOR = new Vector3f(1);
-    public static final Vector3f LIGHT_POSITION = new Vector3f(0, 5, 0);
-
     protected Matrix4f model;
     protected Texture texture;
     protected Vector3f position;
     protected Vector3f scale;
     protected Vector3f rotation;
-    protected Vector2f textureOffset;
-    protected Color color;
-    protected boolean transparent;
-    protected double distance;
-
     public static ShaderProgram program;
 
     private static final float[] VERTICES = new float[] {
@@ -126,19 +115,16 @@ public class Cube {
         this.position = position;
         this.scale = scale;
         this.rotation = rotation;
-        this.distance = 0;
 
         this.model = new Matrix4f();
         Matrix4f.setIdentity(this.model);
     }
 
     private void setUniforms(ShaderProgram program) {
-        program.setUniformMat4("model", this.model);
-        program.setUniformMat4("view", Camera.view);
-        program.setUniformMat4("projection", Main.projection);
-        program.setUniform3f("lightColor", LIGHT_COLOR);
-        program.setUniform3f("lightPos", LIGHT_POSITION);
-        program.setUniform3f("viewPos", -Camera.position.x, -Camera.position.y, -Camera.position.z);
+
+        program.setUniformMat4f("projection", Main.projection);
+        program.setUniformMat4f("model", this.model);
+        program.setUniformMat4f("view", Camera.view);
     }
 
     public void draw() {

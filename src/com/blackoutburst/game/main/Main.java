@@ -1,8 +1,11 @@
 package com.blackoutburst.game.main;
 
 import com.blackoutburst.bogel.core.Display;
+import com.blackoutburst.bogel.graphics.RenderManager;
+import com.blackoutburst.bogel.graphics.Shape;
 import com.blackoutburst.bogel.graphics.Texture;
 import com.blackoutburst.bogel.maths.Matrix4f;
+import com.blackoutburst.bogel.maths.Vector2f;
 import com.blackoutburst.bogel.maths.Vector3f;
 import com.blackoutburst.game.core.Camera;
 import com.blackoutburst.game.core.Cube;
@@ -10,23 +13,26 @@ import com.blackoutburst.game.core.Cube;
 public class Main {
 
     public static Matrix4f projection = new Matrix4f();
-
     public static void main(String[] args) {
+
         Display display = new Display().setTitle("Meinraft").create();
+        Matrix4f.projectionMatrix(90, 0.001F, 10000, projection);
 
-        projection.setIdentity();
-        Matrix4f.projectionMatrix(90, 1000, 0.01f, projection);
 
-        Cube.init();
         Camera.init();
+        Cube.init();
 
-        Cube cube = new Cube(new Texture(""), new Vector3f(), new Vector3f(1), new Vector3f(1));
+        Cube c = new Cube(new Texture(""), new Vector3f(0, 0, -10), new Vector3f(1), new Vector3f(45));
 
+        RenderManager.enableDepth();
         while (display.isOpen()) {
             display.clear();
-            Camera.update();
 
-            cube.draw();
+            Camera.update();
+            c.draw();
+
+            new Shape(Shape.ShapeType.CIRCLE, new Texture("icon128.png"), new Vector2f(100), new Vector2f( 100), 0, false).draw();
+
             display.update();
         }
         display.destroy();

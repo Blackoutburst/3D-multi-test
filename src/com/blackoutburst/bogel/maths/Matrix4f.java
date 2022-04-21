@@ -35,10 +35,7 @@ import java.io.Serializable;
 import java.nio.FloatBuffer;
 
 import com.blackoutburst.bogel.core.Display;
-import com.blackoutburst.bogel.maths.Matrix;
-import com.blackoutburst.bogel.maths.Vector2f;
-import com.blackoutburst.bogel.maths.Vector3f;
-import com.blackoutburst.bogel.maths.Vector4f;
+
 
 /**
  * Holds a 4x4 float matrix.
