@@ -86,6 +86,8 @@ public class Display {
 	}
 	
 	protected static long window;
+
+	protected boolean shouldClose;
 	
 	protected static int width = 1280;
 	protected static int height = 720;
@@ -238,9 +240,16 @@ public class Display {
 	 * @author Blackoutburst
 	 */
 	public boolean isOpen() {
-		return (!glfwWindowShouldClose(window));
+		return (!this.shouldClose && !glfwWindowShouldClose(window));
 	}
-	
+
+	/**
+	 * Close the window
+	 */
+	public void close() {
+		this.shouldClose = true;
+	}
+
 	/**
 	 * <p>
 	 * Set the clear color<br>
