@@ -1,5 +1,7 @@
 package com.blackoutburst.bogel.maths;
 
+import com.blackoutburst.bogel.core.Display;
+
 import java.nio.FloatBuffer;
 
 public class Matrix {
@@ -24,7 +26,22 @@ public class Matrix {
 	public Matrix() {
 		setIdentity(this);
 	}
-	
+
+	public static Matrix projectionMatrix(float FOV, float FAR_PLANE, float NEAR_PLANE, Matrix m){
+		float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
+		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
+		float x_scale = y_scale / aspectRatio;
+		float frustum_length = FAR_PLANE - NEAR_PLANE;
+
+		m.m00 = x_scale;
+		m.m11 = y_scale;
+		m.m22 = -((FAR_PLANE + NEAR_PLANE) / frustum_length);
+		m.m23 = -1;
+		m.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
+		m.m33 = 0;
+		return (m);
+	}
+
 	/**
 	 * Returns a string representation of this matrix
 	 */
@@ -354,8 +371,6 @@ public class Matrix {
 	/**
 	 * Scales the source matrix and put the result in the destination matrix
 	 * @param vec The vector to scale by
-	 * @param src The source matrix
-	 * @param dest The destination matrix, or null if a new matrix is to be created
 	 * @return The scaled matrix
 	 */
 	public static void scale(Vector2f vec, Matrix mat) {
@@ -375,14 +390,33 @@ public class Matrix {
 		mat.m23 = mat.m23 * 1;
 	}
 
+	/**
+	 * Scales the source matrix and put the result in the destination matrix
+	 * @param vec The vector to scale by
+	 * @return The scaled matrix
+	 */
+	public static void scale(Vector3f vec, Matrix mat) {
+		if (mat == null)
+			mat = new Matrix();
+		mat.m00 = mat.m00 * vec.x;
+		mat.m01 = mat.m01 * vec.x;
+		mat.m02 = mat.m02 * vec.x;
+		mat.m03 = mat.m03 * vec.x;
+		mat.m10 = mat.m10 * vec.y;
+		mat.m11 = mat.m11 * vec.y;
+		mat.m12 = mat.m12 * vec.y;
+		mat.m13 = mat.m13 * vec.y;
+		mat.m20 = mat.m20 * vec.z;
+		mat.m21 = mat.m21 * vec.z;
+		mat.m22 = mat.m22 * vec.z;
+		mat.m23 = mat.m23 * vec.z;
+	}
+
 
 	/**
 	 * Rotates the source matrix around the given axis the specified angle and
 	 * put the result in the destination matrix.
 	 * @param angle the angle, in radians.
-	 * @param axis The vector representing the rotation axis. Must be normalized.
-	 * @param src The matrix to rotate
-	 * @param dest The matrix to put the result, or null if a new matrix is to be created
 	 * @return The rotated matrix
 	 */
 	public static void rotate(float angle, Matrix mat) {
@@ -437,10 +471,66 @@ public class Matrix {
 
 
 	/**
+	 * Rotates the source matrix around the given axis the specified angle and
+	 * put the result in the destination matrix.
+	 * @param angle the angle, in radians.
+	 * @param axis The vector representing the rotation axis. Must be normalized.
+	 * @return The rotated matrix
+	 */
+	public static void rotate(float angle, Vector3f axis, Matrix mat) {
+		if (mat == null)
+			mat = new Matrix();
+
+		Matrix src = new Matrix();
+		Matrix.load(mat, src);
+
+		float c = (float) Math.cos(angle);
+		float s = (float) Math.sin(angle);
+		float oneminusc = 1.0f - c;
+		float xy = axis.x*axis.y;
+		float yz = axis.y*axis.z;
+		float xz = axis.x*axis.z;
+		float xs = axis.x*s;
+		float ys = axis.y*s;
+		float zs = axis.z*s;
+
+		float f00 = axis.x*axis.x*oneminusc+c;
+		float f01 = xy*oneminusc+zs;
+		float f02 = xz*oneminusc-ys;
+		// n[3] not used
+		float f10 = xy*oneminusc-zs;
+		float f11 = axis.y*axis.y*oneminusc+c;
+		float f12 = yz*oneminusc+xs;
+		// n[7] not used
+		float f20 = xz*oneminusc+ys;
+		float f21 = yz*oneminusc-xs;
+		float f22 = axis.z*axis.z*oneminusc+c;
+
+		float t00 = src.m00 * f00 + src.m10 * f01 + src.m20 * f02;
+		float t01 = src.m01 * f00 + src.m11 * f01 + src.m21 * f02;
+		float t02 = src.m02 * f00 + src.m12 * f01 + src.m22 * f02;
+		float t03 = src.m03 * f00 + src.m13 * f01 + src.m23 * f02;
+		float t10 = src.m00 * f10 + src.m10 * f11 + src.m20 * f12;
+		float t11 = src.m01 * f10 + src.m11 * f11 + src.m21 * f12;
+		float t12 = src.m02 * f10 + src.m12 * f11 + src.m22 * f12;
+		float t13 = src.m03 * f10 + src.m13 * f11 + src.m23 * f12;
+		mat.m20 = src.m00 * f20 + src.m10 * f21 + src.m20 * f22;
+		mat.m21 = src.m01 * f20 + src.m11 * f21 + src.m21 * f22;
+		mat.m22 = src.m02 * f20 + src.m12 * f21 + src.m22 * f22;
+		mat.m23 = src.m03 * f20 + src.m13 * f21 + src.m23 * f22;
+		mat.m00 = t00;
+		mat.m01 = t01;
+		mat.m02 = t02;
+		mat.m03 = t03;
+		mat.m10 = t10;
+		mat.m11 = t11;
+		mat.m12 = t12;
+		mat.m13 = t13;
+	}
+
+	/**
 	 * Translate the source matrix and stash the result in the destination matrix
 	 * @param vec The vector to translate by
-	 * @param src The source matrix
-	 * @param dest The destination matrix or null if a new matrix is to be created
 	 * @return The translated matrix
 	 */
 	public static void translate(Vector2f vec, Matrix mat) {
@@ -453,6 +543,18 @@ public class Matrix {
 		mat.m31 += src.m01 * vec.x + src.m11 * vec.y;
 		mat.m32 += src.m02 * vec.x + src.m12 * vec.y;
 		mat.m33 += src.m03 * vec.x + src.m13 * vec.y;
+	}
+
+	public static void translate(Vector3f vec, Matrix mat) {
+		if (mat == null)
+			mat = new Matrix();
+		Matrix src = new Matrix();
+		Matrix.load(mat, src);
+
+		mat.m30 += src.m00 * vec.x + src.m10 * vec.y + src.m20 * vec.z;
+		mat.m31 += src.m01 * vec.x + src.m11 * vec.y + src.m21 * vec.z;
+		mat.m32 += src.m02 * vec.x + src.m12 * vec.y + src.m22 * vec.z;
+		mat.m33 += src.m03 * vec.x + src.m13 * vec.y + src.m23 * vec.z;
 	}
 
 	/**

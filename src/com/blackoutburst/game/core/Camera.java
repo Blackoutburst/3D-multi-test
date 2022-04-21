@@ -3,13 +3,13 @@ package com.blackoutburst.game.core;
 import com.blackoutburst.bogel.core.Keyboard;
 import com.blackoutburst.bogel.core.Mouse;
 import com.blackoutburst.bogel.core.Time;
-import com.blackoutburst.bogel.maths.Matrix4f;
+import com.blackoutburst.bogel.maths.Matrix;
 import com.blackoutburst.bogel.maths.Vector2f;
 import com.blackoutburst.bogel.maths.Vector3f;
 
 public class Camera {
 
-    public static Matrix4f view;
+    public static Matrix view;
     public static Vector3f position;
     public static Vector2f rotation;
 
@@ -21,10 +21,10 @@ public class Camera {
         lastMousePosition = Mouse.getPosition().copy();
         position = new Vector3f(0, 0f, 0);
         rotation = new Vector2f(0, 0);
-        view = new Matrix4f();
-        view.setIdentity();
+        view = new Matrix();
+        Matrix.setIdentity(view);
 
-        Matrix4f.translate(position, view, view);
+        Matrix.translate(position, view);
     }
 
     private static void rotate() {
@@ -83,12 +83,12 @@ public class Camera {
         rotate();
         move();
 
-        view.setIdentity();
+        Matrix.setIdentity(view);
 
-        Matrix4f.rotate((float) Math.toRadians(rotation.y), new Vector3f(1, 0, 0), view, view);
-        Matrix4f.rotate((float) Math.toRadians(rotation.x), new Vector3f(0, 1, 0), view, view);
+        Matrix.rotate((float) Math.toRadians(rotation.y), new Vector3f(1, 0, 0), view);
+        Matrix.rotate((float) Math.toRadians(rotation.x), new Vector3f(0, 1, 0), view);
 
         final Vector3f reverse = new Vector3f(-position.x, -position.y, -position.z);
-        Matrix4f.translate(reverse, view, view);
+        Matrix.translate(reverse, view);
     }
 }

@@ -3,7 +3,7 @@ package com.blackoutburst.game.core;
 import com.blackoutburst.bogel.core.Shader;
 import com.blackoutburst.bogel.core.ShaderProgram;
 import com.blackoutburst.bogel.graphics.Texture;
-import com.blackoutburst.bogel.maths.Matrix4f;
+import com.blackoutburst.bogel.maths.Matrix;
 import com.blackoutburst.bogel.maths.Vector3f;
 import com.blackoutburst.game.main.Main;
 import org.lwjgl.BufferUtils;
@@ -20,7 +20,7 @@ import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
 public class Cube {
 
     private static int vaoID;
-    protected Matrix4f model;
+    protected Matrix model;
     protected Texture texture;
     protected Vector3f position;
     protected Vector3f scale;
@@ -116,24 +116,24 @@ public class Cube {
         this.scale = scale;
         this.rotation = rotation;
 
-        this.model = new Matrix4f();
-        Matrix4f.setIdentity(this.model);
+        this.model = new Matrix();
+        Matrix.setIdentity(this.model);
     }
 
     private void setUniforms(ShaderProgram program) {
 
-        program.setUniformMat4f("projection", Main.projection);
-        program.setUniformMat4f("model", this.model);
-        program.setUniformMat4f("view", Camera.view);
+        program.setUniformMat4("projection", Main.projection);
+        program.setUniformMat4("model", this.model);
+        program.setUniformMat4("view", Camera.view);
     }
 
     public void draw() {
-        Matrix4f.setIdentity(this.model);
-        Matrix4f.translate(this.position, this.model, this.model);
-        Matrix4f.rotate(this.rotation.x, new Vector3f(1, 0, 0), this.model, this.model);
-        Matrix4f.rotate(this.rotation.y, new Vector3f(0, 1, 0), this.model, this.model);
-        Matrix4f.rotate(this.rotation.z, new Vector3f(0, 0, 1), this.model, this.model);
-        Matrix4f.scale(this.scale, this.model, this.model);
+        Matrix.setIdentity(this.model);
+        Matrix.translate(this.position, this.model);
+        Matrix.rotate(this.rotation.x, new Vector3f(1, 0, 0), this.model);
+        Matrix.rotate(this.rotation.y, new Vector3f(0, 1, 0), this.model);
+        Matrix.rotate(this.rotation.z, new Vector3f(0, 0, 1), this.model);
+        Matrix.scale(this.scale, this.model);
 
         setUniforms(program);
 

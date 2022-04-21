@@ -4,7 +4,7 @@ import com.blackoutburst.bogel.core.Display;
 import com.blackoutburst.bogel.graphics.RenderManager;
 import com.blackoutburst.bogel.graphics.Shape;
 import com.blackoutburst.bogel.graphics.Texture;
-import com.blackoutburst.bogel.maths.Matrix4f;
+import com.blackoutburst.bogel.maths.Matrix;
 import com.blackoutburst.bogel.maths.Vector2f;
 import com.blackoutburst.bogel.maths.Vector3f;
 import com.blackoutburst.game.core.Camera;
@@ -12,11 +12,11 @@ import com.blackoutburst.game.core.Cube;
 
 public class Main {
 
-    public static Matrix4f projection = new Matrix4f();
+    public static Matrix projection = new Matrix();
     public static void main(String[] args) {
 
         Display display = new Display().setTitle("Meinraft").create();
-        Matrix4f.projectionMatrix(90, 0.001F, 10000, projection);
+        Matrix.projectionMatrix(90, 0.001F, 10000, projection);
 
 
         Camera.init();

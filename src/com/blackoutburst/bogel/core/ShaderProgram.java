@@ -280,19 +280,4 @@ public class ShaderProgram {
         int loc = glGetUniformLocation(id, varName);
         glProgramUniformMatrix4fv(id, loc, false, Matrix.getValues(mat));
     }
-
-    /**
-     * <p>
-     * Set a <b>mat4</b> uniform variable
-     * </p>
-     *
-     * @param varName the variable name
-     * @param mat the matrix value
-     * @since 0.1
-     * @author Blackoutburst
-     */
-    public void setUniformMat4f(String varName, Matrix4f mat) {
-        int loc = glGetUniformLocation(id, varName);
-        glProgramUniformMatrix4fv(id, loc, false, Matrix4f.getValues(mat));
-    }
 }
