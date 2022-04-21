@@ -1,6 +1,5 @@
 .idea/
 *.iml
 out/
-/.metadata/
-/Server/.*
-/Server/src/META-INF/
+src/META-INF
+.metadata
