@@ -109,7 +109,7 @@ public class Cube {
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        final Shader vertexShader = Shader.loadShader(Shader.VERTEX, "cube.vert");
+        final Shader vertexShader = Shader.loadShader(Shader.VERTEX, "cubeWavy.vert");
         final Shader fragmentShader = Shader.loadShader(Shader.FRAGMENT, "cube.frag");
 
         program = new ShaderProgram(vertexShader, fragmentShader);
