@@ -2,6 +2,7 @@ package com.blackoutburst.game.main;
 
 import com.blackoutburst.bogel.core.Display;
 import com.blackoutburst.bogel.core.Keyboard;
+import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.RenderManager;
 import com.blackoutburst.bogel.graphics.Texture;
 import com.blackoutburst.bogel.maths.Matrix;
@@ -10,11 +11,21 @@ import com.blackoutburst.game.core.Camera;
 import com.blackoutburst.game.core.Cube;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11C.GL_LESS;
 import static org.lwjgl.opengl.GL11C.glDepthFunc;
 
 public class Main {
+
+    private static float noise(float x, float amplitude) {
+        float n = (float) (Math.sin(x*10.0) * 0.01 +
+                        Math.sin(x*30.0*0.5) * 0.005);
+        return n * amplitude;
+    }
 
     // Create a global variable projection matrix
     public static Matrix projection = new Matrix();
@@ -29,22 +40,25 @@ public class Main {
         //Init Camera aka view matrix
         Camera.init();
 
+        Display.clearColor = new Color(135/255.0f, 206/255.0f, 235/255.0f);
+
 
         //Init cube VAO / VBO / Shader
         Cube.init();
-
-        //Create a new cube
-        Cube head = new Cube(new Texture(""), new Vector3f(0, 0, -10), new Vector3f(0.8f), new Vector3f(0));
-        Cube torso = new Cube(new Texture(""), new Vector3f(0, -1.0f, -10), new Vector3f(0.8f, 1.2f, 0.4f), new Vector3f(0));
-        Cube leftArm = new Cube(new Texture(""), new Vector3f(0.6f, -1.0f, -10), new Vector3f(0.4f, 1.2f, 0.4f), new Vector3f(0));
-        Cube rightArm = new Cube(new Texture(""), new Vector3f(-0.6f, -1.0f, -10), new Vector3f(0.4f, 1.2f, 0.4f), new Vector3f(0));
-        Cube leftLeg = new Cube(new Texture(""), new Vector3f(0.2f, -2.2f, -10), new Vector3f(0.4f, 1.2f, 0.4f), new Vector3f(0));
-        Cube rightLeg = new Cube(new Texture(""), new Vector3f(-0.2f, -2.2f, -10), new Vector3f(0.4f, 1.2f, 0.4f), new Vector3f(0));
 
         //Disable the mouse cursor / hide it
         GLFW.glfwSetInputMode(Display.getWindow(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
 
         RenderManager.enableDepth();
+
+        List<Cube> map = new ArrayList<>();
+
+        Texture t = new Texture("grass.png");
+        for (int x = 0; x < 64; x++) {
+            for (int z = 0; z < 64; z++) {
+                map.add(new Cube(t, new Vector3f(-x, (int) noise((x + z * 2) / 50.0f, 150), -z), new Vector3f(1), new Vector3f()));
+            }
+        }
 
         while (display.isOpen()) {
             //Clear both depth and color buffer
@@ -58,13 +72,9 @@ public class Main {
             //Update the camera
             Camera.update();
 
-            //Draw the cube
-            head.draw();
-            torso.draw();
-            leftArm.draw();
-            rightArm.draw();
-            leftLeg.draw();
-            rightLeg.draw();
+            for (Cube c : map) {
+                c.draw();
+            }
 
             //Swap buffer
             display.update();
