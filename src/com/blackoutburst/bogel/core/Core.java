@@ -15,7 +15,8 @@ import com.blackoutburst.bogel.graphics.RenderManager;
  *
  */
 public class Core {
-		
+
+	public static final String OS_NAME = System.getProperty("os.name").toLowerCase();
 	private static int renderPasses = 0;
 	private static int fps = 0;
 

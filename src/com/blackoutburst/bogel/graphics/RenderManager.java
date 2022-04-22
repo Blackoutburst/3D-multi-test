@@ -1,6 +1,7 @@
 package com.blackoutburst.bogel.graphics;
 
 import com.blackoutburst.bogel.core.Camera;
+import com.blackoutburst.bogel.core.Core;
 import com.blackoutburst.bogel.core.Display;
 import com.blackoutburst.bogel.maths.Matrix;
 
@@ -32,7 +33,7 @@ public class RenderManager {
 	 * @author Blackoutburst
 	 */
 	public static void init() {
-		setOrtho(Display.getWidth(), Display.getHeight());
+		setOrtho();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		
@@ -48,7 +49,10 @@ public class RenderManager {
 	 * @since 0.1
 	 * @author Blackoutburst
 	 */
-	public static void setOrtho(int width, int height) {
+	public static void setOrtho() {
+		final int width = Core.OS_NAME.contains("mac") ? Display.getFramebufferSize().x : Display.getSize().x;
+		final int height = Core.OS_NAME.contains("mac") ? Display.getFramebufferSize().y : Display.getSize().y;
+
 		glViewport(0, 0, width, height);
 		Matrix.ortho2D(projection, 0, width, 0, height, -1, 1);
 	}

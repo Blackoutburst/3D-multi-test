@@ -70,8 +70,6 @@ import com.blackoutburst.bogel.maths.Vector2i;
  */
 public class Display {
 
-	private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
-
 	/**
 	 * <h1>FullScreenMode</h1>
 	 * 
@@ -165,7 +163,7 @@ public class Display {
 		if (window == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
 
-		if (!OS_NAME.contains("mac"))
+		if (!Core.OS_NAME.contains("mac"))
 			setIcons("icon128.png");
 		
 		glfwMakeContextCurrent(window);
