@@ -35,6 +35,7 @@ import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
+import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
@@ -68,7 +69,9 @@ import com.blackoutburst.bogel.maths.Vector2i;
  * @author Blackoutburst
  */
 public class Display {
-	
+
+	private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
+
 	/**
 	 * <h1>FullScreenMode</h1>
 	 * 
@@ -161,8 +164,9 @@ public class Display {
 		
 		if (window == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
-		
-		setIcons("icon128.png");
+
+		if (!OS_NAME.contains("mac"))
+			setIcons("icon128.png");
 		
 		glfwMakeContextCurrent(window);
 		glfwShowWindow(window);
@@ -229,7 +233,23 @@ public class Display {
 		
 		return (this);
 	}
-	
+
+	public static Vector2i getFramebufferSize() {
+		Vector2i size = new Vector2i();
+
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			IntBuffer width = stack.mallocInt(1);
+			IntBuffer height = stack.mallocInt(1);
+			glfwGetFramebufferSize(window, width, height);
+			size.set(width.get(), height.get());
+			((Buffer)width).clear();
+			((Buffer)height).clear();
+		} catch (Exception e) {
+			System.err.println("Error while getting framebuffer size: "+e);
+		}
+		return (size);
+	}
+
 	/**
 	 * <p>
 	 * Tell if the window is still open<br>

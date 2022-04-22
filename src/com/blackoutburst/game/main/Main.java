@@ -44,6 +44,8 @@ public class Main {
             //Clear both depth and color buffer
             display.clear();
 
+            System.out.println(Display.getSize()+" "+Display.getFramebufferSize());
+
             //Close the window when pressing escape
             if (Keyboard.isKeyDown(Keyboard.ESCAPE))
                 display.close();
@@ -53,9 +55,6 @@ public class Main {
 
             //Draw the cube
             c.draw();
-
-            //Draw a test 2D object using Bogel magic (creating a texture in a loop is a trahs idea btw)
-            new Shape(Shape.ShapeType.CIRCLE, new Texture("icon128.png"), new Vector2f(100), new Vector2f( 100), 0, false).draw();
 
             //Swap buffer
             display.update();
