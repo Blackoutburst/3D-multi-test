@@ -9,23 +9,14 @@ import com.blackoutburst.bogel.maths.Matrix;
 import com.blackoutburst.bogel.maths.Vector3f;
 import com.blackoutburst.game.core.Camera;
 import com.blackoutburst.game.core.Cube;
+import com.blackoutburst.game.core.OpenSimplex2;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11C.GL_LESS;
-import static org.lwjgl.opengl.GL11C.glDepthFunc;
+import static java.lang.System.out;
 
 public class Main {
-
-    private static float noise(float x, float amplitude) {
-        float n = (float) (Math.sin(x*10.0) * 0.01 +
-                        Math.sin(x*30.0*0.5) * 0.005);
-        return n * amplitude;
-    }
 
     // Create a global variable projection matrix
     public static Matrix projection = new Matrix();
@@ -40,7 +31,7 @@ public class Main {
         //Init Camera aka view matrix
         Camera.init();
 
-        Display.clearColor = new Color(135/255.0f, 206/255.0f, 235/255.0f);
+        Display.clearColor = new Color(115/255.0f, 186/255.0f, 215/255.0f);
 
 
         //Init cube VAO / VBO / Shader
@@ -56,7 +47,7 @@ public class Main {
         Texture t = new Texture("grass.png");
         for (int x = 0; x < 64; x++) {
             for (int z = 0; z < 64; z++) {
-                map.add(new Cube(t, new Vector3f(-x, (int) noise((x + z * 2) / 50.0f, 150), -z), new Vector3f(1), new Vector3f()));
+                map.add(new Cube(t, new Vector3f(-x, (int) (OpenSimplex2.noise2(0, x / 40f, z / 40f) * 3), -z), new Vector3f(1), new Vector3f()));
             }
         }
 

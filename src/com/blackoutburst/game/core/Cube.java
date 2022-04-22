@@ -123,7 +123,6 @@ public class Cube {
 
     private void setUniforms(ShaderProgram program) {
         program.setUniform3f("lightColor", Color.WHITE);
-        program.setUniform3f("lightPos", new Vector3f(-32, 10, -32));
         program.setUniform3f("viewPos", Camera.position);
         program.setUniform3f("color", Color.GREEN);
         program.setUniformMat4("projection", Main.projection);

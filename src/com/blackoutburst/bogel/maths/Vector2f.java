@@ -162,6 +162,13 @@ public class Vector2f {
 		
 		return (this);
 	}
+
+	public Vector2f sub(float v) {
+		x -= v;
+		y -= v;
+
+		return (this);
+	}
 	
 	/**
 	 * <p>

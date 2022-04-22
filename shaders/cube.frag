@@ -1,6 +1,6 @@
 #version 410
 
-#define ambientStrength 0.5
+#define ambientStrength 0.8
 #define specularStrength 0.2
 
 precision mediump float;
@@ -11,7 +11,6 @@ in vec3 normals;
 
 uniform sampler2D text;
 uniform vec3 lightColor;
-uniform vec3 lightPos;
 uniform vec3 viewPos;
 
 uniform vec3 color;
@@ -21,7 +20,7 @@ out vec4 FragColor;
 void main() {
 
     vec3 norm = normalize(normals);
-    vec3 lightDir = normalize(lightPos - vertPos);
+    vec3 lightDir = vec3(0.1, 0.4, 0.2);
 
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = diff * lightColor;
@@ -34,7 +33,7 @@ void main() {
 
     vec3 ambient = ambientStrength * lightColor;
 
-    vec3 result = (ambient + diffuse + specular) * color;
+    vec3 result = (ambient + diffuse) * color;
 
     FragColor = vec4(result, 1.0) * texture(text, uv);
 }
