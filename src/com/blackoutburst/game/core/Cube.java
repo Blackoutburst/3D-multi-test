@@ -157,11 +157,11 @@ public class Cube {
         glBufferData(GL_ARRAY_BUFFER, offsetBuffer, GL_DYNAMIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        glEnableVertexAttribArray(4);
+        glEnableVertexAttribArray(3);
         glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-        glVertexAttribPointer(4, 3, GL_FLOAT, false, 0, 0);
+        glVertexAttribPointer(3, 3, GL_FLOAT, false, 0, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glVertexAttribDivisorARB(4, 1);
+        glVertexAttribDivisorARB(3, 1);
         glBindVertexArray(0);
 
         glDeleteBuffers(instanceVBO);
