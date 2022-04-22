@@ -72,7 +72,7 @@ public class Main {
             Camera.update();
 
             Cube.draw(map);
-            w.draw();
+            //w.draw();
 
             //Swap buffer
             display.update();

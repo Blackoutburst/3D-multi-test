@@ -2,6 +2,7 @@ package com.blackoutburst.game.core;
 
 import com.blackoutburst.bogel.core.Shader;
 import com.blackoutburst.bogel.core.ShaderProgram;
+import com.blackoutburst.bogel.core.Time;
 import com.blackoutburst.bogel.graphics.Color;
 import com.blackoutburst.bogel.graphics.Texture;
 import com.blackoutburst.bogel.maths.Matrix;
@@ -134,6 +135,7 @@ public class Cube {
         program.setUniformMat4("projection", Main.projection);
         program.setUniformMat4("model", model);
         program.setUniformMat4("view", Camera.view);
+        program.setUniform1f("time", (float) Time.getRuntime());
     }
 
     public static void setCubeOffset(int cubesNumber, List<Cube> toDraw) {
