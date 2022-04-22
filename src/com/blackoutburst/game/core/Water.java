@@ -35,12 +35,12 @@ public class Water {
     private static final float[] VERTICES = new float[] {
 
             //TOP
-            -0.5f,  0.5f, -0.5f,  0.0f * 512f, 1.0f * 512f,
-            0.5f,  0.5f,  0.5f,  1.0f * 512f, 0.0f * 512f,
-            0.5f,  0.5f, -0.5f,  1.0f * 512f, 1.0f * 512f,
-            0.5f,  0.5f,  0.5f,  1.0f * 512f, 0.0f * 512f,
-            -0.5f,  0.5f, -0.5f,  0.0f * 512f, 1.0f * 512f,
-            -0.5f,  0.5f,  0.5f,  0.0f * 512f, 0.0f * 512f
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f
     };
 
     public static void init() {
@@ -66,7 +66,7 @@ public class Water {
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        final Shader vertexShader = Shader.loadShader(Shader.VERTEX, "water.vert");
+        final Shader vertexShader = Shader.loadShader(Shader.VERTEX, "waterWavy.vert");
         final Shader fragmentShader = Shader.loadShader(Shader.FRAGMENT, "water.frag");
 
         program = new ShaderProgram(vertexShader, fragmentShader);
@@ -82,32 +82,64 @@ public class Water {
         Matrix.setIdentity(this.model);
     }
 
-    private void setUniforms(ShaderProgram program) {
+    private static void setUniforms(ShaderProgram program) {
+        Matrix model = new Matrix();
+        Matrix.setIdentity(model);
 
+        program.setUniform3f("lightColor", Color.WHITE);
+        program.setUniform3f("viewPos", Camera.position);
+        program.setUniform3f("color", Color.GREEN);
         program.setUniformMat4("projection", Main.projection);
-        program.setUniformMat4("model", this.model);
+        program.setUniformMat4("model", model);
         program.setUniformMat4("view", Camera.view);
         program.setUniform1f("time", (float) Time.getRuntime());
     }
 
-   public void draw() {
-        Matrix.setIdentity(this.model);
-        Matrix.translate(this.position, this.model);
-        Matrix.rotate(this.rotation.x, new Vector3f(1, 0, 0), this.model);
-        Matrix.rotate(this.rotation.y, new Vector3f(0, 1, 0), this.model);
-        Matrix.rotate(this.rotation.z, new Vector3f(0, 0, 1), this.model);
-        Matrix.scale(this.scale, this.model);
+    public static void setCubeOffset(int cubesNumber, List<Water> toDraw) {
+        final float[] translation = new float[cubesNumber * 3];
+
+        int idx = 0;
+        for (int i = 0; i < cubesNumber; i++) {
+            translation[idx] = toDraw.get(i).position.x;
+            translation[idx + 1] = toDraw.get(i).position.y;
+            translation[idx + 2] = toDraw.get(i).position.z;
+            idx += 3;
+        }
+
+        final int instanceVBO = glGenBuffers();
+        final FloatBuffer offsetBuffer = BufferUtils.createFloatBuffer(translation.length);
+        ((Buffer) offsetBuffer.put(translation)).flip();
+
+        glBindVertexArray(vaoID);
+        glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+        glBufferData(GL_ARRAY_BUFFER, offsetBuffer, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        glEnableVertexAttribArray(3);
+        glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+        glVertexAttribPointer(3, 3, GL_FLOAT, false, 0, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glVertexAttribDivisorARB(3, 1);
+        glBindVertexArray(0);
+
+        glDeleteBuffers(instanceVBO);
+
+        ((Buffer)offsetBuffer).clear();
+    }
+
+    public static void draw(List<Water> toDraw) {
+        final int cubesNumber = toDraw.size();
 
         setUniforms(program);
 
-        glBindTexture(GL_TEXTURE_2D, texture.getTexture());
+        glBindTexture(GL_TEXTURE_2D, toDraw.get(0).texture.getTexture());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
         glUseProgram(program.getID());
         glBindVertexArray(vaoID);
 
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 36, cubesNumber);
 
         glBindVertexArray(0);
         glUseProgram(0);

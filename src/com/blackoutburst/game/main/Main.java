@@ -57,7 +57,18 @@ public class Main {
         Cube.setCubeOffset(cubesNumber, tmp);
 
         Water.init();
-        Water w = new Water(t, new Vector3f(0, -1.8f, 0), new Vector3f(512, 0, 512), new Vector3f());
+
+        List<Water> water = new ArrayList<>();
+        for (int x = -256; x < 256; x++) {
+            for (int z = -256; z < 256; z++) {
+                water.add(new Water(t, new Vector3f(x, -2.2f, z), new Vector3f(1, 0, 1), new Vector3f()));
+            }
+        }
+
+        final List<Water> wat = new ArrayList<>(water);
+        final int watNumber = wat.size();
+
+        Water.setCubeOffset(watNumber, wat);
 
         while (display.isOpen()) {
             //Clear both depth and color buffer
@@ -72,7 +83,8 @@ public class Main {
             Camera.update();
 
             Cube.draw(map);
-            //w.draw();
+
+            Water.draw(water);
 
             //Swap buffer
             display.update();
