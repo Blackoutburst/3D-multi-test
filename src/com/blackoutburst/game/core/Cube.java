@@ -11,7 +11,6 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.opengl.ARBInstancedArrays.glVertexAttribDivisorARB;

@@ -10,6 +10,7 @@ import com.blackoutburst.bogel.maths.Vector3f;
 import com.blackoutburst.game.core.Camera;
 import com.blackoutburst.game.core.Cube;
 import com.blackoutburst.game.core.OpenSimplex2;
+import com.blackoutburst.game.core.Water;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -55,6 +56,9 @@ public class Main {
 
         Cube.setCubeOffset(cubesNumber, tmp);
 
+        Water.init();
+        Water w = new Water(t, new Vector3f(0, -1.8f, 0), new Vector3f(512, 0, 512), new Vector3f());
+
         while (display.isOpen()) {
             //Clear both depth and color buffer
             display.clear();
@@ -68,6 +72,7 @@ public class Main {
             Camera.update();
 
             Cube.draw(map);
+            w.draw();
 
             //Swap buffer
             display.update();
