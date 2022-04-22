@@ -91,9 +91,9 @@ public class RenderManager {
 	 * @author Blackoutburst
 	 */
 	public static void enableDepth() {
-		glEnable(GL_DEPTH_TEST); 
+		glEnable(GL_DEPTH_TEST);
 	}
-	
+
 	/**
 	 * <p>
 	 * Disable depth test
