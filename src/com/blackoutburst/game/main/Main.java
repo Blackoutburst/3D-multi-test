@@ -45,7 +45,6 @@ public class Main {
         GLFW.glfwSetInputMode(Display.getWindow(), GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
 
         RenderManager.enableDepth();
-        RenderManager.disableCulling();
 
         while (display.isOpen()) {
             //Clear both depth and color buffer
