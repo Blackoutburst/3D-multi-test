@@ -18,7 +18,7 @@ public class Camera {
     private static final float SENSITIVITY = 0.1f;
 
     public static void init() {
-        lastMousePosition = Mouse.getPosition().copy();
+        lastMousePosition = Mouse.getRawPosition();
         position = new Vector3f(0, 0f, 0);
         rotation = new Vector2f(0, 0);
         view = new Matrix();
@@ -28,16 +28,16 @@ public class Camera {
     }
 
     private static void rotate() {
-        final Vector2f mousePosition = Mouse.getPosition();
+        final Vector2f mousePosition = Mouse.getRawPosition();
 
         float xOffset = mousePosition.x - lastMousePosition.x;
-        float yOffset = lastMousePosition.y - mousePosition.y;
+        float yOffset = mousePosition.y - lastMousePosition.y;
 
-        lastMousePosition.x = mousePosition.x;
-        lastMousePosition.y = mousePosition.y;
+        lastMousePosition = mousePosition.copy();
 
         xOffset *= SENSITIVITY;
         yOffset *= SENSITIVITY;
+
 
         rotation.x += xOffset;
         rotation.y += yOffset;

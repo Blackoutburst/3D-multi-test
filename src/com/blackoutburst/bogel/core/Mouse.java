@@ -1,6 +1,14 @@
 package com.blackoutburst.bogel.core;
 
 import com.blackoutburst.bogel.maths.Vector2f;
+import com.blackoutburst.bogel.maths.Vector2i;
+import org.lwjgl.system.MemoryStack;
+
+import java.nio.Buffer;
+import java.nio.DoubleBuffer;
+import java.nio.IntBuffer;
+
+import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
 
 
 /**
@@ -171,5 +179,21 @@ public class Mouse {
 	 */
 	protected static void setScroll(float scroll) {
 		Mouse.scroll = scroll;
+	}
+
+	public static Vector2f getRawPosition() {
+		Vector2f size = new Vector2f();
+
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			DoubleBuffer width = stack.mallocDouble(1);
+			DoubleBuffer height = stack.mallocDouble(1);
+			glfwGetCursorPos(Display.getWindow(), width, height);
+			size.set((float) width.get(), (float) height.get());
+			((Buffer)width).clear();
+			((Buffer)height).clear();
+		} catch (Exception e) {
+			System.err.println("Error while getting cursor position: "+e);
+		}
+		return (size);
 	}
 }
