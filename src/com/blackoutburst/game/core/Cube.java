@@ -11,12 +11,16 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.lwjgl.opengl.ARBInstancedArrays.glVertexAttribDivisorARB;
 import static org.lwjgl.opengl.GL11C.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL15C.*;
 import static org.lwjgl.opengl.GL20C.*;
 import static org.lwjgl.opengl.GL30C.glBindVertexArray;
 import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
+import static org.lwjgl.opengl.GL31C.glDrawArraysInstanced;
 
 public class Cube {
 
@@ -121,16 +125,70 @@ public class Cube {
         Matrix.setIdentity(this.model);
     }
 
-    private void setUniforms(ShaderProgram program) {
+    private static void setUniforms(ShaderProgram program) {
+        Matrix model = new Matrix();
+        Matrix.setIdentity(model);
+
         program.setUniform3f("lightColor", Color.WHITE);
         program.setUniform3f("viewPos", Camera.position);
         program.setUniform3f("color", Color.GREEN);
         program.setUniformMat4("projection", Main.projection);
-        program.setUniformMat4("model", this.model);
+        program.setUniformMat4("model", model);
         program.setUniformMat4("view", Camera.view);
     }
 
-    public void draw() {
+    public static void setCubeOffset(int cubesNumber, List<Cube> toDraw) {
+        final float[] translation = new float[cubesNumber * 3];
+
+        int idx = 0;
+        for (int i = 0; i < cubesNumber; i++) {
+            translation[idx] = toDraw.get(i).position.x;
+            translation[idx + 1] = toDraw.get(i).position.y;
+            translation[idx + 2] = toDraw.get(i).position.z;
+            idx += 3;
+        }
+
+        final int instanceVBO = glGenBuffers();
+        final FloatBuffer offsetBuffer = BufferUtils.createFloatBuffer(translation.length);
+        ((Buffer) offsetBuffer.put(translation)).flip();
+
+        glBindVertexArray(vaoID);
+        glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+        glBufferData(GL_ARRAY_BUFFER, offsetBuffer, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        glEnableVertexAttribArray(4);
+        glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+        glVertexAttribPointer(4, 3, GL_FLOAT, false, 0, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glVertexAttribDivisorARB(4, 1);
+        glBindVertexArray(0);
+
+        glDeleteBuffers(instanceVBO);
+
+        ((Buffer)offsetBuffer).clear();
+    }
+
+    public static void draw(List<Cube> toDraw) {
+        final int cubesNumber = toDraw.size();
+
+        setUniforms(program);
+
+        glBindTexture(GL_TEXTURE_2D, toDraw.get(0).texture.getTexture());
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+        glUseProgram(program.getID());
+        glBindVertexArray(vaoID);
+
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 36, cubesNumber);
+
+        glBindVertexArray(0);
+        glUseProgram(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+   /* public void draw() {
         Matrix.setIdentity(this.model);
         Matrix.translate(this.position, this.model);
         Matrix.rotate(this.rotation.x, new Vector3f(1, 0, 0), this.model);
@@ -152,7 +210,7 @@ public class Cube {
         glBindVertexArray(0);
         glUseProgram(0);
         glBindTexture(GL_TEXTURE_2D, 0);
-    }
+    }*/
 
     public Vector3f getPosition() {
         return position;

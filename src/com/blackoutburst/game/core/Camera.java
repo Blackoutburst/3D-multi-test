@@ -19,7 +19,7 @@ public class Camera {
 
     public static void init() {
         lastMousePosition = Mouse.getRawPosition();
-        position = new Vector3f(0, 0f, 0);
+        position = new Vector3f(0, 10f, 0);
         rotation = new Vector2f(0, 0);
         view = new Matrix();
         Matrix.setIdentity(view);
@@ -70,7 +70,7 @@ public class Camera {
         if (Keyboard.isKeyDown(Keyboard.SPACE)) velocity.y += 1;
         if (Keyboard.isKeyDown(Keyboard.LEFT_SHIFT)) velocity.y -= 1;
 
-        speed = Keyboard.isKeyDown(Keyboard.LEFT_CONTROL) ? 0.01f : 0.0075f;
+        speed = Keyboard.isKeyDown(Keyboard.LEFT_CONTROL) ? 0.1f : 0.0075f;
 
         velocity = velocity.normalize();
 

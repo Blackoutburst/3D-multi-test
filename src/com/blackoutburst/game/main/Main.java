@@ -45,11 +45,15 @@ public class Main {
         List<Cube> map = new ArrayList<>();
 
         Texture t = new Texture("grass.png");
-        for (int x = 0; x < 64; x++) {
-            for (int z = 0; z < 64; z++) {
-                map.add(new Cube(t, new Vector3f(-x, (int) (OpenSimplex2.noise2(0, x / 40f, z / 40f) * 3), -z), new Vector3f(1), new Vector3f()));
+        for (int x = -256; x < 256; x++) {
+            for (int z = -256; z < 256; z++) {
+                map.add(new Cube(t, new Vector3f(-x, (int) (OpenSimplex2.noise2(0, x / 40f, z / 40f) * 4), -z), new Vector3f(1), new Vector3f()));
             }
         }
+        final List<Cube> tmp = new ArrayList<>(map);
+        final int cubesNumber = tmp.size();
+
+        Cube.setCubeOffset(cubesNumber, tmp);
 
         while (display.isOpen()) {
             //Clear both depth and color buffer
@@ -63,9 +67,7 @@ public class Main {
             //Update the camera
             Camera.update();
 
-            for (Cube c : map) {
-                c.draw();
-            }
+            Cube.draw(map);
 
             //Swap buffer
             display.update();
