@@ -12,8 +12,10 @@ uniform mat4 projection;
 out vec2 uv;
 out vec3 vertPos;
 out vec3 normals;
+out vec4 vPos;
 
 void main() {
+	vPos = model * vec4(position + offset, 1.0);
 	uv = textCoord;
 	normals = normal;
 

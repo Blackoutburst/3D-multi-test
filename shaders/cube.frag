@@ -5,6 +5,7 @@
 
 precision mediump float;
 
+in vec4 vPos;
 in vec3 vertPos;
 in vec2 uv;
 in vec3 normals;
@@ -33,7 +34,13 @@ void main() {
 
     vec3 ambient = ambientStrength * lightColor;
 
-    vec3 result = (ambient + diffuse) * color;
+    vec3 finalColor = color;
+    if (vertPos.y < 0.2)
+        finalColor = vec3(0.72156862745, 0.41568627451, 0.2);
+    if (vPos.y < -1.5)
+        finalColor = vec3(1.0, 1.0, 0.0);
+
+    vec3 result = (ambient + diffuse) * finalColor;
 
     FragColor = vec4(result, 1.0) * texture(text, uv);
 }
