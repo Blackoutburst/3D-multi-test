@@ -3,10 +3,8 @@ package com.blackoutburst.game.main;
 import com.blackoutburst.bogel.core.Display;
 import com.blackoutburst.bogel.core.Keyboard;
 import com.blackoutburst.bogel.graphics.RenderManager;
-import com.blackoutburst.bogel.graphics.Shape;
 import com.blackoutburst.bogel.graphics.Texture;
 import com.blackoutburst.bogel.maths.Matrix;
-import com.blackoutburst.bogel.maths.Vector2f;
 import com.blackoutburst.bogel.maths.Vector3f;
 import com.blackoutburst.game.core.Camera;
 import com.blackoutburst.game.core.Cube;
@@ -43,8 +41,6 @@ public class Main {
         while (display.isOpen()) {
             //Clear both depth and color buffer
             display.clear();
-
-            System.out.println(Display.getSize()+" "+Display.getFramebufferSize());
 
             //Close the window when pressing escape
             if (Keyboard.isKeyDown(Keyboard.ESCAPE))
