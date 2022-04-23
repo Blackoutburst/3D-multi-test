@@ -3,3 +3,4 @@
 out/
 src/META-INF
 .metadata
+*.DS_STORE
