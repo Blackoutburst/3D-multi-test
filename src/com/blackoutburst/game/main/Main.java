@@ -31,7 +31,6 @@ public class Main {
 
         Display.clearColor = new Color(115/255.0f, 186/255.0f, 255/255.0f);
 
-
         //Init cube VAO / VBO / Shader
         Cube.init();
 
