@@ -21,7 +21,7 @@ void main() {
 
 	vPos = model * vec4(position + offset, 1.0);
 
-	vec3 wave = vec3(0.0, (sin((vPos.x + vPos.z * 4.0) + time * 2.0)) * 0.05, 0.0);
+	vec3 wave = vec3(0.0, log(1.0 - (position.y + 0.5)) * (sin((vPos.x + vPos.z * 4.0) + time * 2.0)) * 0.05, 0.0);
 	vertPos = vec3(model * vec4(position + wave, 1.0));
 
 	gl_Position = projection * view * model * vec4(position + wave + offset, 1.0);
