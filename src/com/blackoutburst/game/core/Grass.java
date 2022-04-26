@@ -22,7 +22,7 @@ import static org.lwjgl.opengl.GL30C.glBindVertexArray;
 import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
 import static org.lwjgl.opengl.GL31C.glDrawArraysInstanced;
 
-public class Water {
+public class Grass {
 
     private static int vaoID;
     protected Matrix model;
@@ -33,13 +33,21 @@ public class Water {
     public static ShaderProgram program;
 
     private static final float[] VERTICES = new float[] {
-            //TOP
-            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f
+            -0.25f, -0.25f, 0.25f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+            0.25f,  0.25f, -0.25f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+            0.25f, -0.25f, -0.25f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+            0.25f,  0.25f, -0.25f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+            -0.25f, -0.25f, 0.25f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+            -0.25f,  0.25f, 0.25f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+
+            -0.25f, -0.25f, -0.25f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+            0.25f, -0.25f,  0.25f,   0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+            0.25f, 0.25f,   0.25f,   0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+            0.25f, 0.25f,   0.25f,   0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+            -0.25f, 0.25f,  -0.25f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+            -0.25f, -0.25f, -0.25f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+
+
     };
 
     public static void init() {
@@ -69,13 +77,13 @@ public class Water {
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        final Shader vertexShader = Shader.loadShader(Shader.VERTEX, "waterWavy.vert");
-        final Shader fragmentShader = Shader.loadShader(Shader.FRAGMENT, "waterPhong.frag");
+        final Shader vertexShader = Shader.loadShader(Shader.VERTEX, "grass.vert");
+        final Shader fragmentShader = Shader.loadShader(Shader.FRAGMENT, "grass.frag");
 
         program = new ShaderProgram(vertexShader, fragmentShader);
     }
 
-    public Water(Texture texture, Vector3f position, Vector3f scale, Vector3f rotation) {
+    public Grass(Texture texture, Vector3f position, Vector3f scale, Vector3f rotation) {
         this.texture = texture;
         this.position = position;
         this.scale = scale;
@@ -92,14 +100,14 @@ public class Water {
         program.setUniform3f("lightColor", Color.WHITE);
         program.setUniform3f("lightPos", Camera.position.copy().add(new Vector3f(100, 5 ,100)));
         program.setUniform3f("viewPos", Camera.position);
-        program.setUniform3f("color", Color.LIGHT_BLUE);
+        program.setUniform3f("color", new Color(0.1f, 0.9f, 0.05f));
         program.setUniformMat4("projection", Main.projection);
         program.setUniformMat4("model", model);
         program.setUniformMat4("view", Camera.view);
         program.setUniform1f("time", (float) Time.getRuntime());
     }
 
-    public static void setCubeOffset(int cubesNumber, List<Water> toDraw) {
+    public static void setCubeOffset(int cubesNumber, List<Grass> toDraw) {
         final float[] translation = new float[cubesNumber * 3];
 
         int idx = 0;
@@ -134,10 +142,21 @@ public class Water {
     public static void draw(final int size) {
 
         setUniforms(program);
+        glBindTexture(GL_TEXTURE_2D, 2);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glUseProgram(program.getID());
         glBindVertexArray(vaoID);
 
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, size);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 12, size);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
 
     public Vector3f getPosition() {

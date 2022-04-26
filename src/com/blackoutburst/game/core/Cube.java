@@ -131,7 +131,7 @@ public class Cube {
 
         program.setUniform3f("lightColor", Color.WHITE);
         program.setUniform3f("viewPos", Camera.position);
-        program.setUniform3f("color", Color.GREEN);
+        program.setUniform3f("color", new Color(0.2f, 1.0f, 0.1f));
         program.setUniformMat4("projection", Main.projection);
         program.setUniformMat4("model", model);
         program.setUniformMat4("view", Camera.view);
@@ -155,7 +155,7 @@ public class Cube {
 
         glBindVertexArray(vaoID);
         glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-        glBufferData(GL_ARRAY_BUFFER, offsetBuffer, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, offsetBuffer, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         glEnableVertexAttribArray(3);
@@ -170,23 +170,19 @@ public class Cube {
         ((Buffer)offsetBuffer).clear();
     }
 
-    public static void draw(List<Cube> toDraw) {
-        final int cubesNumber = toDraw.size();
+    public static void draw(final int size) {
 
         setUniforms(program);
 
-        glBindTexture(GL_TEXTURE_2D, toDraw.get(0).texture.getTexture());
+        glBindTexture(GL_TEXTURE_2D, 1);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
         glUseProgram(program.getID());
         glBindVertexArray(vaoID);
 
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 36, cubesNumber);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 36, size);
 
-        glBindVertexArray(0);
-        glUseProgram(0);
-        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
    /* public void draw() {

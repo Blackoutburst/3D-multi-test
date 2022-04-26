@@ -19,11 +19,10 @@ void main() {
 	uv = textCoord;
 	normals = normal;
 
+	vPos = model * vec4(position + offset, 1.0);
 
-	vec4 tmp = model * vec4(position + offset, 1.0);
-	vec3 wave = vec3(0.0, (sin((tmp.x + tmp.z * 4.0) + time * 2.0)) * 0.05, 0.0);
-	vPos = model * vec4(position + wave + offset, 1.0);
-	vertPos = vec3(model * vec4(position + wave + offset, 1.0));
+	vec3 wave = vec3(0.0, (sin((vPos.x + vPos.z * 4.0) + time * 2.0)) * 0.05, 0.0);
+	vertPos = vec3(model * vec4(position + wave, 1.0));
 
 	gl_Position = projection * view * model * vec4(position + wave + offset, 1.0);
 }

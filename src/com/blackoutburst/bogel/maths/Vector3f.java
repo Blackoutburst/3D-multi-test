@@ -231,6 +231,13 @@ public class Vector3f {
 		return (newVector);
 	}
 
+	public Vector3f add(Vector3f v) {
+		this.x += v.x;
+		this.y += v.y;
+		this.z += v.z;
+		return (this);
+	}
+
 	@Override
 	public String toString() {
 		return "["+x+", "+y+", "+z+"]";
