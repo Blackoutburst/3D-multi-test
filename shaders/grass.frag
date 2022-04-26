@@ -36,5 +36,9 @@ void main() {
 
     vec3 result = (ambient + diffuse) * color * (vec3(1) * (vertPos.y + 0.5) * 2.0);
 
-    FragColor = vec4(result, 1.0) * texture(text, uv);
+    vec4 dripNuts = texture(text, uv);
+    if (dripNuts.a == 0.0)
+        discard;
+
+    FragColor = vec4(result, 1.0) * dripNuts;
 }

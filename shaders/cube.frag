@@ -13,6 +13,7 @@ in vec3 normals;
 uniform sampler2D text;
 uniform vec3 lightColor;
 uniform vec3 viewPos;
+uniform float time;
 
 uniform vec3 color;
 
@@ -42,5 +43,6 @@ void main() {
 
     vec3 result = (ambient + diffuse) * finalColor;
 
+    gl_FragDepth = mod(time * gl_FragCoord.z * 0.1f, 0.1) + 0.9;
     FragColor = vec4(result, 1.0) * texture(text, uv);
 }
