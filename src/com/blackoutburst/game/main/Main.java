@@ -74,7 +74,6 @@ public class Main {
                     water.add(new Water(t, new Vector3f(x, -2.2f, z), new Vector3f(1, 1, 1), new Vector3f()));
             }
         }
-        System.out.println(water.size());
 
         final List<Water> wat = new ArrayList<>(water);
         final int watNumber = wat.size();
