@@ -88,46 +88,6 @@ public class Main {
             //Clear both depth and color buffer
             display.clear();
 
-            if (Mouse.getRightButton().isPressed()) {
-                final int SEED = new Random().nextInt();
-                map = new ArrayList<>();
-                grass = new ArrayList<>();
-
-                A = 350;
-                for (int x = -A; x < A; x++) {
-                    for (int z = -A; z < A; z++) {
-                        map.add(new Cube(t, new Vector3f(x, (int) (OpenSimplex2.noise2(SEED, x / 100f, z / 100f) * 7), z), new Vector3f(1), new Vector3f()));
-                        if ((int) (OpenSimplex2.noise2(8, x / 100f, z / 100f) * 7) > -2.0) {
-                            grass.add(new Grass(t2, new Vector3f(x + new Random().nextFloat() / 2.0f, (int) (OpenSimplex2.noise2(SEED, x / 100f, z / 100f) * 7) + 0.7f, z + new Random().nextFloat() / 2.0f), new Vector3f(1), new Vector3f()));
-                        }
-                    }
-                }
-                tmp = new ArrayList<>(map);
-                cubesNumber = tmp.size();
-
-                Cube.setCubeOffset(cubesNumber, tmp);
-
-                tmp2 = new ArrayList<>(grass);
-                gn = tmp2.size();
-
-                Grass.setCubeOffset(gn, tmp2);
-
-
-                water = new ArrayList<>();
-
-                for (float x = -A; x < A; x++) {
-                    for (float z = -A; z < A ; z++) {
-                        if ((int) (OpenSimplex2.noise2(SEED, x / 100f, z / 100f) * 7) < -2.0)
-                            water.add(new Water(t, new Vector3f(x, -2.2f, z), new Vector3f(1, 1, 1), new Vector3f()));
-                    }
-                }
-
-                wat = new ArrayList<>(water);
-                watNumber = wat.size();
-
-                Water.setCubeOffset(watNumber, wat);
-
-            }
 
             //Close the window when pressing escape
             if (Keyboard.isKeyDown(Keyboard.ESCAPE)) {
