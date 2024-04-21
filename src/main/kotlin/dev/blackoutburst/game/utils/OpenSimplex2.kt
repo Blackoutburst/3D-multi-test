@@ -1,3 +1,5 @@
+package dev.blackoutburst.game.utils
+
 object OpenSimplex2 {
     private const val PRIME_X = 0x5205402B9270C86FL
     private const val PRIME_Y = 0x598CD327003817B5L
@@ -124,7 +126,7 @@ object OpenSimplex2 {
     }
 
     /**
-     * 3D OpenSimplex2 noise, with better visual isotropy in (X, Y).
+     * 3D dev.blackoutburst.game.utils.OpenSimplex2 noise, with better visual isotropy in (X, Y).
      * Recommended for 3D terrain and time-varied animations.
      * The Z coordinate should always be the "different" coordinate in whatever your use case is.
      * If Y is vertical in world coordinates, call noise3_ImproveXZ(x, z, Y) or use noise3_XZBeforeY.
@@ -148,7 +150,7 @@ object OpenSimplex2 {
     }
 
     /**
-     * 3D OpenSimplex2 noise, with better visual isotropy in (X, Z).
+     * 3D dev.blackoutburst.game.utils.OpenSimplex2 noise, with better visual isotropy in (X, Z).
      * Recommended for 3D terrain and time-varied animations.
      * The Y coordinate should always be the "different" coordinate in whatever your use case is.
      * If Y is vertical in world coordinates, call noise3_ImproveXZ(x, Y, z).
@@ -172,7 +174,7 @@ object OpenSimplex2 {
     }
 
     /**
-     * 3D OpenSimplex2 noise, fallback rotation option
+     * 3D dev.blackoutburst.game.utils.OpenSimplex2 noise, fallback rotation option
      * Use noise3_ImproveXY or noise3_ImproveXZ instead, wherever appropriate.
      * They have less diagonal bias. This function's best use is as a fallback.
      */
@@ -190,7 +192,7 @@ object OpenSimplex2 {
     }
 
     /**
-     * Generate overlapping cubic lattices for 3D OpenSimplex2 noise.
+     * Generate overlapping cubic lattices for 3D dev.blackoutburst.game.utils.OpenSimplex2 noise.
      */
     private fun noise3_UnrotatedBase(seed: Long, xr: Double, yr: Double, zr: Double): Float {
         // Get base points and offsets.
@@ -284,7 +286,7 @@ object OpenSimplex2 {
     }
 
     /**
-     * 4D OpenSimplex2 noise, with XYZ oriented like noise3_ImproveXY
+     * 4D dev.blackoutburst.game.utils.OpenSimplex2 noise, with XYZ oriented like noise3_ImproveXY
      * and W for an extra degree of freedom. W repeats eventually.
      * Recommended for time-varied animations which texture a 3D object (W=time)
      * in a space where Z is vertical
@@ -303,7 +305,7 @@ object OpenSimplex2 {
     }
 
     /**
-     * 4D OpenSimplex2 noise, with XYZ oriented like noise3_ImproveXZ
+     * 4D dev.blackoutburst.game.utils.OpenSimplex2 noise, with XYZ oriented like noise3_ImproveXZ
      * and W for an extra degree of freedom. W repeats eventually.
      * Recommended for time-varied animations which texture a 3D object (W=time)
      * in a space where Y is vertical
@@ -322,7 +324,7 @@ object OpenSimplex2 {
     }
 
     /**
-     * 4D OpenSimplex2 noise, with XYZ oriented like noise3_Fallback
+     * 4D dev.blackoutburst.game.utils.OpenSimplex2 noise, with XYZ oriented like noise3_Fallback
      * and W for an extra degree of freedom. W repeats eventually.
      * Recommended for time-varied animations which texture a 3D object (W=time)
      * where there isn't a clear distinction between horizontal and vertical
@@ -340,7 +342,7 @@ object OpenSimplex2 {
     }
 
     /**
-     * 4D OpenSimplex2 noise, with XY and ZW forming orthogonal triangular-based planes.
+     * 4D dev.blackoutburst.game.utils.OpenSimplex2 noise, with XY and ZW forming orthogonal triangular-based planes.
      * Recommended for 3D terrain, where X and Y (or Z and W) are horizontal.
      * Recommended for noise(x, y, sin(time), cos(time)) trick.
      */
@@ -356,7 +358,7 @@ object OpenSimplex2 {
     }
 
     /**
-     * 4D OpenSimplex2 noise, fallback lattice orientation.
+     * 4D dev.blackoutburst.game.utils.OpenSimplex2 noise, fallback lattice orientation.
      */
     fun noise4_Fallback(seed: Long, x: Double, y: Double, z: Double, w: Double): Float {
         // Get points for A4 lattice
@@ -371,7 +373,7 @@ object OpenSimplex2 {
     }
 
     /**
-     * 4D OpenSimplex2 noise base.
+     * 4D dev.blackoutburst.game.utils.OpenSimplex2 noise base.
      */
     private fun noise4_UnskewedBase(seed: Long, xs: Double, ys: Double, zs: Double, ws: Double): Float {
         // Get base points and offsets

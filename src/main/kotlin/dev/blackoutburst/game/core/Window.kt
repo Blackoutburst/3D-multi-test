@@ -2,6 +2,7 @@ package dev.blackoutburst.game.core
 
 import dev.blackoutburst.game.graphics.Color
 import dev.blackoutburst.game.maths.Vector2i
+import dev.blackoutburst.game.utils.*
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
@@ -19,6 +20,9 @@ class Window {
     }
 
     private var title: String = "OpenGL"
+
+    private var showCursor = false
+    private var toggleMousePressed = false
 
     private var shouldClose = false
 
@@ -94,6 +98,8 @@ class Window {
         glfwSetMouseButtonCallback(id, MouseButtonCallBack())
         glfwSetScrollCallback(id, MouseScrollCallBack())
 
+        glfwSetInputMode(id, GLFW_CURSOR, GLFW_CURSOR_DISABLED)
+
         return (this)
     }
 
@@ -108,6 +114,16 @@ class Window {
         Mouse.rightButton.reset()
         Mouse.middleButton.reset()
         Mouse.scroll = 0f
+
+        if (Keyboard.isKeyDown(Keyboard.ESCAPE)) {
+            close()
+        }
+
+        if (Keyboard.isKeyDown(Keyboard.LEFT_ALT) && !toggleMousePressed) {
+            showCursor = !showCursor
+            glfwSetInputMode(id, GLFW_CURSOR, if (showCursor) GLFW_CURSOR_NORMAL else org.lwjgl.glfw.GLFW.GLFW_CURSOR_DISABLED)
+        }
+        toggleMousePressed = Keyboard.isKeyDown(Keyboard.LEFT_ALT)
 
         glfwPollEvents()
         glfwSwapBuffers(id)
@@ -143,33 +159,6 @@ class Window {
         return (this)
     }
 
-    fun setVSync(enabled: Boolean): Window {
-        if (id != NULL) {
-            glfwSwapInterval(if (enabled) GLFW_TRUE else GLFW_FALSE)
-        } else {
-            System.err.println("Warning [Vsync] must be set AFTER creating the window!")
-        }
-        return (this)
-    }
-
-    fun setResizable(resizable: Boolean): Window {
-        if (id != NULL) {
-            System.err.println("Warning [Resizable] must be set BEFORE creating the window!")
-        } else {
-            glfwWindowHint(GLFW_RESIZABLE, if (resizable) GLFW_TRUE else GLFW_FALSE)
-        }
-        return (this)
-    }
-
-    fun setTransparent(transparent: Boolean): Window {
-        if (id != NULL) {
-            System.err.println("Warning [Transparent] must be set BEFORE creating the window!")
-        } else {
-            glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, if (transparent) GLFW_TRUE else GLFW_FALSE)
-        }
-        return (this)
-    }
-
     fun setDecoration(decorated: Boolean): Window {
         if (id != NULL) {
             System.err.println("Warning [Decoration] must be set before creating the window!")
@@ -178,17 +167,6 @@ class Window {
         }
         return (this)
     }
-
-    fun setPosition(position: Vector2i): Window {
-        glfwSetWindowPos(id, position.x, position.y)
-        return (this)
-    }
-
-    fun setPosition(x: Int, y: Int): Window {
-        glfwSetWindowPos(id, x, y)
-        return (this)
-    }
-
 
     companion object {
         var id: Long = 0
