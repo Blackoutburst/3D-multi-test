@@ -1,3 +1,5 @@
+package dev.blackoutburst.game
+
 import dev.blackoutburst.game.core.*
 import dev.blackoutburst.game.graphics.Color
 import dev.blackoutburst.game.graphics.Texture
@@ -16,7 +18,7 @@ class Main {
         val projection = Matrix()
             .projectionMatrix(90f, 1000f, 0.1f)
 
-        val world = World()
+        val world = World(50)
         val player = Player(world, camera)
     }
 
@@ -27,7 +29,7 @@ class Main {
         glCullFace(GL_BACK)
         glEnable(GL_DEPTH_TEST)
 
-        Texture("./grass.png")
+        Texture("grass.png")
 
         world.generate()
     }

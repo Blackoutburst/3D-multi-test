@@ -1,6 +1,6 @@
 package dev.blackoutburst.game.graphics
 
-import Main
+import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.maths.Matrix
 import dev.blackoutburst.game.maths.Vector3f
 import org.lwjgl.BufferUtils
