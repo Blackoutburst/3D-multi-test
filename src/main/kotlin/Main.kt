@@ -1,83 +1,76 @@
-import org.lwjgl.Version
-import org.lwjgl.glfw.Callbacks
+import dev.blackoutburst.game.core.*
+import dev.blackoutburst.game.graphics.Color
+import dev.blackoutburst.game.graphics.Block
+import dev.blackoutburst.game.graphics.Texture
+import dev.blackoutburst.game.maths.Matrix
+import dev.blackoutburst.game.maths.Vector3f
 import org.lwjgl.glfw.GLFW
-import org.lwjgl.glfw.GLFWErrorCallback
-import org.lwjgl.opengl.GL
-import org.lwjgl.opengl.GL11
-import org.lwjgl.system.MemoryStack
-import org.lwjgl.system.MemoryUtil
+import org.lwjgl.opengl.GL11.*
 
+
+class Main {
+    companion object {
+        var showCursor = false
+        val blocks = mutableListOf<Block>()
+
+        val window = Window()
+            .setFullscreenMode(Window.FullScreenMode.NONE)
+            .setTitle("MeinRaft")
+            .create()
+
+        val camera = Camera()
+        val projection = Matrix()
+            .projectionMatrix(90f, 1000f, 0.1f)
+    }
+
+    fun run() {
+        var toggleMousePressed = false
+
+        GLFW.glfwSetInputMode(Window.id, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED)
+
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_CULL_FACE)
+        glCullFace(GL_BACK)
+        glEnable(GL_DEPTH_TEST)
+
+        Texture("./grass.png")
+        val mapSize = 200
+
+        for (x in -mapSize until mapSize) {
+            for (z in -mapSize until mapSize) {
+                blocks.add(Block(
+                    position = Vector3f(x.toFloat(), (OpenSimplex2.noise2(8, x / 100.0, z / 100.0) * 7).toInt().toFloat(), z.toFloat()),
+                ))
+            }
+        }
+
+        Block.setOffset(blocks)
+
+        while (window.isOpen) {
+            window.clear(Color(173.0f/255.0f, 206.0f/255.0f, 237.0f/255.0f))
+
+            if (Keyboard.isKeyDown(Keyboard.ESCAPE)) {
+                window.close()
+            }
+
+            if (Keyboard.isKeyDown(Keyboard.LEFT_ALT) && !toggleMousePressed) {
+                showCursor = !showCursor
+                GLFW.glfwSetInputMode(Window.id, GLFW.GLFW_CURSOR, if (showCursor) GLFW.GLFW_CURSOR_NORMAL else GLFW.GLFW_CURSOR_DISABLED)
+            }
+            toggleMousePressed = Keyboard.isKeyDown(Keyboard.LEFT_ALT)
+
+            camera.update()
+
+            Block.draw(blocks.size)
+
+            window.update()
+        }
+
+        window.destroy()
+    }
+}
 
 fun main() {
     Main().run()
-}
-
-class Main {
-    private var window: Long = 0
-
-    fun run() {
-        println("Hello LWJGL " + Version.getVersion() + "!")
-
-        init()
-        loop()
-
-        Callbacks.glfwFreeCallbacks(window)
-        GLFW.glfwDestroyWindow(window)
-
-        GLFW.glfwTerminate()
-        GLFW.glfwSetErrorCallback(null)!!.free()
-    }
-
-    private fun init() {
-        GLFWErrorCallback.createPrint(System.err).set()
-
-        check(GLFW.glfwInit()) { "Unable to initialize GLFW" }
-
-        GLFW.glfwDefaultWindowHints()
-        GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE)
-        GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE)
-
-        window = GLFW.glfwCreateWindow(300, 300, "Hello World!", MemoryUtil.NULL, MemoryUtil.NULL)
-        if (window == MemoryUtil.NULL) throw RuntimeException("Failed to create the GLFW window")
-
-        GLFW.glfwSetKeyCallback(window) { window: Long, key: Int, scancode: Int, action: Int, mods: Int ->
-            if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE) GLFW.glfwSetWindowShouldClose(
-                window,
-                true
-            )
-        }
-
-        MemoryStack.stackPush().use { stack ->
-            val pWidth = stack.mallocInt(1)
-            val pHeight = stack.mallocInt(1)
-
-
-            GLFW.glfwGetWindowSize(window, pWidth, pHeight)
-
-            val vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor())
-
-            GLFW.glfwSetWindowPos(
-                window,
-                (vidmode!!.width() - pWidth[0]) / 2,
-                (vidmode.height() - pHeight[0]) / 2
-            )
-        }
-        GLFW.glfwMakeContextCurrent(window)
-        GLFW.glfwSwapInterval(1)
-        GLFW.glfwShowWindow(window)
-    }
-
-    private fun loop() {
-        GL.createCapabilities()
-
-        GL11.glClearColor(1.0f, 0.0f, 0.0f, 0.0f)
-
-        while (!GLFW.glfwWindowShouldClose(window)) {
-            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT)
-
-            GLFW.glfwSwapBuffers(window)
-
-            GLFW.glfwPollEvents()
-        }
-    }
 }
