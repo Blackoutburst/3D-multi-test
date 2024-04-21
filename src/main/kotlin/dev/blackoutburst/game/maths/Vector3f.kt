@@ -34,6 +34,7 @@ class Vector3f {
     operator fun plus(other: Vector3f) = Vector3f(x + other.x, y + other.y, z + other.z)
     operator fun minus(other: Vector3f) = Vector3f(x - other.x, y - other.y, z - other.z)
     operator fun div(scalar: Float) = Vector3f(x / scalar, y / scalar, z / scalar)
+    operator fun times(scalar: Float) = Vector3f(x * scalar, y * scalar, z * scalar)
 
     fun normalize(): Vector3f {
         val mag = sqrt((x * x + y * y + z * z).toDouble()).toFloat()

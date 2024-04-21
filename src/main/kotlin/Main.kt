@@ -6,7 +6,9 @@ import dev.blackoutburst.game.maths.Matrix
 import dev.blackoutburst.game.maths.Vector3f
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11.*
+import kotlin.math.sign
 
+data class HitResult(val block: Block?, val face: Vector3f?)
 
 class Main {
     companion object {
@@ -23,6 +25,44 @@ class Main {
             .projectionMatrix(90f, 1000f, 0.1f)
     }
 
+    private fun getBlockAt(position: Vector3f): HitResult {
+        blocks.find { block ->
+            block.position.x - 0.5 <= position.x && block.position.x + 0.5 >= position.x &&
+                    block.position.y - 0.5 <= position.y && block.position.y + 0.5 >= position.y &&
+                    block.position.z - 0.5 <= position.z && block.position.z + 0.5 >= position.z
+        }?.let { block ->
+            // Determine which face is hit
+            val dx = maxOf(position.x - (block.position.x + 0.5), block.position.x - 0.5 - position.x)
+            val dy = maxOf(position.y - (block.position.y + 0.5), block.position.y - 0.5 - position.y)
+            val dz = maxOf(position.z - (block.position.z + 0.5), block.position.z - 0.5 - position.z)
+
+            val face = when {
+                dx > dy && dx > dz -> Vector3f(sign(position.x - block.position.x), 0f, 0f)
+                dy > dz -> Vector3f(0f, sign(position.y - block.position.y), 0f)
+                else -> Vector3f(0f, 0f, sign(position.z - block.position.z))
+            }
+
+            return HitResult(block, face)
+        }
+        return HitResult(null, null)
+    }
+
+
+    private fun rayCast(start: Vector3f, direction: Vector3f, distance: Float): HitResult {
+        var currentPosition = start
+        val step = direction.normalize() * 0.005f
+
+        for (i in 0 until (distance / step.length()).toInt()) {
+            val hitResult = getBlockAt(currentPosition)
+            if (hitResult.block != null) {
+                return hitResult
+            }
+            currentPosition += step
+        }
+        return HitResult(null, null)
+    }
+
+
     fun run() {
         var toggleMousePressed = false
 
@@ -35,7 +75,7 @@ class Main {
         glEnable(GL_DEPTH_TEST)
 
         Texture("./grass.png")
-        val mapSize = 200
+        val mapSize = 20
 
         for (x in -mapSize until mapSize) {
             for (z in -mapSize until mapSize) {
@@ -52,6 +92,28 @@ class Main {
 
             if (Keyboard.isKeyDown(Keyboard.ESCAPE)) {
                 window.close()
+            }
+
+            if (Mouse.rightButton.isPressed) {
+                val result = rayCast(camera.position, camera.getDirection(), 5f)
+                result.block?.let { block ->
+                    result.face?.let { face ->
+                        if (getBlockAt(block.position + face).block == null) {
+                            blocks.add(
+                                Block(
+                                    block.position + face
+                                )
+                            )
+                        }
+                    }
+                }
+                Block.setOffset(blocks)
+            }
+
+            if (Mouse.leftButton.isPressed) {
+                val result = rayCast(camera.position, camera.getDirection(), 5f)
+                blocks.remove(result.block)
+                Block.setOffset(blocks)
             }
 
             if (Keyboard.isKeyDown(Keyboard.LEFT_ALT) && !toggleMousePressed) {

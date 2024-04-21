@@ -11,15 +11,15 @@ import kotlin.math.sin
 class Camera {
     var position = Vector3f(0f, 20f, 0f)
     var rotation = Vector2f(0f)
-    val hitbox = Vector3f(0.2f, 1.8f, 0.2f)
+    val hitbox = Vector3f(0.15f, 1.8f, 0.15f)
     var velocity = Vector3f()
     val runSpeed = 0.0075f
     val walkSpeed = 0.005f
     var moving = false
-    val gravity = -0.005f
+    val gravity = -0.004f
     val drag = 0.90f
     var isJumping = false
-    var jumpPower = 1.5f
+    var jumpPower = 1.1f
 
     var view = Matrix()
         .translate(position)
@@ -48,8 +48,8 @@ class Camera {
     }
 
     private fun collide(): Boolean {
-        val playerMin = position - Vector3f(0f, hitbox.y/4f, 0f)
-        val playerMax = position + Vector3f(hitbox.x * 4f, hitbox.y/4f, hitbox.z * 4f)
+        val playerMin = position - Vector3f(-hitbox.x * 2f, hitbox.y/4f, -hitbox.z * 2f)
+        val playerMax = position + Vector3f(hitbox.x * 5f, hitbox.y/2f, hitbox.z * 5f)
 
         for (block in Main.blocks) {
             val blockMin = block.position
@@ -65,8 +65,8 @@ class Camera {
     }
 
     private fun grounded(): Boolean {
-        val playerMin = position - Vector3f(0f, hitbox.y/2f, 0f)
-        val playerMax = position + Vector3f(hitbox.x * 4f, hitbox.y/2f, hitbox.z * 4f)
+        val playerMin = position - Vector3f(-hitbox.x * 2f, hitbox.y/2f, -hitbox.z * 2f)
+        val playerMax = position + Vector3f(hitbox.x * 5f, hitbox.y/2f, hitbox.z * 5f)
 
         val playerFeetY = playerMin.y - 0.1f
 
@@ -89,6 +89,7 @@ class Camera {
 
         var potentialX = position.x
         var potentialZ = position.z
+        var potentialY = position.y
 
         if (isKeyDown(Keyboard.W)) {
             velocity.x -= sin(-rotation.x * Math.PI / 180).toFloat()
@@ -140,6 +141,14 @@ class Camera {
             velocity.y = jumpPower
         }
 
+        potentialY += (velocity.y * Time.delta.toFloat() * 0.005f)
+        position.y = potentialY
+        if (collide()) {
+            position.y = oldPosition.y
+            velocity.y = 0f
+            isJumping = false
+        }
+
         if (!grounded() || isJumping) {
             velocity.y += gravity * Time.delta.toFloat()
             isJumping = false
@@ -165,5 +174,16 @@ class Camera {
             .rotate(Math.toRadians(rotation.y.toDouble()).toFloat(), Vector3f(1f, 0f, 0f))
             .rotate(Math.toRadians(rotation.x.toDouble()).toFloat(), Vector3f(0f, 1f, 0f))
             .translate(Vector3f(-position.x, -position.y, -position.z))
+    }
+
+    fun getDirection(): Vector3f {
+        val radianYaw = Math.toRadians(rotation.x.toDouble() - 90).toFloat()
+        val radianPitch = Math.toRadians(-rotation.y.toDouble()).toFloat()
+
+        val x = cos(radianPitch) * cos(radianYaw)
+        val y = sin(radianPitch)
+        val z = cos(radianPitch) * sin(radianYaw)
+
+        return Vector3f(x, y, z).normalize()
     }
 }
