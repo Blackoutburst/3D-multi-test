@@ -178,11 +178,12 @@ class Player(private val world: World, private val camera: Camera) {
 
         position.y += (velocity.y * Time.delta.toFloat() * 0.005f)
 
-        val buffer = ByteBuffer.allocate(12)
+        val buffer = ByteBuffer.allocate(128)
         buffer.order(ByteOrder.BIG_ENDIAN)
-        buffer.putFloat(0, position.x)
-        buffer.putFloat(4, position.y)
-        buffer.putFloat(8, position.z)
+        buffer.put(0x00)
+        buffer.putFloat(position.x)
+        buffer.putFloat(position.y)
+        buffer.putFloat( position.z)
         connection.write(buffer.array())
     }
 

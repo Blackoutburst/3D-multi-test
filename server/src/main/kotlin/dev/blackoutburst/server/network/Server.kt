@@ -1,5 +1,6 @@
 package dev.blackoutburst.server.network
 
+import dev.blackoutburst.server.network.packets.PacketManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -9,6 +10,8 @@ object Server {
 
     private val clients = mutableListOf<Client>()
     private val server = ServerSocket(15000)
+
+    val manager = PacketManager()
 
     fun read() {
         val socket = server.accept()
