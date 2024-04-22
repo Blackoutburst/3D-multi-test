@@ -3,11 +3,14 @@ package dev.blackoutburst.game.core
 import dev.blackoutburst.game.graphics.Block
 import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
+import dev.blackoutburst.game.network.Connection
 import dev.blackoutburst.game.utils.Keyboard
 import dev.blackoutburst.game.utils.Keyboard.isKeyDown
 import dev.blackoutburst.game.utils.Mouse
 import dev.blackoutburst.game.utils.Time
 import dev.blackoutburst.game.world.World
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -26,6 +29,8 @@ class Player(private val world: World, private val camera: Camera) {
 
     private var lastMousePosition: Vector2f = Mouse.getRawPosition()
     private val sensitivity = 0.1f
+
+    val connection = Connection()
 
     fun update() {
         mouseAction()
@@ -172,6 +177,13 @@ class Player(private val world: World, private val camera: Camera) {
         }
 
         position.y += (velocity.y * Time.delta.toFloat() * 0.005f)
+
+        val buffer = ByteBuffer.allocate(12)
+        buffer.order(ByteOrder.BIG_ENDIAN)
+        buffer.putFloat(0, position.x)
+        buffer.putFloat(4, position.y)
+        buffer.putFloat(8, position.z)
+        connection.write(buffer.array())
     }
 
     private fun mouseAction() {

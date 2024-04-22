@@ -49,6 +49,7 @@ class Main {
         Texture("grass.png")
 
         world.generate()
+        player.connection.start()
     }
 
     fun run() {
@@ -67,6 +68,7 @@ class Main {
         }
 
         window.destroy()
+        player.connection.close()
     }
 }
 

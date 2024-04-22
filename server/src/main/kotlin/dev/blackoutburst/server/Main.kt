@@ -1,5 +1,9 @@
 package dev.blackoutburst.server
 
+import dev.blackoutburst.server.network.Server
+
 fun main() {
-    println("hello world")
+    while(true) {
+        Server.read()
+    }
 }
