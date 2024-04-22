@@ -40,3 +40,93 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Client ###
+
+client/.gradle
+client/build/
+!client/gradle/wrapper/gradle-wrapper.jar
+!client/**/src/main/**/build/
+!client/**/src/test/**/build/
+
+### IntelliJ IDEA ###
+client/.idea/modules.xml
+client/.idea/jarRepositories.xml
+client/.idea/compiler.xml
+client/.idea/libraries/
+client/*.iws
+client/*.iml
+client/*.ipr
+client/out/
+client/!**/src/main/**/out/
+client/!**/src/test/**/out/
+
+### Eclipse ###
+client/.apt_generated
+client/.classpath
+client/.factorypath
+client/.project
+client/.settings
+client/.springBeans
+client/.sts4-cache
+client/bin/
+!client/**/src/main/**/bin/
+!client/**/src/test/**/bin/
+
+### NetBeans ###
+client/nbproject/private/
+client/nbbuild/
+client/dist/
+client/nbdist/
+client/.nb-gradle/
+
+### VS Code ###
+client/.vscode/
+
+### Mac OS ###
+client/.DS_Store
+
+### Server ###
+
+server/.gradle
+server/build/
+!server/gradle/wrapper/gradle-wrapper.jar
+!server/**/src/main/**/build/
+!server/**/src/test/**/build/
+
+### IntelliJ IDEA ###
+server/.idea/modules.xml
+server/.idea/jarRepositories.xml
+server/.idea/compiler.xml
+server/.idea/libraries/
+server/*.iws
+server/*.iml
+server/*.ipr
+server/out/
+server/!**/src/main/**/out/
+server/!**/src/test/**/out/
+
+### Eclipse ###
+server/.apt_generated
+server/.classpath
+server/.factorypath
+server/.project
+server/.settings
+server/.springBeans
+server/.sts4-cache
+server/bin/
+!server/**/src/main/**/bin/
+!server/**/src/test/**/bin/
+
+### NetBeans ###
+server/nbproject/private/
+server/nbbuild/
+server/dist/
+server/nbdist/
+server/.nb-gradle/
+
+### VS Code ###
+server/.vscode/
+
+### Mac OS ###
+server/.DS_Store
