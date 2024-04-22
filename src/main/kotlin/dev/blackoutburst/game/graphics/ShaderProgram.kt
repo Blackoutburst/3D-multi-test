@@ -32,61 +32,52 @@ class ShaderProgram(
     }
 
     fun setUniform1f(varName: String, x: Float) {
-        val loc: Int = ARBProgramInterfaceQuery.glGetProgramResourceLocation(id, ARBProgramInterfaceQuery.GL_UNIFORM, varName)
+        val loc = GL20.glGetUniformLocation(id, varName)
         GL41.glProgramUniform1f(id, loc, x)
     }
 
     fun setUniform2f(varName: String, x: Float, y: Float) {
-        val loc: Int =
-            ARBProgramInterfaceQuery.glGetProgramResourceLocation(id, ARBProgramInterfaceQuery.GL_UNIFORM, varName)
+        val loc = GL20.glGetUniformLocation(id, varName)
         GL41.glProgramUniform2f(id, loc, x, y)
     }
 
     fun setUniform2f(varName: String, vec: Vector2f) {
-        val loc: Int =
-            ARBProgramInterfaceQuery.glGetProgramResourceLocation(id, ARBProgramInterfaceQuery.GL_UNIFORM, varName)
+        val loc = GL20.glGetUniformLocation(id, varName)
         GL41.glProgramUniform2f(id, loc, vec.x, vec.y)
     }
 
     fun setUniform3f(varName: String, x: Float, y: Float, z: Float) {
-        val loc: Int =
-            ARBProgramInterfaceQuery.glGetProgramResourceLocation(id, ARBProgramInterfaceQuery.GL_UNIFORM, varName)
+        val loc = GL20.glGetUniformLocation(id, varName)
         GL41.glProgramUniform3f(id, loc, x, y, z)
     }
 
     fun setUniform3f(varName: String, vec: Vector3f) {
-        val loc: Int =
-            ARBProgramInterfaceQuery.glGetProgramResourceLocation(id, ARBProgramInterfaceQuery.GL_UNIFORM, varName)
+        val loc = GL20.glGetUniformLocation(id, varName)
         GL41.glProgramUniform3f(id, loc, vec.x, vec.y, vec.z)
     }
 
     fun setUniform3f(varName: String, color: Color) {
-        val loc: Int =
-            ARBProgramInterfaceQuery.glGetProgramResourceLocation(id, ARBProgramInterfaceQuery.GL_UNIFORM, varName)
+        val loc = GL20.glGetUniformLocation(id, varName)
         GL41.glProgramUniform3f(id, loc, color.r, color.g, color.b)
     }
 
     fun setUniform4f(varName: String, x: Float, y: Float, z: Float, w: Float) {
-        val loc: Int =
-            ARBProgramInterfaceQuery.glGetProgramResourceLocation(id, ARBProgramInterfaceQuery.GL_UNIFORM, varName)
+        val loc = GL20.glGetUniformLocation(id, varName)
         GL41.glProgramUniform4f(id, loc, x, y, z, w)
     }
 
     fun setUniform4f(varName: String, vec: Vector4f) {
-        val loc: Int =
-            ARBProgramInterfaceQuery.glGetProgramResourceLocation(id, ARBProgramInterfaceQuery.GL_UNIFORM, varName)
+        val loc = GL20.glGetUniformLocation(id, varName)
         GL41.glProgramUniform4f(id, loc, vec.x, vec.y, vec.z, vec.w)
     }
 
     fun setUniform4f(varName: String, color: Color) {
-        val loc: Int =
-            ARBProgramInterfaceQuery.glGetProgramResourceLocation(id, ARBProgramInterfaceQuery.GL_UNIFORM, varName)
+        val loc = GL20.glGetUniformLocation(id, varName)
         GL41.glProgramUniform4f(id, loc, color.r, color.g, color.b, color.a)
     }
 
     fun setUniformMat4(varName: String, mat: Matrix) {
-        val loc: Int =
-            ARBProgramInterfaceQuery.glGetProgramResourceLocation(id, ARBProgramInterfaceQuery.GL_UNIFORM, varName)
+        val loc = GL20.glGetUniformLocation(id, varName)
         GL41.glProgramUniformMatrix4fv(id, loc, false, mat.getValues())
     }
 }

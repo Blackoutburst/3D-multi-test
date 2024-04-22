@@ -4,6 +4,7 @@ import dev.blackoutburst.game.core.*
 import dev.blackoutburst.game.graphics.Color
 import dev.blackoutburst.game.graphics.Texture
 import dev.blackoutburst.game.maths.Matrix
+import dev.blackoutburst.game.utils.Time
 import dev.blackoutburst.game.world.World
 import org.lwjgl.opengl.GL11.*
 
@@ -20,6 +21,22 @@ class Main {
 
         val world = World(50)
         val player = Player(world, camera)
+
+        private var renderPasses = 0
+        private var fps = 0
+        private var previousTime = Time.runtime
+    }
+
+    private fun getFps(): Int {
+        val currentTime: Double = Time.runtime
+        renderPasses++
+
+        if (currentTime - previousTime >= 1.0) {
+            fps = renderPasses
+            renderPasses = 0
+            previousTime = currentTime
+        }
+        return (fps)
     }
 
     private fun setup() {
