@@ -2,6 +2,7 @@ package dev.blackoutburst.game.world
 
 import dev.blackoutburst.game.graphics.WorldBlock
 import dev.blackoutburst.game.maths.Vector3f
+import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.utils.OpenSimplex2
 import dev.blackoutburst.game.utils.RayCastResult
 import kotlin.math.sign
@@ -10,9 +11,35 @@ class World {
 
     val CHUNK_SIZE = 16
 
-    val chunks = mutableListOf<Chunk>()
+    val chunks = mutableMapOf<String, Chunk>()
 
-    fun placeChunk(position: Vector3f, blockData: List<Byte>) {
+    var worldBlocks = listOf<WorldBlock>()
+
+    fun getCloseBlocks(position: Vector3f): List<WorldBlock> {
+        val indexes = mutableListOf<String>()
+
+        for (x in -1..1) {
+            for (y in -1..1) {
+                for (z in -1..1) {
+                        indexes.add(
+                            (Vector3i(
+                            position.x.toInt() + x * CHUNK_SIZE,
+                            position.y.toInt() + y * CHUNK_SIZE,
+                            position.z.toInt() + z * CHUNK_SIZE
+                        ) / CHUNK_SIZE * CHUNK_SIZE).toString()
+                    )
+                }
+            }
+        }
+
+        val blocks = indexes.map {
+            chunks[it]?.getSolidBlock() ?: emptyList()
+        }.flatten()
+
+        return blocks
+    }
+
+    fun updateChunk(position: Vector3i, blockData: List<Byte>) {
         val blocks = mutableListOf<WorldBlock>()
         var index = 0
 
@@ -20,8 +47,8 @@ class World {
             for (y in 0 until CHUNK_SIZE) {
                 for (z in 0 until CHUNK_SIZE) {
                     blocks.add(WorldBlock(
-                        type = blockData[index],
-                        position = Vector3f(
+                        type = BlockType.getByID(blockData[index]),
+                        position = Vector3i(
                             position.x + x,
                             position.y + y,
                             position.z + z
@@ -32,45 +59,19 @@ class World {
             }
         }
 
-        chunks.add(Chunk(
-            position,
-            blocks
-        ))
+        chunks[position.toString()] = Chunk(position, blocks)
+
+        worldBlocks = chunks.map {
+            it.value.getSolidBlock()
+        }.flatten().toList()
+
         update()
     }
 
-    private fun update() {
-        val blocks = chunks.map {
-            it.blocks
-        }.flatten()
+    private fun update() = WorldBlock.setOffset(worldBlocks)
 
-        WorldBlock.setOffset(blocks)
-    }
+    fun render() = WorldBlock.draw(worldBlocks.size)
 
-    fun render() {
-        val blocks = chunks.map {
-            it.blocks
-        }.flatten()
-
-
-        WorldBlock.draw(blocks.size)
-    }
-
-    /*
-    fun destroyBlock(block: WorldBlock) {
-        blocks.remove(block)
-        update()
-    }
-
-    fun placeBlock(block: WorldBlock) {
-        if (getBlockAt(block.position).block != null) return
-
-        blocks.add(block)
-        update()
-    }
-     */
-
-    /*
     fun rayCast(start: Vector3f, direction: Vector3f, distance: Float): RayCastResult {
         var currentPosition = start
         val step = direction.normalize() * 0.005f
@@ -86,6 +87,9 @@ class World {
     }
 
     fun getBlockAt(position: Vector3f): RayCastResult {
+        val index = (Vector3i(position.x.toInt(), position.y.toInt(), position.z.toInt()) / CHUNK_SIZE * CHUNK_SIZE).toString()
+        val blocks = chunks[index]?.getSolidBlock() ?: emptyList()
+
         blocks.find { block ->
             block.position.x - 0.5 <= position.x && block.position.x + 0.5 >= position.x &&
                     block.position.y - 0.5 <= position.y && block.position.y + 0.5 >= position.y &&
@@ -96,15 +100,13 @@ class World {
             val dz = maxOf(position.z - (block.position.z + 0.5), block.position.z - 0.5 - position.z)
 
             val face = when {
-                dx > dy && dx > dz -> Vector3f(sign(position.x - block.position.x), 0f, 0f)
-                dy > dz -> Vector3f(0f, sign(position.y - block.position.y), 0f)
-                else -> Vector3f(0f, 0f, sign(position.z - block.position.z))
+                dx > dy && dx > dz -> Vector3i(sign(position.x - block.position.x).toInt(), 0, 0)
+                dy > dz -> Vector3i(0, sign(position.y - block.position.y).toInt(), 0)
+                else -> Vector3i(0, 0, sign(position.z - block.position.z).toInt())
             }
 
             return RayCastResult(block, face)
         }
         return RayCastResult(null, null)
     }
-    */
-
 }

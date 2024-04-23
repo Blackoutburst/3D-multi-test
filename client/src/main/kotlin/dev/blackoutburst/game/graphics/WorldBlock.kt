@@ -2,7 +2,8 @@ package dev.blackoutburst.game.graphics
 
 import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.maths.Matrix
-import dev.blackoutburst.game.maths.Vector3f
+import dev.blackoutburst.game.maths.Vector3i
+import dev.blackoutburst.game.world.BlockType
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.*
 import org.lwjgl.opengl.ARBInstancedArrays.glVertexAttribDivisorARB
@@ -12,7 +13,7 @@ import org.lwjgl.opengl.GL31.glDrawArraysInstanced
 import java.nio.Buffer
 
 
-class WorldBlock(val type: Byte, val position: Vector3f) {
+class WorldBlock(val type: BlockType, val position: Vector3i) {
     companion object {
         private var vaoID = 0
 
@@ -109,9 +110,9 @@ class WorldBlock(val type: Byte, val position: Vector3f) {
 
             var idx = 0
             for (i in 0 until size) {
-                translation[idx] = blocks[i].position.x
-                translation[idx + 1] = blocks[i].position.y
-                translation[idx + 2] = blocks[i].position.z
+                translation[idx] = blocks[i].position.x.toFloat()
+                translation[idx + 1] = blocks[i].position.y.toFloat()
+                translation[idx + 2] = blocks[i].position.z.toFloat()
                 idx += 3
             }
 

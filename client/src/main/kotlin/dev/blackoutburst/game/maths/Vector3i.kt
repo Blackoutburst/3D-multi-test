@@ -66,4 +66,9 @@ class Vector3i {
     override fun toString(): String {
         return "[$x, $y, $z]"
     }
+
+    operator fun plus(other: Vector3i) = Vector3i(x + other.x, y + other.y, z + other.z)
+    operator fun minus(other: Vector3i) = Vector3i(x - other.x, y - other.y, z - other.z)
+    operator fun div(scalar: Int) = Vector3i(x / scalar, y / scalar, z / scalar)
+    operator fun times(scalar: Int) = Vector3i(x * scalar, y * scalar, z * scalar)
 }

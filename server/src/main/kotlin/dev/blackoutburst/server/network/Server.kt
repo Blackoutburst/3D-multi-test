@@ -32,8 +32,8 @@ object Server {
 
         World.chunks.forEach {
             client.write(S05SendChunk(
-                position = it.position,
-                blockData = it.blocks.map { b -> b.type.id }
+                position = it.value.position,
+                blockData = it.value.blocks.map { b -> b.type.id }
             ))
         }
 

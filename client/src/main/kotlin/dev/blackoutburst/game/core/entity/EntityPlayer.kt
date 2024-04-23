@@ -5,13 +5,16 @@ import dev.blackoutburst.game.core.Window
 import dev.blackoutburst.game.graphics.WorldBlock
 import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
+import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.network.Connection
 import dev.blackoutburst.game.network.packets.client.C00MoveEntity
 import dev.blackoutburst.game.network.packets.client.C01EntityRotation
+import dev.blackoutburst.game.network.packets.client.C02UpdateBlock
 import dev.blackoutburst.game.utils.Keyboard
 import dev.blackoutburst.game.utils.Keyboard.isKeyDown
 import dev.blackoutburst.game.utils.Mouse
 import dev.blackoutburst.game.utils.Time
+import dev.blackoutburst.game.world.BlockType
 import dev.blackoutburst.game.world.World
 import kotlin.math.cos
 import kotlin.math.sin
@@ -40,7 +43,7 @@ class EntityPlayer(
 
     override fun update() {
         if (Window.showCursor) return
-        //mouseAction()
+        mouseAction()
         rotate()
         move()
         updateCamera()
@@ -62,13 +65,12 @@ class EntityPlayer(
     }
 
     private fun collide(): Boolean {
-        /*
         val playerMin = position - Vector3f(-hitbox.x * 2f, hitbox.y/4f, -hitbox.z * 2f)
         val playerMax = position + Vector3f(hitbox.x * 5f, hitbox.y/2f, hitbox.z * 5f)
 
-        for (block in world.blocks) {
+        for (block in world.getCloseBlocks(position)) {
             val blockMin = block.position
-            val blockMax = block.position + Vector3f(1f)
+            val blockMax = block.position + Vector3i(1)
 
             if (playerMin.x <= blockMax.x && playerMax.x >= blockMin.x &&
                 playerMin.y <= blockMax.y && playerMax.y >= blockMin.y &&
@@ -76,20 +78,18 @@ class EntityPlayer(
                 return true
             }
         }
-         */
         return false
     }
 
     private fun grounded(): Boolean {
-        /*
         val playerMin = position - Vector3f(-hitbox.x * 2f, hitbox.y/2f, -hitbox.z * 2f)
         val playerMax = position + Vector3f(hitbox.x * 5f, hitbox.y/2f, hitbox.z * 5f)
 
         val playerFeetY = playerMin.y - 0.1f
 
-        for (block in world.blocks) {
+        for (block in world.getCloseBlocks(position)) {
             val blockMin = block.position
-            val blockMax = block.position + Vector3f(1f)
+            val blockMax = block.position + Vector3i(1)
 
             if (playerMin.x < blockMax.x && playerMax.x > blockMin.x &&
                 playerFeetY < blockMax.y && playerMin.y >= blockMin.y &&
@@ -97,8 +97,6 @@ class EntityPlayer(
                 return true
             }
         }
-
-         */
         return false
     }
 
@@ -212,15 +210,12 @@ class EntityPlayer(
         position.y += (velocity.y * Time.delta.toFloat() * 0.005f)
     }
 
-    /*
     private fun mouseAction() {
         if (Mouse.rightButton.isPressed) {
             val result = world.rayCast(Main.camera.position, Main.camera.getDirection(), 5f)
             result.block?.let { b ->
                 result.face?.let { f ->
-                    world.placeBlock(WorldBlock(
-                        position = b.position + f
-                    ))
+                    connection.write(C02UpdateBlock(BlockType.GRASS.id, b.position + f))
                 }
             }
         }
@@ -228,10 +223,8 @@ class EntityPlayer(
         if (Mouse.leftButton.isPressed) {
             world.rayCast(Main.camera.position, Main.camera.getDirection(), 5f)
                 .block?.let {
-                    world.destroyBlock(it)
+                    connection.write(C02UpdateBlock(BlockType.AIR.id, it.position))
                 }
         }
     }
-
-     */
 }
