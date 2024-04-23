@@ -16,9 +16,6 @@ class S01AddEntity: PacketPlayIn() {
 
         Vector3f(x, y, z)
 
-        Main.entityManager.addEntity(EntityOtherPlayer(
-            id = entityId,
-            position = Vector3f(x, y, z)
-        ))
+        Main.entityManager.addEntity(EntityOtherPlayer(entityId, Vector3f(x, y, z)))
     }
 }
