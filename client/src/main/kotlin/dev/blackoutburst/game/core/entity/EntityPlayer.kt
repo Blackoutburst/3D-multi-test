@@ -27,16 +27,17 @@ class EntityPlayer(
     private val connection: Connection,
 ): Entity(id, position, rotation) {
 
-    private val flying = true
+    private val flying = false
     private val hitbox = Vector3f(0.15f, 1.8f, 0.15f)
     private var velocity = Vector3f()
     private val runSpeed = 0.0075f
     private val walkSpeed = 0.005f
     private var moving = false
     private val gravity = -0.004f
-    private val drag = 0.90f
+    private val drag = 0.155f
     private var isJumping = false
     private var jumpPower = 1.1f
+    private var sprint = false
 
     private var lastMousePosition: Vector2f = Mouse.getRawPosition()
     private val sensitivity = 0.1f
@@ -150,7 +151,11 @@ class EntityPlayer(
             moving = true
         }
 
-        val speed = if (isKeyDown(Keyboard.LEFT_CONTROL)) runSpeed else walkSpeed
+        if (isKeyDown(Keyboard.LEFT_CONTROL)) {
+            sprint = true
+        }
+
+        val speed = if (sprint) runSpeed else walkSpeed
 
         if (moving) {
             val horizontalVelocity = Vector3f(velocity.x, 0f, velocity.z)
@@ -158,8 +163,12 @@ class EntityPlayer(
             velocity.x = horizontalVelocity.normalize().x
             velocity.z = horizontalVelocity.normalize().z
         } else {
-            velocity.x *= drag
-            velocity.z *= drag
+            sprint = false
+        }
+
+        if (grounded()) {
+            velocity.x *= drag * Time.delta.toFloat()
+            velocity.z *= drag * Time.delta.toFloat()
         }
 
         potentialX += (velocity.x * speed * Time.delta.toFloat())

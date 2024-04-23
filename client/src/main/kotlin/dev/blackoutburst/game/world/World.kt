@@ -5,11 +5,15 @@ import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.utils.OpenSimplex2
 import dev.blackoutburst.game.utils.RayCastResult
+import dev.blackoutburst.game.utils.chunkFloor
+import kotlin.math.floor
 import kotlin.math.sign
 
 class World {
 
-    val CHUNK_SIZE = 16
+    companion object {
+        val CHUNK_SIZE = 16
+    }
 
     val chunks = mutableMapOf<String, Chunk>()
 
@@ -22,11 +26,7 @@ class World {
             for (y in -1..1) {
                 for (z in -1..1) {
                         indexes.add(
-                            (Vector3i(
-                            position.x.toInt() + x * CHUNK_SIZE,
-                            position.y.toInt() + y * CHUNK_SIZE,
-                            position.z.toInt() + z * CHUNK_SIZE
-                        ) / CHUNK_SIZE * CHUNK_SIZE).toString()
+                            (Vector3i(chunkFloor(position.x) + x * CHUNK_SIZE, chunkFloor(position.y) + y * CHUNK_SIZE, chunkFloor(position.z) + z * CHUNK_SIZE) / CHUNK_SIZE * CHUNK_SIZE).toString()
                     )
                 }
             }
@@ -87,7 +87,11 @@ class World {
     }
 
     fun getBlockAt(position: Vector3f): RayCastResult {
-        val index = (Vector3i(position.x.toInt(), position.y.toInt(), position.z.toInt()) / CHUNK_SIZE * CHUNK_SIZE).toString()
+        val index = (Vector3i(
+            chunkFloor(position.x),
+            chunkFloor(position.y),
+            chunkFloor(position.z)
+        ) / CHUNK_SIZE * CHUNK_SIZE).toString()
         val blocks = chunks[index]?.getSolidBlock() ?: emptyList()
 
         blocks.find { block ->

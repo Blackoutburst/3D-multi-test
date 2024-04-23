@@ -1,6 +1,7 @@
 package dev.blackoutburst.game
 
-import dev.blackoutburst.game.core.*
+import dev.blackoutburst.game.core.Camera
+import dev.blackoutburst.game.core.Window
 import dev.blackoutburst.game.core.entity.EntityManager
 import dev.blackoutburst.game.graphics.Color
 import dev.blackoutburst.game.graphics.Texture
@@ -12,6 +13,7 @@ import org.lwjgl.opengl.GL11.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class Main {
+
     companion object {
         val glTaskQueue: ConcurrentLinkedQueue<() -> Unit> = ConcurrentLinkedQueue()
 
