@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL31.glDrawArraysInstanced
 import java.nio.Buffer
 
 
-class Block(val position: Vector3f) {
+class WorldBlock(val position: Vector3f) {
     companion object {
         private var vaoID = 0
 
@@ -103,7 +103,7 @@ class Block(val position: Vector3f) {
             program.setUniformMat4("view", Main.camera.view)
         }
 
-        fun setOffset(blocks: List<Block>) {
+        fun setOffset(blocks: List<WorldBlock>) {
             val size = blocks.size
             val translation = FloatArray(size * 3)
 

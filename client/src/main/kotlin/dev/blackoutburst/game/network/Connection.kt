@@ -47,8 +47,6 @@ class Connection {
 
                 manager.read(data)
             }
-
-
         } catch (ignored: Exception) {
             close()
         }

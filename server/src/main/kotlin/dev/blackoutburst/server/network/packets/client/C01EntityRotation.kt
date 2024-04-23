@@ -13,6 +13,9 @@ class C01EntityRotation: PacketPlayIn() {
         val x = buffer.getFloat()
         val y = buffer.getFloat()
 
-        Server.write(S04EntityRotation(entityId, Vector2f(x, y)))
+        val rotation = Vector2f(x, y)
+
+        Server.entityManger.setRotation(entityId, rotation)
+        Server.write(S04EntityRotation(entityId, rotation))
     }
 }

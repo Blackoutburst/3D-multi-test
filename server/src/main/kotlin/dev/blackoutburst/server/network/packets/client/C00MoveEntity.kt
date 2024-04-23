@@ -14,6 +14,9 @@ class C00MoveEntity: PacketPlayIn() {
         val y = buffer.getFloat()
         val z = buffer.getFloat()
 
-        Server.write(S00MoveEntity(entityId, Vector3f(x, y, z)))
+        val position = Vector3f(x, y, z)
+
+        Server.entityManger.setPosition(entityId, position)
+        Server.write(S00MoveEntity(entityId, position))
     }
 }

@@ -9,9 +9,12 @@ import dev.blackoutburst.game.network.Connection
 import dev.blackoutburst.game.utils.Time
 import dev.blackoutburst.game.world.World
 import org.lwjgl.opengl.GL11.*
+import java.util.concurrent.ConcurrentLinkedQueue
 
 class Main {
     companion object {
+        val glTaskQueue: ConcurrentLinkedQueue<() -> Unit> = ConcurrentLinkedQueue()
+
         val window = Window()
             .setFullscreenMode(Window.FullScreenMode.NONE)
             .setTitle("MeinRaft")
@@ -55,10 +58,18 @@ class Main {
         connection.start()
     }
 
+    private fun pollGlTasks() {
+        while (glTaskQueue.isNotEmpty()) {
+            glTaskQueue.poll()?.invoke()
+        }
+    }
+
     fun run() {
         setup()
 
         while (window.isOpen) {
+            pollGlTasks()
+
             window.clear(Color(173.0f/255.0f, 206.0f/255.0f, 237.0f/255.0f))
 
             entityManager.update()

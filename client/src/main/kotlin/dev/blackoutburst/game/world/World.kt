@@ -1,6 +1,6 @@
 package dev.blackoutburst.game.world
 
-import dev.blackoutburst.game.graphics.Block
+import dev.blackoutburst.game.graphics.WorldBlock
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.utils.OpenSimplex2
 import dev.blackoutburst.game.utils.RayCastResult
@@ -8,13 +8,13 @@ import kotlin.math.sign
 
 class World(private val size: Int = 20) {
 
-    val blocks = mutableListOf<Block>()
+    val blocks = mutableListOf<WorldBlock>()
 
     fun generate() {
         for (x in -size/2 until size/2) {
             for (z in -size/2 until size/2) {
-                blocks.add(Block(
-                    position = Vector3f(x.toFloat(), (OpenSimplex2.noise2(8, x / 100.0, z / 100.0) * 7).toInt().toFloat(), z.toFloat()),
+                blocks.add(WorldBlock(
+                    position = Vector3f(x.toFloat(), (OpenSimplex2.noise2(8, x / 100.0, z / 100.0) * 7).toInt().toFloat() - 10, z.toFloat()),
                 ))
             }
         }
@@ -23,19 +23,19 @@ class World(private val size: Int = 20) {
     }
 
     private fun update() {
-        Block.setOffset(blocks)
+        WorldBlock.setOffset(blocks)
     }
 
     fun render() {
-        Block.draw(blocks.size)
+        WorldBlock.draw(blocks.size)
     }
 
-    fun destroyBlock(block: Block) {
+    fun destroyBlock(block: WorldBlock) {
         blocks.remove(block)
         update()
     }
 
-    fun placeBlock(block: Block) {
+    fun placeBlock(block: WorldBlock) {
         if (getBlockAt(block.position).block != null) return
 
         blocks.add(block)

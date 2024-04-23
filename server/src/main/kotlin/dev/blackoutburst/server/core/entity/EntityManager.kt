@@ -1,5 +1,7 @@
 package dev.blackoutburst.server.core.entity
 
+import dev.blackoutburst.game.maths.Vector2f
+import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.server.network.Server
 import dev.blackoutburst.server.network.packets.server.S01AddEntity
 import dev.blackoutburst.server.network.packets.server.S02RemoveEntity
@@ -11,7 +13,7 @@ class EntityManager {
             return field++
         }
 
-    private val entities = mutableListOf<Entity>()
+    val entities = mutableListOf<Entity>()
 
     fun addEntity(entity: Entity) {
         entities.add(entity)
@@ -20,6 +22,18 @@ class EntityManager {
             entityId = entity.id,
             position = entity.position
         ))
+    }
+
+    fun setPosition(id: Int, position: Vector3f) {
+        entities.find { it.id == id }?.let {
+            it.position = position
+        }
+    }
+
+    fun setRotation(id: Int, rotation: Vector2f) {
+        entities.find { it.id == id }?.let {
+            it.rotation = rotation
+        }
     }
 
     fun removeEntity(entity: Entity) {

@@ -4,6 +4,7 @@ import dev.blackoutburst.server.core.entity.EntityManager
 import dev.blackoutburst.server.core.entity.EntityPlayer
 import dev.blackoutburst.server.network.packets.PacketManager
 import dev.blackoutburst.server.network.packets.PacketPlayOut
+import dev.blackoutburst.server.network.packets.server.S01AddEntity
 import dev.blackoutburst.server.network.packets.server.S03Identification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,8 +26,10 @@ object Server {
         val entity = EntityPlayer(entityManger.newId)
         val client = Client(socket, input, output, entity)
 
-        entityManger.addEntity(client.entity)
         client.write(S03Identification(client.entity.id))
+        entityManger.entities.forEach { client.write(S01AddEntity(it.id, it.position)) }
+        client.write(S03Identification(client.entity.id))
+        entityManger.addEntity(client.entity)
         clients.add(client)
 
         CoroutineScope(Dispatchers.IO).launch {

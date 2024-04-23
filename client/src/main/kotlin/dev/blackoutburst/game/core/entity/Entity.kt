@@ -1,7 +1,7 @@
 package dev.blackoutburst.game.core.entity
 
-import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
+import dev.blackoutburst.game.maths.Vector2f
 
 abstract class Entity(
     val id: Int,

@@ -1,8 +1,8 @@
 package dev.blackoutburst.game.core.entity
 
 import dev.blackoutburst.game.Main
-import dev.blackoutburst.game.core.Camera
-import dev.blackoutburst.game.graphics.Block
+import dev.blackoutburst.game.core.Window
+import dev.blackoutburst.game.graphics.WorldBlock
 import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.network.Connection
@@ -18,8 +18,8 @@ import kotlin.math.sin
 
 class EntityPlayer(
     id: Int,
-    position: Vector3f,
-    rotation: Vector2f,
+    position: Vector3f = Vector3f(),
+    rotation: Vector2f = Vector2f(),
     private val world: World,
     private val connection: Connection,
 ): Entity(id, position, rotation) {
@@ -38,6 +38,7 @@ class EntityPlayer(
     private val sensitivity = 0.1f
 
     override fun update() {
+        if (Window.showCursor) return
         mouseAction()
         rotate()
         move()
@@ -199,7 +200,7 @@ class EntityPlayer(
             val result = world.rayCast(Main.camera.position, Main.camera.getDirection(), 5f)
             result.block?.let { b ->
                 result.face?.let { f ->
-                    world.placeBlock(Block(
+                    world.placeBlock(WorldBlock(
                         position = b.position + f
                     ))
                 }

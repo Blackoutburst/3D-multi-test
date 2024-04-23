@@ -21,7 +21,6 @@ class Window {
 
     private var title: String = "OpenGL"
 
-    private var showCursor = false
     private var toggleMousePressed = false
 
     private var shouldClose = false
@@ -169,6 +168,7 @@ class Window {
     }
 
     companion object {
+        var showCursor = false
         var id: Long = 0
         val width = 1280
         val height = 720
