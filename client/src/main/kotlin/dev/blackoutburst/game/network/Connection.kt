@@ -37,7 +37,7 @@ class Connection {
         }
     }
 
-    fun read() {
+    private fun read() {
         try {
             input?.let {
                 val data = it.readNBytes(128)
