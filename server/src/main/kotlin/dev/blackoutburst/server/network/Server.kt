@@ -1,6 +1,10 @@
 package dev.blackoutburst.server.network
 
+import dev.blackoutburst.server.core.entity.EntityManager
+import dev.blackoutburst.server.core.entity.EntityPlayer
 import dev.blackoutburst.server.network.packets.PacketManager
+import dev.blackoutburst.server.network.packets.PacketPlayOut
+import dev.blackoutburst.server.network.packets.server.S03Identification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,14 +15,18 @@ object Server {
     private val clients = mutableListOf<Client>()
     private val server = ServerSocket(15000)
 
-    val manager = PacketManager()
+    val packetManager = PacketManager()
+    val entityManger = EntityManager()
 
-    fun read() {
+    fun addClient() {
         val socket = server.accept()
         val input = socket.getInputStream()
         val output = socket.getOutputStream()
-        val client = Client(socket, input, output)
+        val entity = EntityPlayer(entityManger.newId)
+        val client = Client(socket, input, output, entity)
 
+        entityManger.addEntity(client.entity)
+        client.write(S03Identification(client.entity.id))
         clients.add(client)
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -28,18 +36,19 @@ object Server {
         }
     }
 
-    fun write(data: ByteArray) {
+    fun write(packet: PacketPlayOut) {
         for (client in clients) {
-            client.write(data)
+            client.write(packet)
         }
     }
 
-    fun remove(client: Client) {
+    fun removeClient(client: Client) {
         try {
             client.socket.close()
             client.input.close()
             client.output.close()
             clients.remove(client)
+            entityManger.removeEntity(client.entity)
         } catch (ignored: Exception) {}
     }
 }

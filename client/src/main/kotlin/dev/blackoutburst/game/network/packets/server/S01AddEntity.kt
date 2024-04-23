@@ -1,11 +1,12 @@
 package dev.blackoutburst.game.network.packets.server
 
 import dev.blackoutburst.game.Main
+import dev.blackoutburst.game.core.entity.EntityOtherPlayer
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.network.packets.PacketPlayIn
 import java.nio.ByteBuffer
 
-class S00MoveEntity: PacketPlayIn() {
+class S01AddEntity: PacketPlayIn() {
 
     override fun decode(buffer: ByteBuffer) {
         val entityId = buffer.getInt()
@@ -13,6 +14,11 @@ class S00MoveEntity: PacketPlayIn() {
         val y = buffer.getFloat()
         val z = buffer.getFloat()
 
-        Main.entityManager.setPosition(entityId, Vector3f(x, y, z))
+        Vector3f(x, y, z)
+
+        Main.entityManager.addEntity(EntityOtherPlayer(
+            id = entityId,
+            position = Vector3f(x, y, z)
+        ))
     }
 }

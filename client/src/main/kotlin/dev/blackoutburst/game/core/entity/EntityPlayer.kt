@@ -1,5 +1,7 @@
-package dev.blackoutburst.game.core
+package dev.blackoutburst.game.core.entity
 
+import dev.blackoutburst.game.Main
+import dev.blackoutburst.game.core.Camera
 import dev.blackoutburst.game.graphics.Block
 import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
@@ -10,14 +12,16 @@ import dev.blackoutburst.game.utils.Keyboard.isKeyDown
 import dev.blackoutburst.game.utils.Mouse
 import dev.blackoutburst.game.utils.Time
 import dev.blackoutburst.game.world.World
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import kotlin.math.cos
 import kotlin.math.sin
 
-class Player(private val world: World, private val camera: Camera) {
-    private var position = Vector3f(0f, 20f, 0f)
-    private var rotation = Vector2f(0f)
+class EntityPlayer(
+    id: Int,
+    position: Vector3f,
+    private val world: World,
+    private val connection: Connection,
+): Entity(id, position) {
+    private var rotation = Vector2f()
     private val hitbox = Vector3f(0.15f, 1.8f, 0.15f)
     private var velocity = Vector3f()
     private val runSpeed = 0.0075f
@@ -31,18 +35,25 @@ class Player(private val world: World, private val camera: Camera) {
     private var lastMousePosition: Vector2f = Mouse.getRawPosition()
     private val sensitivity = 0.1f
 
-    val connection = Connection()
-
-    fun update() {
+    override fun update() {
         mouseAction()
         rotate()
         move()
         updateCamera()
+        networkUpdate()
+    }
+
+    override fun render() {
+    }
+
+    private fun networkUpdate() {
+        connection.write(C00MoveEntity(id, position))
     }
 
     private fun updateCamera() {
-        camera.position = position
-        camera.rotation = rotation
+        Main.camera.position = position
+        Main.camera.rotation = rotation
+        Main.camera.update()
     }
 
     private fun collide(): Boolean {
@@ -178,13 +189,11 @@ class Player(private val world: World, private val camera: Camera) {
         }
 
         position.y += (velocity.y * Time.delta.toFloat() * 0.005f)
-
-        connection.write(C00MoveEntity(position))
     }
 
     private fun mouseAction() {
         if (Mouse.rightButton.isPressed) {
-            val result = world.rayCast(camera.position, camera.getDirection(), 5f)
+            val result = world.rayCast(Main.camera.position, Main.camera.getDirection(), 5f)
             result.block?.let { b ->
                 result.face?.let { f ->
                     world.placeBlock(Block(
@@ -195,7 +204,7 @@ class Player(private val world: World, private val camera: Camera) {
         }
 
         if (Mouse.leftButton.isPressed) {
-            world.rayCast(camera.position, camera.getDirection(), 5f)
+            world.rayCast(Main.camera.position, Main.camera.getDirection(), 5f)
                 .block?.let {
                     world.destroyBlock(it)
                 }

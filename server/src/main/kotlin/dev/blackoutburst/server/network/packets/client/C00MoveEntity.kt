@@ -7,11 +7,9 @@ import java.nio.ByteBuffer
 class C00MoveEntity: PacketPlayIn() {
 
     override fun decode(buffer: ByteBuffer) {
+        val entityId = buffer.getInt()
         val x = buffer.getFloat()
         val y = buffer.getFloat()
         val z = buffer.getFloat()
-
-        println(Vector3f(x, y, z))
-
     }
 }

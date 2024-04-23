@@ -1,9 +1,11 @@
 package dev.blackoutburst.game
 
 import dev.blackoutburst.game.core.*
+import dev.blackoutburst.game.core.entity.EntityManager
 import dev.blackoutburst.game.graphics.Color
 import dev.blackoutburst.game.graphics.Texture
 import dev.blackoutburst.game.maths.Matrix
+import dev.blackoutburst.game.network.Connection
 import dev.blackoutburst.game.utils.Time
 import dev.blackoutburst.game.world.World
 import org.lwjgl.opengl.GL11.*
@@ -15,12 +17,13 @@ class Main {
             .setTitle("MeinRaft")
             .create()
 
-        val camera = Camera()
         val projection = Matrix()
             .projectionMatrix(90f, 1000f, 0.1f)
 
         val world = World(50)
-        val player = Player(world, camera)
+        val connection = Connection()
+        val camera = Camera()
+        val entityManager = EntityManager()
 
         private var renderPasses = 0
         private var fps = 0
@@ -49,7 +52,7 @@ class Main {
         Texture("grass.png")
 
         world.generate()
-        player.connection.start()
+        connection.start()
     }
 
     fun run() {
@@ -58,17 +61,17 @@ class Main {
         while (window.isOpen) {
             window.clear(Color(173.0f/255.0f, 206.0f/255.0f, 237.0f/255.0f))
 
-            player.update()
-
-            camera.update()
+            entityManager.update()
 
             world.render()
+
+            entityManager.render()
 
             window.update()
         }
 
         window.destroy()
-        player.connection.close()
+        connection.close()
     }
 }
 

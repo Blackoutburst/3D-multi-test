@@ -17,6 +17,8 @@ class Connection {
 
     private var manager = PacketManager()
 
+    var id = -1
+
     fun start() {
         try {
             socket = Socket("127.0.0.1", 15000).let {

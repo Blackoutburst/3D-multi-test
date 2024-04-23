@@ -1,15 +1,15 @@
-package dev.blackoutburst.game.network.packets.client
+package dev.blackoutburst.server.network.packets.server
 
 import dev.blackoutburst.game.maths.Vector3f
-import dev.blackoutburst.game.network.packets.PacketPlayOut
+import dev.blackoutburst.server.network.packets.PacketPlayOut
 import java.nio.ByteOrder
 
-private const val ID: Byte = 0x00
+private const val ID: Byte = 0x01
 
-class C00MoveEntity(
+class S01AddEntity(
     private val entityId: Int,
     private val position: Vector3f
-) : PacketPlayOut() {
+): PacketPlayOut() {
 
     init {
         buffer.apply {

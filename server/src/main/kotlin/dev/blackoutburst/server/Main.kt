@@ -4,6 +4,6 @@ import dev.blackoutburst.server.network.Server
 
 fun main() {
     while(true) {
-        Server.read()
+        Server.addClient()
     }
 }

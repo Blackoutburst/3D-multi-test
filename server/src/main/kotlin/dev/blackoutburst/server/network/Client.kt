@@ -1,30 +1,37 @@
 package dev.blackoutburst.server.network
 
+import dev.blackoutburst.server.core.entity.EntityPlayer
+import dev.blackoutburst.server.network.packets.PacketPlayOut
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.Socket
 
-class Client(val socket: Socket, val input: InputStream, val output: OutputStream) {
+class Client(
+    val socket: Socket,
+    val input: InputStream,
+    val output: OutputStream,
+    val entity: EntityPlayer
+) {
 
     fun read() {
         try {
             val data = input.readNBytes(128)
             if (data.isEmpty()) {
-                Server.remove(this)
+                Server.removeClient(this)
             }
 
-            Server.manager.read(data)
+            Server.packetManager.read(data)
         } catch (ignored: Exception) {
-            Server.remove(this)
+            Server.removeClient(this)
         }
     }
 
-    fun write(data: ByteArray) {
+    fun write(packet: PacketPlayOut) {
         try {
-            output.write(data)
+            output.write(packet.buffer.array())
             output.flush()
         } catch (ignored: Exception) {
-            Server.remove(this)
+            Server.removeClient(this)
         }
     }
 }

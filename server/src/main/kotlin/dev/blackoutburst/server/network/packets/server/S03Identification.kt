@@ -1,16 +1,12 @@
 package dev.blackoutburst.server.network.packets.server
 
-import dev.blackoutburst.game.maths.Vector3f
-import dev.blackoutburst.server.network.packets.PacketPlayIn
 import dev.blackoutburst.server.network.packets.PacketPlayOut
-import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-private const val ID: Byte = 0x00
+private const val ID: Byte = 0x03
 
-class S00MoveEntity(
+class S03Identification(
     private val entityId: Int,
-    private val position: Vector3f
 ): PacketPlayOut() {
 
     init {
@@ -18,9 +14,6 @@ class S00MoveEntity(
             order(ByteOrder.BIG_ENDIAN)
             put(ID)
             putInt(entityId)
-            putFloat(position.x)
-            putFloat(position.y)
-            putFloat(position.z)
         }
     }
 }
