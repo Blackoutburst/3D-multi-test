@@ -19,6 +19,5 @@ class C01EntityRotation: PacketPlayIn() {
         if (entityId != client.entityId) return
 
         Server.entityManger.setRotation(entityId, rotation)
-        Server.write(S04EntityRotation(entityId, rotation))
     }
 }

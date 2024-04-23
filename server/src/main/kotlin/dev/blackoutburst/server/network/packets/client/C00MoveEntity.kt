@@ -20,6 +20,5 @@ class C00MoveEntity: PacketPlayIn() {
         if (entityId != client.entityId) return
 
         Server.entityManger.setPosition(entityId, position)
-        Server.write(S00MoveEntity(entityId, position))
     }
 }
