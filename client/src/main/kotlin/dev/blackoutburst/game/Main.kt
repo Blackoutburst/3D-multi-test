@@ -23,7 +23,7 @@ class Main {
         val projection = Matrix()
             .projectionMatrix(90f, 1000f, 0.1f)
 
-        val world = World(50)
+        val world = World()
         val connection = Connection()
         val camera = Camera()
         val entityManager = EntityManager()
@@ -54,7 +54,6 @@ class Main {
 
         Texture("grass.png")
 
-        world.generate()
         connection.start()
     }
 

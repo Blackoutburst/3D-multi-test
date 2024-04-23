@@ -24,6 +24,7 @@ class EntityPlayer(
     private val connection: Connection,
 ): Entity(id, position, rotation) {
 
+    private val flying = true
     private val hitbox = Vector3f(0.15f, 1.8f, 0.15f)
     private var velocity = Vector3f()
     private val runSpeed = 0.0075f
@@ -39,7 +40,7 @@ class EntityPlayer(
 
     override fun update() {
         if (Window.showCursor) return
-        mouseAction()
+        //mouseAction()
         rotate()
         move()
         updateCamera()
@@ -61,6 +62,7 @@ class EntityPlayer(
     }
 
     private fun collide(): Boolean {
+        /*
         val playerMin = position - Vector3f(-hitbox.x * 2f, hitbox.y/4f, -hitbox.z * 2f)
         val playerMax = position + Vector3f(hitbox.x * 5f, hitbox.y/2f, hitbox.z * 5f)
 
@@ -74,10 +76,12 @@ class EntityPlayer(
                 return true
             }
         }
+         */
         return false
     }
 
     private fun grounded(): Boolean {
+        /*
         val playerMin = position - Vector3f(-hitbox.x * 2f, hitbox.y/2f, -hitbox.z * 2f)
         val playerMax = position + Vector3f(hitbox.x * 5f, hitbox.y/2f, hitbox.z * 5f)
 
@@ -93,6 +97,8 @@ class EntityPlayer(
                 return true
             }
         }
+
+         */
         return false
     }
 
@@ -180,7 +186,8 @@ class EntityPlayer(
             isJumping = false
         }
 
-        if (!grounded() || isJumping) {
+
+        if ((!grounded() || isJumping) && !flying) {
             velocity.y += gravity * Time.delta.toFloat()
             isJumping = false
         } else {
@@ -192,9 +199,20 @@ class EntityPlayer(
             velocity.y = 0f
         }
 
+        if (isKeyDown(Keyboard.SPACE) && flying) {
+            velocity.y += 1
+            moving = true
+        }
+
+        if (isKeyDown(Keyboard.LEFT_SHIFT) && flying) {
+            velocity.y -= 1
+            moving = true
+        }
+
         position.y += (velocity.y * Time.delta.toFloat() * 0.005f)
     }
 
+    /*
     private fun mouseAction() {
         if (Mouse.rightButton.isPressed) {
             val result = world.rayCast(Main.camera.position, Main.camera.getDirection(), 5f)
@@ -214,4 +232,6 @@ class EntityPlayer(
                 }
         }
     }
+
+     */
 }

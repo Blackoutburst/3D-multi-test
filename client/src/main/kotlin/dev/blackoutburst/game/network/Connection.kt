@@ -40,7 +40,7 @@ class Connection {
     private fun read() {
         try {
             input?.let {
-                val data = it.readNBytes(128)
+                val data = it.readNBytes(5000)
                 if (data.isEmpty()) {
                     close()
                 }

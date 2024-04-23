@@ -15,7 +15,7 @@ class Client(
 
     fun read() {
         try {
-            val data = input.readNBytes(128)
+            val data = input.readNBytes(5000)
             if (data.isEmpty()) {
                 Server.removeClient(this)
             }

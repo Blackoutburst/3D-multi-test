@@ -3,6 +3,8 @@ package dev.blackoutburst.game.network.packets.client
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.network.packets.PacketPlayOut
 import java.nio.ByteOrder
+import java.util.zip.Deflater
+import java.util.zip.Inflater
 
 private const val ID: Byte = 0x00
 

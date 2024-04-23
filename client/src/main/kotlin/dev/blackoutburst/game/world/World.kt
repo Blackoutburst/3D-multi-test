@@ -6,30 +6,57 @@ import dev.blackoutburst.game.utils.OpenSimplex2
 import dev.blackoutburst.game.utils.RayCastResult
 import kotlin.math.sign
 
-class World(private val size: Int = 20) {
+class World {
 
-    val blocks = mutableListOf<WorldBlock>()
+    val CHUNK_SIZE = 16
 
-    fun generate() {
-        for (x in -size/2 until size/2) {
-            for (z in -size/2 until size/2) {
-                blocks.add(WorldBlock(
-                    position = Vector3f(x.toFloat(), (OpenSimplex2.noise2(8, x / 100.0, z / 100.0) * 7).toInt().toFloat() - 10, z.toFloat()),
-                ))
+    val chunks = mutableListOf<Chunk>()
+
+    fun placeChunk(position: Vector3f, blockData: List<Byte>) {
+        val blocks = mutableListOf<WorldBlock>()
+        var index = 0
+
+        for (x in 0 until CHUNK_SIZE) {
+            for (y in 0 until CHUNK_SIZE) {
+                for (z in 0 until CHUNK_SIZE) {
+                    blocks.add(WorldBlock(
+                        type = blockData[index],
+                        position = Vector3f(
+                            position.x + x,
+                            position.y + y,
+                            position.z + z
+                        )
+                    ))
+                    index++
+                }
             }
         }
 
+        chunks.add(Chunk(
+            position,
+            blocks
+        ))
         update()
     }
 
     private fun update() {
+        val blocks = chunks.map {
+            it.blocks
+        }.flatten()
+
         WorldBlock.setOffset(blocks)
     }
 
     fun render() {
+        val blocks = chunks.map {
+            it.blocks
+        }.flatten()
+
+
         WorldBlock.draw(blocks.size)
     }
 
+    /*
     fun destroyBlock(block: WorldBlock) {
         blocks.remove(block)
         update()
@@ -41,7 +68,9 @@ class World(private val size: Int = 20) {
         blocks.add(block)
         update()
     }
+     */
 
+    /*
     fun rayCast(start: Vector3f, direction: Vector3f, distance: Float): RayCastResult {
         var currentPosition = start
         val step = direction.normalize() * 0.005f
@@ -62,7 +91,6 @@ class World(private val size: Int = 20) {
                     block.position.y - 0.5 <= position.y && block.position.y + 0.5 >= position.y &&
                     block.position.z - 0.5 <= position.z && block.position.z + 0.5 >= position.z
         }?.let { block ->
-            // Determine which face is hit
             val dx = maxOf(position.x - (block.position.x + 0.5), block.position.x - 0.5 - position.x)
             val dy = maxOf(position.y - (block.position.y + 0.5), block.position.y - 0.5 - position.y)
             val dz = maxOf(position.z - (block.position.z + 0.5), block.position.z - 0.5 - position.z)
@@ -77,5 +105,6 @@ class World(private val size: Int = 20) {
         }
         return RayCastResult(null, null)
     }
+    */
 
 }

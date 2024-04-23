@@ -13,6 +13,7 @@ class PacketManager {
         packets[0x02] = S02RemoveEntity()
         packets[0x03] = S03Identification()
         packets[0x04] = S04EntityRotation()
+        packets[0x05] = S05SendChunk()
     }
 
     fun read(data: ByteArray) {
