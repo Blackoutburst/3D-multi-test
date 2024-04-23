@@ -1,4 +1,4 @@
-package dev.blackoutburst.server.network.packets
+package dev.blackoutburst.game.network.packets
 
 import java.nio.ByteBuffer
 

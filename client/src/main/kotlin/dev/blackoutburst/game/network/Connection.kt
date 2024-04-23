@@ -1,5 +1,7 @@
 package dev.blackoutburst.game.network
 
+import dev.blackoutburst.game.network.packets.PacketManager
+import dev.blackoutburst.game.network.packets.PacketPlayOut
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -13,12 +15,20 @@ class Connection {
     private var input: InputStream? = null
     private var output: OutputStream? = null
 
+    private var manager = PacketManager()
+
     fun start() {
         try {
             socket = Socket("127.0.0.1", 15000).let {
                 input = it.getInputStream()
                 output = it.getOutputStream()
                 it
+            }.also {
+                CoroutineScope(Dispatchers.IO).launch {
+                    while (!it.isClosed) {
+                        read()
+                    }
+                }
             }
         } catch (ignored: Exception) {
             close()
@@ -28,19 +38,25 @@ class Connection {
     fun read() {
         try {
             input?.let {
-                val data = it.readNBytes(12)
-                println(data)
+                val data = it.readNBytes(128)
+                if (data.isEmpty()) {
+                    close()
+                }
+
+                manager.read(data)
             }
+
+
         } catch (ignored: Exception) {
             close()
         }
     }
 
-    fun write(data: ByteArray) {
+    fun write(packet: PacketPlayOut) {
         try {
             output?.let {
                 CoroutineScope(Dispatchers.IO).launch {
-                    it.write(data)
+                    it.write(packet.buffer.array())
                     it.flush()
                 }
             }

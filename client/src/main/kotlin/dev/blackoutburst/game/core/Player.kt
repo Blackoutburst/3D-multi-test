@@ -4,6 +4,7 @@ import dev.blackoutburst.game.graphics.Block
 import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.network.Connection
+import dev.blackoutburst.game.network.packets.client.C00MoveEntity
 import dev.blackoutburst.game.utils.Keyboard
 import dev.blackoutburst.game.utils.Keyboard.isKeyDown
 import dev.blackoutburst.game.utils.Mouse
@@ -178,13 +179,7 @@ class Player(private val world: World, private val camera: Camera) {
 
         position.y += (velocity.y * Time.delta.toFloat() * 0.005f)
 
-        val buffer = ByteBuffer.allocate(128)
-        buffer.order(ByteOrder.BIG_ENDIAN)
-        buffer.put(0x00)
-        buffer.putFloat(position.x)
-        buffer.putFloat(position.y)
-        buffer.putFloat( position.z)
-        connection.write(buffer.array())
+        connection.write(C00MoveEntity(position))
     }
 
     private fun mouseAction() {
