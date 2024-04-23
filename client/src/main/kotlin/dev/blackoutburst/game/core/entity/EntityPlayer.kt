@@ -30,13 +30,12 @@ class EntityPlayer(
     private val flying = false
     private val hitbox = Vector3f(0.15f, 1.8f, 0.15f)
     private var velocity = Vector3f()
-    private val runSpeed = 0.0075f
-    private val walkSpeed = 0.005f
+    private val runSpeed = 8f
+    private val walkSpeed = 5f
     private var moving = false
-    private val gravity = -0.004f
-    private val drag = 0.155f
+    private val gravity = -0.2f
     private var isJumping = false
-    private var jumpPower = 1.1f
+    private var jumpPower = 10f
     private var sprint = false
 
     private var lastMousePosition: Vector2f = Mouse.getRawPosition()
@@ -66,7 +65,7 @@ class EntityPlayer(
     }
 
     private fun collide(): Boolean {
-        val playerMin = position - Vector3f(-hitbox.x * 2f, hitbox.y/4f, -hitbox.z * 2f)
+        val playerMin = position - Vector3f(-hitbox.x * 2f, hitbox.y/2f, -hitbox.z * 2f)
         val playerMax = position + Vector3f(hitbox.x * 5f, hitbox.y/2f, hitbox.z * 5f)
 
         for (block in world.getCloseBlocks(position)) {
@@ -127,6 +126,10 @@ class EntityPlayer(
         var potentialZ = position.z
         var potentialY = position.y
 
+        if (isKeyDown(Keyboard.LEFT_CONTROL)) {
+            sprint = true
+        }
+
         if (isKeyDown(Keyboard.W)) {
             velocity.x -= sin(-rotation.x * Math.PI / 180).toFloat()
             velocity.z -= cos(-rotation.x * Math.PI / 180).toFloat()
@@ -151,11 +154,8 @@ class EntityPlayer(
             moving = true
         }
 
-        if (isKeyDown(Keyboard.LEFT_CONTROL)) {
-            sprint = true
-        }
-
         val speed = if (sprint) runSpeed else walkSpeed
+
 
         if (moving) {
             val horizontalVelocity = Vector3f(velocity.x, 0f, velocity.z)
@@ -166,13 +166,8 @@ class EntityPlayer(
             sprint = false
         }
 
-        if (grounded()) {
-            velocity.x *= drag * Time.delta.toFloat()
-            velocity.z *= drag * Time.delta.toFloat()
-        }
-
-        potentialX += (velocity.x * speed * Time.delta.toFloat())
-        potentialZ += (velocity.z * speed * Time.delta.toFloat())
+        potentialX += velocity.x * Time.delta.toFloat() * speed
+        potentialZ += velocity.z * Time.delta.toFloat() * speed
 
         val oldPosition = Vector3f(position.x, position.y, position.z)
         position.x = potentialX
@@ -185,26 +180,13 @@ class EntityPlayer(
             velocity.y = jumpPower
         }
 
-        potentialY += (velocity.y * Time.delta.toFloat() * 0.005f)
-        position.y = potentialY
-        if (collide()) {
-            position.y = oldPosition.y
-            velocity.y = 0f
-            isJumping = false
-        }
-
-
         if ((!grounded() || isJumping) && !flying) {
-            velocity.y += gravity * Time.delta.toFloat()
+            velocity.y += gravity
             isJumping = false
         } else {
             velocity.y = 0f
         }
 
-        if (position.y < -50f) {
-            position.y = 20f
-            velocity.y = 0f
-        }
 
         if (isKeyDown(Keyboard.SPACE) && flying) {
             velocity.y += 1
@@ -216,7 +198,20 @@ class EntityPlayer(
             moving = true
         }
 
-        position.y += (velocity.y * Time.delta.toFloat() * 0.005f)
+        potentialY += velocity.y * Time.delta.toFloat()
+        position.y = potentialY
+        if (collide()) {
+            position.y = oldPosition.y
+            velocity.y = 0f
+            isJumping = false
+        }
+
+        if (position.y < -50f) {
+            position.y = 20f
+            velocity.y = 0f
+        }
+        velocity.x = 0f
+        velocity.z = 0f
     }
 
     private fun mouseAction() {
