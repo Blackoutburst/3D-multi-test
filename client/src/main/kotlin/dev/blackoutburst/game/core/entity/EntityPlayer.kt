@@ -7,6 +7,7 @@ import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.network.Connection
 import dev.blackoutburst.game.network.packets.client.C00MoveEntity
+import dev.blackoutburst.game.network.packets.client.C01EntityRotation
 import dev.blackoutburst.game.utils.Keyboard
 import dev.blackoutburst.game.utils.Keyboard.isKeyDown
 import dev.blackoutburst.game.utils.Mouse
@@ -18,10 +19,11 @@ import kotlin.math.sin
 class EntityPlayer(
     id: Int,
     position: Vector3f,
+    rotation: Vector2f,
     private val world: World,
     private val connection: Connection,
-): Entity(id, position) {
-    private var rotation = Vector2f()
+): Entity(id, position, rotation) {
+
     private val hitbox = Vector3f(0.15f, 1.8f, 0.15f)
     private var velocity = Vector3f()
     private val runSpeed = 0.0075f
@@ -48,6 +50,7 @@ class EntityPlayer(
 
     private fun networkUpdate() {
         connection.write(C00MoveEntity(id, position))
+        connection.write(C01EntityRotation(id, rotation))
     }
 
     private fun updateCamera() {

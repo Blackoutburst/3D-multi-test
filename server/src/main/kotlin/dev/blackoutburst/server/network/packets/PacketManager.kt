@@ -1,6 +1,7 @@
 package dev.blackoutburst.server.network.packets
 
 import dev.blackoutburst.server.network.packets.client.C00MoveEntity
+import dev.blackoutburst.server.network.packets.client.C01EntityRotation
 import java.nio.ByteBuffer
 
 class PacketManager {
@@ -9,6 +10,7 @@ class PacketManager {
 
     init {
         packets[0x00] = C00MoveEntity()
+        packets[0x01] = C01EntityRotation()
     }
 
     fun read(data: ByteArray) {

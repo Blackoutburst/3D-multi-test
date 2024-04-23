@@ -1,6 +1,7 @@
 package dev.blackoutburst.game.core.entity
 
 import dev.blackoutburst.game.Main
+import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
 
 class EntityManager {
@@ -33,6 +34,22 @@ class EntityManager {
 
         entities.find { it.id == id }?.let {
             it.position = position
+        }
+    }
+
+    fun setRotation(entity: Entity, rotation: Vector2f) {
+        if (entity.id == Main.connection.id) return
+
+        entities.find { it.id == entity.id }?.let {
+            it.rotation = rotation
+        }
+    }
+
+    fun setRotation(id: Int, rotation: Vector2f) {
+        if (id == Main.connection.id) return
+
+        entities.find { it.id == id }?.let {
+            it.rotation = rotation
         }
     }
 
