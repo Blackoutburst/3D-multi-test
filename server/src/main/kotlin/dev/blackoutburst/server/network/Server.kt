@@ -24,14 +24,14 @@ object Server {
         val input = socket.getInputStream()
         val output = socket.getOutputStream()
         val entity = EntityPlayer(entityManger.newId)
-        val client = Client(socket, input, output, entity)
+        val client = Client(socket, input, output, entity.id)
 
-        client.write(S03Identification(client.entity.id))
+        client.write(S03Identification(client.entityId))
         entityManger.entities.forEach {
             client.write(S01AddEntity(it.id, it.position, it.rotation))
         }
-        client.write(S03Identification(client.entity.id))
-        entityManger.addEntity(client.entity)
+        client.write(S03Identification(client.entityId))
+        entityManger.addEntity(entity)
         clients.add(client)
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -53,7 +53,7 @@ object Server {
             client.input.close()
             client.output.close()
             clients.remove(client)
-            entityManger.removeEntity(client.entity)
+            entityManger.removeEntity(client.entityId)
         } catch (ignored: Exception) {}
     }
 }

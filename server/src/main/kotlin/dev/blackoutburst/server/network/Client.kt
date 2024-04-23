@@ -10,7 +10,7 @@ class Client(
     val socket: Socket,
     val input: InputStream,
     val output: OutputStream,
-    val entity: EntityPlayer
+    val entityId: Int
 ) {
 
     fun read() {
@@ -20,7 +20,7 @@ class Client(
                 Server.removeClient(this)
             }
 
-            Server.packetManager.read(data)
+            Server.packetManager.read(this, data)
         } catch (ignored: Exception) {
             Server.removeClient(this)
         }

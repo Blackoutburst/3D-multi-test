@@ -37,13 +37,13 @@ class EntityManager {
         }
     }
 
-    fun removeEntity(entity: Entity) {
-        entities.find { it.id == entity.id }?.let {
+    fun removeEntity(id: Int) {
+        entities.find { it.id == id }?.let {
             entities.remove(it)
         }
 
         Server.write(S02RemoveEntity(
-            entityId = entity.id,
+            entityId = id,
         ))
     }
 }
