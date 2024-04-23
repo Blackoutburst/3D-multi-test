@@ -27,7 +27,9 @@ object Server {
         val client = Client(socket, input, output, entity)
 
         client.write(S03Identification(client.entity.id))
-        entityManger.entities.forEach { client.write(S01AddEntity(it.id, it.position)) }
+        entityManger.entities.forEach {
+            client.write(S01AddEntity(it.id, it.position, it.rotation))
+        }
         client.write(S03Identification(client.entity.id))
         entityManger.addEntity(client.entity)
         clients.add(client)
