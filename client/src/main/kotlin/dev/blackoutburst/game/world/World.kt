@@ -87,12 +87,7 @@ class World {
     }
 
     fun getBlockAt(position: Vector3f): RayCastResult {
-        val index = (Vector3i(
-            chunkFloor(position.x),
-            chunkFloor(position.y),
-            chunkFloor(position.z)
-        ) / CHUNK_SIZE * CHUNK_SIZE).toString()
-        val blocks = chunks[index]?.getSolidBlock() ?: emptyList()
+        val blocks = getCloseBlocks(position)
 
         blocks.find { block ->
             block.position.x - 0.5 <= position.x && block.position.x + 0.5 >= position.x &&
