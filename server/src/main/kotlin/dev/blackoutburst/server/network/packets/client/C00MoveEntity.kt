@@ -4,7 +4,6 @@ import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.server.network.Client
 import dev.blackoutburst.server.network.Server
 import dev.blackoutburst.server.network.packets.PacketPlayIn
-import dev.blackoutburst.server.network.packets.server.S00MoveEntity
 import java.nio.ByteBuffer
 
 class C00MoveEntity: PacketPlayIn() {

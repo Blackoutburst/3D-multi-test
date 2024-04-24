@@ -1,6 +1,5 @@
 package dev.blackoutburst.game.network.packets.client
 
-import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.network.packets.PacketPlayOut
 import java.nio.ByteOrder

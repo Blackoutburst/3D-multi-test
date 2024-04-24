@@ -4,7 +4,6 @@ import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.server.network.Client
 import dev.blackoutburst.server.network.Server
 import dev.blackoutburst.server.network.packets.PacketPlayIn
-import dev.blackoutburst.server.network.packets.server.S04EntityRotation
 import java.nio.ByteBuffer
 
 class C01EntityRotation: PacketPlayIn() {
