@@ -33,7 +33,7 @@ class EntityPlayer(
     private val runSpeed = 8f
     private val walkSpeed = 5f
     private var moving = false
-    private val gravity = -0.2f
+    private val gravity = -40f
     private var isJumping = false
     private var jumpPower = 10f
     private var sprint = false
@@ -181,7 +181,7 @@ class EntityPlayer(
         }
 
         if ((!grounded() || isJumping) && !flying) {
-            velocity.y += gravity
+            velocity.y += gravity * Time.delta.toFloat()
             isJumping = false
         } else {
             velocity.y = 0f
