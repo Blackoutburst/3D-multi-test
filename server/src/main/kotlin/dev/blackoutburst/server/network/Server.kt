@@ -2,6 +2,7 @@ package dev.blackoutburst.server.network
 
 import dev.blackoutburst.server.core.entity.EntityManager
 import dev.blackoutburst.server.core.entity.EntityPlayer
+import dev.blackoutburst.server.core.world.BlockType
 import dev.blackoutburst.server.core.world.World
 import dev.blackoutburst.server.network.packets.PacketManager
 import dev.blackoutburst.server.network.packets.PacketPlayOut
@@ -30,7 +31,9 @@ object Server {
 
         client.write(S03Identification(client.entityId))
 
-        World.chunks.forEach {
+        World.chunks.filter {
+            it.value.blocks.any { b -> b.type != BlockType.AIR }
+        }.forEach {
             client.write(S05SendChunk(
                 position = it.value.position,
                 blockData = it.value.blocks.map { b -> b.type.id }

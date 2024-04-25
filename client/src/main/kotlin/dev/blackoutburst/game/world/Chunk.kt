@@ -7,5 +7,4 @@ class Chunk(
     val position: Vector3i,
     val blocks: MutableList<WorldBlock>
 ) {
-    fun getSolidBlock() = blocks.filter { it.type != BlockType.AIR }
 }

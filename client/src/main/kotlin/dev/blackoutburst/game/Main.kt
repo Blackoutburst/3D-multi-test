@@ -80,6 +80,8 @@ class Main {
             entityManager.render()
 
             window.update()
+
+            println(getFps())
         }
 
         window.destroy()

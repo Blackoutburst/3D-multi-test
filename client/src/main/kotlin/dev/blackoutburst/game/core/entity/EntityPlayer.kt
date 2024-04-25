@@ -27,7 +27,7 @@ class EntityPlayer(
     private val connection: Connection,
 ): Entity(id, position, rotation) {
 
-    private val flying = false
+    private val flying = true
     private val hitbox = Vector3f(0.15f, 1.8f, 0.15f)
     private var velocity = Vector3f()
     private val runSpeed = 8f
@@ -188,15 +188,6 @@ class EntityPlayer(
         }
 
 
-        if (isKeyDown(Keyboard.SPACE) && flying) {
-            velocity.y += 1
-            moving = true
-        }
-
-        if (isKeyDown(Keyboard.LEFT_SHIFT) && flying) {
-            velocity.y -= 1
-            moving = true
-        }
 
         potentialY += velocity.y * Time.delta.toFloat()
         position.y = potentialY
@@ -210,6 +201,15 @@ class EntityPlayer(
             position.y = 20f
             velocity.y = 0f
         }
+
+        if (isKeyDown(Keyboard.SPACE) && flying) {
+            position.y += 1 * speed * Time.delta.toFloat()
+        }
+
+        if (isKeyDown(Keyboard.LEFT_SHIFT) && flying) {
+            position.y -= 1 * speed * Time.delta.toFloat()
+        }
+
         velocity.x = 0f
         velocity.z = 0f
     }

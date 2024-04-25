@@ -33,7 +33,7 @@ class World {
         }
 
         val blocks = indexes.map {
-            chunks[it]?.getSolidBlock() ?: emptyList()
+            chunks[it]?.blocks ?: emptyList()
         }.flatten()
 
         return blocks
@@ -46,8 +46,14 @@ class World {
         for (x in 0 until CHUNK_SIZE) {
             for (y in 0 until CHUNK_SIZE) {
                 for (z in 0 until CHUNK_SIZE) {
+                    val data = BlockType.getByID(blockData[index])
+                    if (data == BlockType.AIR)  {
+                        index++
+                        continue
+                    }
+
                     blocks.add(WorldBlock(
-                        type = BlockType.getByID(blockData[index]),
+                        type = data,
                         position = Vector3i(
                             position.x + x,
                             position.y + y,
@@ -62,7 +68,7 @@ class World {
         chunks[position.toString()] = Chunk(position, blocks)
 
         worldBlocks = chunks.map {
-            it.value.getSolidBlock()
+            it.value.blocks
         }.flatten().toList()
 
         update()

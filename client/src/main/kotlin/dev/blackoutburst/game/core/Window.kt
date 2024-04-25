@@ -88,6 +88,7 @@ class Window {
 
         glfwMakeContextCurrent(id)
         glfwShowWindow(id)
+        glfwSwapInterval(0)
 
         GL.createCapabilities()
 
