@@ -27,7 +27,7 @@ class EntityPlayer(
     private val connection: Connection,
 ): Entity(id, position, rotation) {
 
-    private val flying = true
+    private val flying = false
     private val hitbox = Vector3f(0.15f, 1.8f, 0.15f)
     private var velocity = Vector3f()
     private val runSpeed = 8f
