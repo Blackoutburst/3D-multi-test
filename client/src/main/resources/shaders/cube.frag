@@ -29,7 +29,7 @@ void main() {
     vec3 viewDir = normalize(viewPos - vertPos);
     vec3 reflectDir = reflect(-lightDir, norm);
 
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
     vec3 specular = specularStrength * spec * lightColor;
 
     vec3 ambient = ambientStrength * lightColor;

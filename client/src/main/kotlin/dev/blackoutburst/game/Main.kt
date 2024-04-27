@@ -82,6 +82,8 @@ class Main {
 
             entityManager.render()
 
+            println(getFps())
+
             window.update()
 
         }
