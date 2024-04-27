@@ -4,8 +4,11 @@ import dev.blackoutburst.game.core.Camera
 import dev.blackoutburst.game.core.Window
 import dev.blackoutburst.game.core.entity.EntityManager
 import dev.blackoutburst.game.graphics.Color
+import dev.blackoutburst.game.graphics.Cube
 import dev.blackoutburst.game.graphics.Texture
 import dev.blackoutburst.game.maths.Matrix
+import dev.blackoutburst.game.maths.Vector2f
+import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.network.Connection
 import dev.blackoutburst.game.utils.Time
 import dev.blackoutburst.game.world.World
@@ -81,7 +84,6 @@ class Main {
 
             window.update()
 
-            println(getFps())
         }
 
         window.destroy()

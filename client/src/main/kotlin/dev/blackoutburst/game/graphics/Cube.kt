@@ -14,7 +14,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 
-class Cube(var position: Vector3f, var rotation: Vector2f) {
+class Cube(var position: Vector3f, var rotation: Vector2f, var color: Color) {
     private val vaoID = GL30C.glGenVertexArrays()
     private val vertices = floatArrayOf(
         //FRONT
@@ -101,46 +101,13 @@ class Cube(var position: Vector3f, var rotation: Vector2f) {
             .rotate(yRad, Vector3f(cos(xRad), 0f, -sin(xRad)))
             .rotate(xRad, Vector3f(0f, 1f, 0f))
 
-        program.setUniform3f("color", Color(0.8f, 0.2f, 0.8f))
+        program.setUniform4f("color", color)
         program.setUniform3f("lightColor", Color.WHITE)
         program.setUniform3f("viewPos", Main.camera.position)
 
         program.setUniformMat4("projection", Main.projection)
         program.setUniformMat4("model", model)
         program.setUniformMat4("view", Main.camera.view)
-    }
-
-    fun setOffset(blocks: List<Cube>) {
-        val size = blocks.size
-        val translation = FloatArray(size * 3)
-
-        var idx = 0
-        for (i in 0 until size) {
-            translation[idx] = blocks[i].position.x
-            translation[idx + 1] = blocks[i].position.y
-            translation[idx + 2] = blocks[i].position.z
-            idx += 3
-        }
-
-        val instanceVBO: Int = glGenBuffers()
-        val offsetBuffer = BufferUtils.createFloatBuffer(translation.size)
-        (offsetBuffer.put(translation) as Buffer).flip()
-
-        glBindVertexArray(vaoID)
-        glBindBuffer(GL_ARRAY_BUFFER, instanceVBO)
-        glBufferData(GL_ARRAY_BUFFER, offsetBuffer, GL_STATIC_DRAW)
-        glBindBuffer(GL_ARRAY_BUFFER, 0)
-
-        glEnableVertexAttribArray(3)
-        glBindBuffer(GL_ARRAY_BUFFER, instanceVBO)
-        glVertexAttribPointer(3, 3, GL_FLOAT, false, 0, 0)
-        glBindBuffer(GL_ARRAY_BUFFER, 0)
-        glVertexAttribDivisorARB(3, 1)
-        glBindVertexArray(0)
-
-        glDeleteBuffers(instanceVBO)
-
-        (offsetBuffer as Buffer).clear()
     }
 
     fun draw() {

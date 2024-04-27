@@ -95,7 +95,7 @@ class WorldBlock(val type: BlockType, val position: Vector3i) {
         }
 
         private fun setUniforms() {
-            program.setUniform3f("color", Color(0.2f, 0.8f, 0.1f))
+            program.setUniform4f("color", Color(0.2f, 0.8f, 0.1f))
             program.setUniform3f("lightColor", Color.WHITE)
             program.setUniform3f("viewPos", Main.camera.position)
 

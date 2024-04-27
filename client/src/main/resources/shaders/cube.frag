@@ -14,7 +14,7 @@ uniform sampler2D text;
 uniform vec3 lightColor;
 uniform vec3 viewPos;
 
-uniform vec3 color;
+uniform vec4 color;
 
 out vec4 FragColor;
 
@@ -34,11 +34,11 @@ void main() {
 
     vec3 ambient = ambientStrength * lightColor;
 
-    vec3 finalColor = color;
+    vec3 finalColor = color.xyz;
     if (vPos.y < 0.2)
         finalColor = vec3(0.82156862745, 0.51568627451, 0.3);
 
     vec3 result = (ambient + diffuse) * finalColor;
 
-    FragColor = vec4(result, 1.0) * texture(text, uv);
+    FragColor = vec4(result, color.w) * texture(text, uv);
 }

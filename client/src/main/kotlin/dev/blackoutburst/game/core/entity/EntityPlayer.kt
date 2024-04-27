@@ -2,6 +2,8 @@ package dev.blackoutburst.game.core.entity
 
 import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.core.Window
+import dev.blackoutburst.game.graphics.Color
+import dev.blackoutburst.game.graphics.Cube
 import dev.blackoutburst.game.graphics.WorldBlock
 import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
@@ -26,7 +28,8 @@ class EntityPlayer(
     private val world: World,
     private val connection: Connection,
 ): Entity(id, position, rotation) {
-
+    private var renderBoundingBox = false
+    private val boundingBox = Cube(Vector3f(), Vector2f(), Color(0.2f, 0.8f, 0.1f, 0.6f))
     private val flying = false
     private val hitbox = Vector3f(0.15f, 1.8f, 0.15f)
     private var velocity = Vector3f()
@@ -48,9 +51,22 @@ class EntityPlayer(
         move()
         updateCamera()
         networkUpdate()
+
+        val result = world.rayCast(Main.camera.position, Main.camera.getDirection(), 5f)
+        result.block?.position?.let { b ->
+            result.face?.let { f ->
+                boundingBox.position = Vector3f(b.x.toFloat() + f.x.toFloat(), b.y.toFloat() + f.y.toFloat(), b.z.toFloat() + f.z.toFloat())
+                renderBoundingBox = true
+            }
+        } ?: run {
+            renderBoundingBox = false
+        }
+
     }
 
     override fun render() {
+        if (renderBoundingBox)
+            boundingBox.draw()
     }
 
     private fun networkUpdate() {
@@ -68,7 +84,7 @@ class EntityPlayer(
         val playerMin = position - Vector3f(-hitbox.x * 2f, hitbox.y/2f, -hitbox.z * 2f)
         val playerMax = position + Vector3f(hitbox.x * 5f, hitbox.y/2f, hitbox.z * 5f)
 
-        for (block in world.getCloseBlocks(position)) {
+        for (block in world.getCloseChunk(position).flatMap { it.blockAsList }) {
             val blockMin = block.position
             val blockMax = block.position + Vector3i(1)
 
@@ -87,7 +103,7 @@ class EntityPlayer(
 
         val playerFeetY = playerMin.y - 0.1f
 
-        for (block in world.getCloseBlocks(position)) {
+        for (block in world.getCloseChunk(position).flatMap { it.blockAsList }) {
             val blockMin = block.position
             val blockMax = block.position + Vector3i(1)
 
@@ -175,6 +191,7 @@ class EntityPlayer(
         position.z = potentialZ
         if (collide()) position.z = oldPosition.z
 
+
         if (isKeyDown(Keyboard.SPACE) && grounded()) {
             isJumping = true
             velocity.y = jumpPower
@@ -186,7 +203,6 @@ class EntityPlayer(
         } else {
             velocity.y = 0f
         }
-
 
 
         potentialY += velocity.y * Time.delta.toFloat()

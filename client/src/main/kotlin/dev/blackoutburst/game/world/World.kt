@@ -3,10 +3,9 @@ package dev.blackoutburst.game.world
 import dev.blackoutburst.game.graphics.WorldBlock
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.maths.Vector3i
-import dev.blackoutburst.game.utils.OpenSimplex2
 import dev.blackoutburst.game.utils.RayCastResult
 import dev.blackoutburst.game.utils.chunkFloor
-import kotlin.math.floor
+import kotlin.math.round
 import kotlin.math.sign
 
 class World {
@@ -19,59 +18,66 @@ class World {
 
     var worldBlocks = listOf<WorldBlock>()
 
-    fun getCloseBlocks(position: Vector3f): List<WorldBlock> {
+    fun getCloseChunk(position: Vector3f): List<Chunk> {
         val indexes = mutableListOf<String>()
+        indexes.add(Vector3i(chunkFloor(position.x), chunkFloor(position.y), chunkFloor(position.z)).toString())
 
         for (x in -1..1) {
             for (y in -1..1) {
                 for (z in -1..1) {
-                        indexes.add(
-                            (Vector3i(chunkFloor(position.x) + x * CHUNK_SIZE, chunkFloor(position.y) + y * CHUNK_SIZE, chunkFloor(position.z) + z * CHUNK_SIZE) / CHUNK_SIZE * CHUNK_SIZE).toString()
-                    )
+                    if (!(x == 0 && y == 0 && z == 0)) {
+                            indexes.add(
+                                (Vector3i(
+                                    chunkFloor(position.x) + x * CHUNK_SIZE,
+                                    chunkFloor(position.y) + y * CHUNK_SIZE,
+                                    chunkFloor(position.z) + z * CHUNK_SIZE
+                                ) / CHUNK_SIZE * CHUNK_SIZE).toString()
+                            )
+                        }
                 }
             }
         }
 
-        val blocks = indexes.map {
-            chunks[it]?.blocks ?: emptyList()
-        }.flatten()
-
-        return blocks
+        return indexes.mapNotNull { chunks[it] }
     }
 
     fun updateChunk(position: Vector3i, blockData: List<Byte>) {
-        val blocks = mutableListOf<WorldBlock>()
+        val blocks = Array(16) { Array(16) { Array(16) {WorldBlock(BlockType.AIR, Vector3i()) } } }
         var index = 0
 
         for (x in 0 until CHUNK_SIZE) {
             for (y in 0 until CHUNK_SIZE) {
                 for (z in 0 until CHUNK_SIZE) {
                     val data = BlockType.getByID(blockData[index])
-                    if (data == BlockType.AIR)  {
-                        index++
-                        continue
-                    }
-
-                    blocks.add(WorldBlock(
-                        type = data,
-                        position = Vector3i(
-                            position.x + x,
-                            position.y + y,
-                            position.z + z
-                        )
-                    ))
+                    blocks[x][y][z] = WorldBlock(data, Vector3i(position.x + x, position.y + y, position.z + z))
                     index++
                 }
             }
         }
 
-        chunks[position.toString()] = Chunk(position, blocks)
+        val blockAsList = blocks.flatMap { it.flatMap { it.toList() } }.filter { it.type != BlockType.AIR }.filter { isFree(position, it, blocks) }
+        chunks[position.toString()] = Chunk(position, blocks, blockAsList)
 
-        worldBlocks = chunks.map {
-            it.value.blocks
-        }.flatten().toList()
+        worldBlocks = chunks.map { it.value.blockAsList }.flatten()
 
         update()
+    }
+
+    private fun isFree(chunkPos: Vector3i, block: WorldBlock, blocks: Array<Array<Array<WorldBlock>>>): Boolean {
+        val pos = block.position - chunkPos
+
+        if (pos.x == 0 || pos.y == 0 || pos.z == 0 || pos.x == 15 || pos.y == 15 || pos.z == 15) return true
+
+        if (pos.x > 0 && blocks[pos.x - 1][pos.y][pos.z].type == BlockType.AIR) return true
+        if (pos.x < 15 && blocks[pos.x + 1][pos.y][pos.z].type == BlockType.AIR) return true
+
+        if (pos.y > 0 && blocks[pos.x][pos.y - 1][pos.z].type == BlockType.AIR) return true
+        if (pos.y < 15 && blocks[pos.x][pos.y + 1][pos.z].type == BlockType.AIR) return true
+
+        if (pos.z > 0 && blocks[pos.x][pos.y][pos.z - 1].type == BlockType.AIR) return true
+        if (pos.z < 15 && blocks[pos.x][pos.y][pos.z + 1].type == BlockType.AIR) return true
+
+        return false
     }
 
     private fun update() = WorldBlock.setOffset(worldBlocks)
@@ -92,14 +98,35 @@ class World {
         return RayCastResult(null, null)
     }
 
-    fun getBlockAt(position: Vector3f): RayCastResult {
-        val blocks = getCloseBlocks(position)
+    fun getChunkIndex(position: Vector3i, chunkSize: Int): Vector3i {
+        return Vector3i(
+            (if (position.x < 0) (position.x + 1) / chunkSize - 1 else position.x / chunkSize) * chunkSize,
+            (if (position.y < 0) (position.y + 1) / chunkSize - 1 else position.y / chunkSize) * chunkSize,
+            (if (position.z < 0) (position.z + 1) / chunkSize - 1 else position.z / chunkSize) * chunkSize
+        )
+    }
 
-        blocks.find { block ->
-            block.position.x - 0.5 <= position.x && block.position.x + 0.5 >= position.x &&
-                    block.position.y - 0.5 <= position.y && block.position.y + 0.5 >= position.y &&
-                    block.position.z - 0.5 <= position.z && block.position.z + 0.5 >= position.z
-        }?.let { block ->
+    fun getBlockAt(position: Vector3f): RayCastResult {
+        val roundedPosition = Vector3i(
+            round(position.x).toInt(),
+            round(position.y).toInt(),
+            round(position.z).toInt()
+        )
+
+        val chunkPosition = getChunkIndex(roundedPosition, CHUNK_SIZE)
+        val chunkIndex = chunkPosition.toString()
+
+        val chunk = chunks[chunkIndex] ?: return RayCastResult(null, null)
+
+        val positionAsInt = Vector3i(
+            ((roundedPosition.x - chunk.position.x) % CHUNK_SIZE + CHUNK_SIZE) % CHUNK_SIZE,
+            ((roundedPosition.y - chunk.position.y) % CHUNK_SIZE + CHUNK_SIZE) % CHUNK_SIZE,
+            ((roundedPosition.z - chunk.position.z) % CHUNK_SIZE + CHUNK_SIZE) % CHUNK_SIZE
+        )
+
+        val block = chunk.blocks[positionAsInt.x][positionAsInt.y][positionAsInt.z]
+
+        if (block.type != BlockType.AIR) {
             val dx = maxOf(position.x - (block.position.x + 0.5), block.position.x - 0.5 - position.x)
             val dy = maxOf(position.y - (block.position.y + 0.5), block.position.y - 0.5 - position.y)
             val dz = maxOf(position.z - (block.position.z + 0.5), block.position.z - 0.5 - position.z)

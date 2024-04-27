@@ -11,12 +11,16 @@ class S03Identification: PacketPlayIn() {
     override fun decode(buffer: ByteBuffer) {
         val entityId = buffer.getInt()
 
-        Main.entityManager.addEntity(EntityPlayer(
-            id = entityId,
-            position = Vector3f(),
-            world = Main.world,
-            connection = Main.connection,
-        ))
-        Main.connection.id = entityId
+        Main.glTaskQueue.add {
+            Main.entityManager.addEntity(
+                EntityPlayer(
+                    id = entityId,
+                    position = Vector3f(),
+                    world = Main.world,
+                    connection = Main.connection,
+                )
+            )
+            Main.connection.id = entityId
+        }
     }
 }

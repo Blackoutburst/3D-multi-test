@@ -5,6 +5,7 @@ import dev.blackoutburst.game.maths.Vector3i
 
 class Chunk(
     val position: Vector3i,
-    val blocks: MutableList<WorldBlock>
+    val blocks: Array<Array<Array<WorldBlock>>>,
+    val blockAsList: List<WorldBlock>
 ) {
 }
