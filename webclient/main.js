@@ -1,6 +1,10 @@
-import {draw, updateCameraPosition, updatePosition} from "./cube.js"
+import { draw, initRender } from "./cube.js"
+import { Player } from "./player.js"
+
 
 const canvas = document.querySelector("#glcanvas")
+const sensitivity = 0.1
+const player = new Player()
 
 function main() {
     const gl = canvas.getContext("webgl2")
@@ -10,12 +14,14 @@ function main() {
         return
     }
     
-    document.addEventListener('pointerlockchange', lockChangeAlert, false)
-    document.addEventListener('pointerlockerror', lockError, false)
-    
+    initRender(gl)
+
     canvas.addEventListener('click', () => {
         canvas.requestPointerLock()
     })
+
+    document.addEventListener('pointerlockchange', lockChangeAlert, false)
+    document.addEventListener('pointerlockerror', lockError, false)
     
     gl.clearColor(0, 0, 0, 1)
     gl.clearDepth(1)
@@ -27,14 +33,27 @@ function main() {
     loop(gl)
 }
 
+function loop(gl) {
+    requestAnimationFrame(loop)
+    player.update()
+
+    draw(gl, player)
+}
+
+function updateMouse(e) {
+    player.pitch += e.movementX * sensitivity
+    player.yaw += e.movementY * sensitivity
+
+    player.yaw = Math.max(-89, Math.min(89,  player.yaw))
+}
 
 function lockChangeAlert() {
     if (document.pointerLockElement === canvas) {
         console.log('The pointer lock status is now locked');
-        document.addEventListener("mousemove", updatePosition, false);
+        document.addEventListener("mousemove", updateMouse, false);
     } else {
         console.log('The pointer lock status is now unlocked');  
-        document.removeEventListener("mousemove", updatePosition, false);
+        document.removeEventListener("mousemove", updateMouse, false);
     }
 }
 
@@ -42,11 +61,5 @@ function lockError() {
     console.error('Pointer lock failed.');
 }
 
-function loop(gl) {
-    requestAnimationFrame(loop);
-    updateCameraPosition()
-    
-    draw(gl)
-}
 
 main()
