@@ -63,7 +63,11 @@ void main() {
 
     vec3 ambient = ambientStrength * lightColor;
 
-    vec3 result = (ambient + diffuse) * color.xyz;
+    vec3 finalColor = color.xyz;
+    if (vPos.y < 0.2)
+        finalColor = vec3(0.82156862745, 0.51568627451, 0.3);
+
+    vec3 result = (ambient + diffuse) * finalColor;
 
     FragColor = vec4(result, color.w) * texture(text, uv);
 }

@@ -6,6 +6,7 @@ import dev.blackoutburst.server.core.world.World
 import dev.blackoutburst.server.network.packets.server.S01AddEntity
 import dev.blackoutburst.server.network.packets.server.S03Identification
 import dev.blackoutburst.server.network.packets.server.S05SendChunk
+import io.ktor.network.sockets.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -21,7 +22,7 @@ object WebServer {
 
             routing {
                 webSocket("/game") {
-                    val entity = EntityPlayer(Server.entityManger.newId)
+                    val entity = EntityPlayer(Server.entityManger.newId.getAndIncrement())
                     val client = Client(null, this, null, null, entity.id)
 
                     client.write(S03Identification(client.entityId))
@@ -43,11 +44,16 @@ object WebServer {
                     Server.entityManger.addEntity(entity)
                     Server.clients.add(client)
 
-                    for (frame in incoming) {
-                        if (frame is Frame.Text) {
-                            println("inc, ${frame.readText()}")
-                            send(Frame.Text(frame.readText()))
+                    try {
+                        for (frame in incoming) {
+                            if (frame is Frame.Binary) {
+                                client.read(frame)
+                            }
                         }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    } finally {
+                        Server.removeClient(client)
                     }
                 }
             }

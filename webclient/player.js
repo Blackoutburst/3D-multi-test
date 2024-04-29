@@ -5,7 +5,7 @@ const keysPressed = {}
 const speed = 0.05
 
 export class Player {
-    position = new Vector3(0, 0, 6)
+    position = new Vector3(0, 20, 20)
     yaw = 0
     pitch = 0
     camera = new Matrix()

@@ -1,14 +1,18 @@
 import { draw, initRender } from "./cube.js"
 import { Player } from "./player.js"
-import {connectWebSocket} from "./websocket.js"
+import { connectWebSocket } from "./websocket.js"
+import { World } from "./world.js"
 
 
 const canvas = document.querySelector("#glcanvas")
 const sensitivity = 0.1
 const player = new Player()
 
+export const world = new World()
+
+export const gl = canvas.getContext("webgl2")
+
 function main() {
-    const gl = canvas.getContext("webgl2")
 
     if (gl === null) {
         alert("Unable to initialize WebGL. Your browser or machine may not support it.",)
@@ -26,21 +30,23 @@ function main() {
     document.addEventListener('pointerlockchange', lockChangeAlert, false)
     document.addEventListener('pointerlockerror', lockError, false)
     
-    gl.clearColor(0, 0, 0, 1)
+    gl.clearColor(0.67, 0.80, 0.92, 1)
     gl.clearDepth(1)
     gl.enable(gl.CULL_FACE)
     gl.enable(gl.DEPTH_TEST)
     gl.depthFunc(gl.LEQUAL)
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
     
     loop(gl)
 }
 
 function loop(gl) {
-    requestAnimationFrame(loop)
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
     player.update()
 
-    draw(gl, player)
+    draw(gl, player, world.worldBlocks.length)
+
+    requestAnimationFrame(() => loop(gl))
 }
 
 function updateMouse(e) {

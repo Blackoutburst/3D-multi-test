@@ -7,13 +7,10 @@ import dev.blackoutburst.server.network.packets.server.S00MoveEntity
 import dev.blackoutburst.server.network.packets.server.S01AddEntity
 import dev.blackoutburst.server.network.packets.server.S02RemoveEntity
 import dev.blackoutburst.server.network.packets.server.S04EntityRotation
+import java.util.concurrent.atomic.AtomicInteger
 
 class EntityManager {
-    var newId = 0
-        private set
-        get() {
-            return field++
-        }
+    var newId = AtomicInteger(0)
 
     val entities = mutableListOf<Entity>()
 

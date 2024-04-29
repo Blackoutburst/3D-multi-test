@@ -74,7 +74,7 @@ class Main {
         while (window.isOpen) {
             pollGlTasks()
 
-            window.clear(Color(173.0f/255.0f, 206.0f/255.0f, 237.0f/255.0f))
+            window.clear(Color(0.67f, 0.80f, 0.92f))
 
             entityManager.update()
 

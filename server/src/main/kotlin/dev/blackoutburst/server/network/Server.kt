@@ -29,7 +29,7 @@ object Server {
         val socket = server.accept()
         val input = socket.getInputStream()
         val output = socket.getOutputStream()
-        val entity = EntityPlayer(entityManger.newId)
+        val entity = EntityPlayer(entityManger.newId.getAndIncrement())
         val client = Client(socket, null, input, output, entity.id)
 
         client.write(S03Identification(client.entityId))
