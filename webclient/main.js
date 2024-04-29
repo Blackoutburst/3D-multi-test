@@ -1,5 +1,6 @@
 import { draw, initRender } from "./cube.js"
 import { Player } from "./player.js"
+import {connectWebSocket} from "./websocket.js"
 
 
 const canvas = document.querySelector("#glcanvas")
@@ -14,6 +15,8 @@ function main() {
         return
     }
     
+    connectWebSocket()
+
     initRender(gl)
 
     canvas.addEventListener('click', () => {
@@ -49,10 +52,8 @@ function updateMouse(e) {
 
 function lockChangeAlert() {
     if (document.pointerLockElement === canvas) {
-        console.log('The pointer lock status is now locked');
         document.addEventListener("mousemove", updateMouse, false);
     } else {
-        console.log('The pointer lock status is now unlocked');  
         document.removeEventListener("mousemove", updateMouse, false);
     }
 }

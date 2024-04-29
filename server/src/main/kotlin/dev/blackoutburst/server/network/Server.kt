@@ -9,6 +9,8 @@ import dev.blackoutburst.server.network.packets.PacketPlayOut
 import dev.blackoutburst.server.network.packets.server.S01AddEntity
 import dev.blackoutburst.server.network.packets.server.S03Identification
 import dev.blackoutburst.server.network.packets.server.S05SendChunk
+import dev.blackoutburst.server.utils.io
+import io.ktor.websocket.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,8 +18,9 @@ import java.net.ServerSocket
 
 object Server {
 
-    private val clients = mutableListOf<Client>()
     private val server = ServerSocket(15000)
+
+    val clients = mutableListOf<Client>()
 
     val packetManager = PacketManager()
     val entityManger = EntityManager()
@@ -27,7 +30,7 @@ object Server {
         val input = socket.getInputStream()
         val output = socket.getOutputStream()
         val entity = EntityPlayer(entityManger.newId)
-        val client = Client(socket, input, output, entity.id)
+        val client = Client(socket, null, input, output, entity.id)
 
         client.write(S03Identification(client.entityId))
 
@@ -47,9 +50,11 @@ object Server {
         entityManger.addEntity(entity)
         clients.add(client)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            while (!client.socket.isClosed) {
-                client.read()
+        io {
+            client.socket?.let {
+                while (!it.isClosed) {
+                    client.read()
+                }
             }
         }
     }
@@ -62,9 +67,10 @@ object Server {
 
     fun removeClient(client: Client) {
         try {
-            client.socket.close()
-            client.input.close()
-            client.output.close()
+            client.socket?.close()
+            client.input?.close()
+            client.output?.close()
+            io { client.webSocket?.close() }
             clients.remove(client)
             entityManger.removeEntity(client.entityId)
         } catch (ignored: Exception) {}

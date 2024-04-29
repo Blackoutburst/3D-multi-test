@@ -77,7 +77,6 @@ export function initRender(gl) {
             }
         }
     }
-    alert(`Block count ${world.length}`)
 
     texture = loadTexture(gl, './stonebrick.png')
     shaderProgram = createShaderProgram(gl)
@@ -159,7 +158,6 @@ export function draw(gl, player) {
     //gl.drawArrays(gl.TRIANGLES, 0 , 36)
     gl.drawArraysInstanced(gl.TRIANGLES, 0, 36, world.length)
     gl.bindTexture(gl.TEXTURE_2D, null)
-    gl.useProgram(null)
 
     requestAnimationFrame(() => draw(gl, player))
 }
