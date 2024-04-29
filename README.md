@@ -49,14 +49,16 @@ Update Block: `0x02`
 | byte | byte      | int | int | int |
 
 ## BlockType
-```
-0: Air
-1: Grass
-```
+| id | Name  |
+|----|-------|
+| 0  | Air   |
+| 1  | Grass |
+
 
 ## Limitation
 Packet size is `5000 bytes` (r/w)
 
 ## Information
-Packets **Server bound** `[0x00, 0x01]` check the client `entityId`. Client must save the `entityId` received by the packet **Client Bound** `0x03` upon connecting to the server. Without this ID client wont be able to move.\
-This protocol uses **BIG ENDIAN**
+- Packets **Server bound** `[0x00, 0x01]` check the client `entityId`. Client must save the `entityId` received by the packet **Client Bound** `0x03` upon connecting to the server. Without this ID client wont be able to move
+- This protocol uses **BIG ENDIAN**
+- Server doesn't send empty chunk
