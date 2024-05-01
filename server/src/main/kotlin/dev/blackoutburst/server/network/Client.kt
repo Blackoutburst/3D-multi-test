@@ -2,7 +2,6 @@ package dev.blackoutburst.server.network
 
 import dev.blackoutburst.server.network.packets.PacketPlayOut
 import dev.blackoutburst.server.utils.io
-import io.ktor.network.sockets.*
 import io.ktor.websocket.*
 import java.io.InputStream
 import java.io.OutputStream

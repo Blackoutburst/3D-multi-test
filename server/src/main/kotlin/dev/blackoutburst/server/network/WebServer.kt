@@ -6,7 +6,6 @@ import dev.blackoutburst.server.core.world.World
 import dev.blackoutburst.server.network.packets.server.S01AddEntity
 import dev.blackoutburst.server.network.packets.server.S03Identification
 import dev.blackoutburst.server.network.packets.server.S05SendChunk
-import io.ktor.network.sockets.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
