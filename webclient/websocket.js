@@ -12,11 +12,9 @@ export function connectWebSocket() {
         })
     }
 
-    ws.onerror = () => {
-    }
+    ws.onerror = () => {}
 
-    ws.onclose = () => {
-    }
+    ws.onclose = () => {}
 }
 
 function parsePacket(dataView) {
@@ -72,10 +70,7 @@ function sendChunk(dataView) {
     const x = dataView.getInt32(1, false)
     const y = dataView.getInt32(5, false)
     const z = dataView.getInt32(9, false)
-    const data = []
-
-    for (let i = 13; i < 4109; i++)
-        data.push(dataView.getInt8(i))
+    const data = new Uint8Array(dataView.buffer, 13, 4096);
 
     world.updateChunk(new Vector3(x, y, z), data)
 }
