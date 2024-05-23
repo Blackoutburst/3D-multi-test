@@ -9,6 +9,7 @@ in vec4 vPos;
 in vec3 vertPos;
 in vec2 uv;
 in vec3 normals;
+flat in float blockType;
 
 uniform sampler2D text;
 uniform vec3 lightColor;
@@ -35,7 +36,7 @@ void main() {
     vec3 ambient = ambientStrength * lightColor;
 
     vec3 finalColor = color.xyz;
-    if (vPos.y < 0.2)
+    if (vPos.y < 0.2 || blockType == 2.0)
         finalColor = vec3(0.82156862745, 0.51568627451, 0.3);
 
     vec3 result = (ambient + diffuse) * finalColor;

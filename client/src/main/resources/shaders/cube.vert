@@ -4,6 +4,7 @@ layout(location = 0) in vec3 position;
 layout(location = 1) in vec2 textCoord;
 layout(location = 2) in vec3 normal;
 layout(location = 3) in vec3 offset;
+layout(location = 4) in float type;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -13,10 +14,12 @@ out vec2 uv;
 out vec3 vertPos;
 out vec3 normals;
 out vec4 vPos;
+flat out float blockType;
 
 void main() {
 	uv = textCoord;
 	normals = normal;
+	blockType = type;
 
 	vPos = vec4(position, 1.0);
 	vertPos = vec3(model * vec4(position, 1.0));

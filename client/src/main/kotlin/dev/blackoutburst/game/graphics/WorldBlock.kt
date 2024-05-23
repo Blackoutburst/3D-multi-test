@@ -135,6 +135,37 @@ class WorldBlock(val type: BlockType, val position: Vector3i) {
             glDeleteBuffers(instanceVBO)
 
             (offsetBuffer as Buffer).clear()
+
+            setType(blocks)
+        }
+
+        fun setType(blocks: List<WorldBlock>) {
+            val size = blocks.size
+            val type = FloatArray(size)
+
+            for (i in 0 until size) {
+                type[i] = blocks[i].type.id.toFloat()
+            }
+
+            val instanceVBO: Int = glGenBuffers()
+            val offsetBuffer = BufferUtils.createFloatBuffer(type.size)
+            (offsetBuffer.put(type) as Buffer).flip()
+
+            glBindVertexArray(vaoID)
+            glBindBuffer(GL_ARRAY_BUFFER, instanceVBO)
+            glBufferData(GL_ARRAY_BUFFER, offsetBuffer, GL_STATIC_DRAW)
+            glBindBuffer(GL_ARRAY_BUFFER, 0)
+
+            glEnableVertexAttribArray(4)
+            glBindBuffer(GL_ARRAY_BUFFER, instanceVBO)
+            glVertexAttribPointer(4, 1, GL_FLOAT, false, 0, 0)
+            glBindBuffer(GL_ARRAY_BUFFER, 0)
+            glVertexAttribDivisorARB(4, 1)
+            glBindVertexArray(0)
+
+            glDeleteBuffers(instanceVBO)
+
+            (offsetBuffer as Buffer).clear()
         }
 
         fun draw(size: Int) {
