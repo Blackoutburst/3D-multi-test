@@ -39,7 +39,6 @@ object WebServer {
                         client.write(S01AddEntity(it.id, it.position, it.rotation))
                     }
 
-                    client.write(S03Identification(client.entityId))
                     Server.entityManger.addEntity(entity)
                     Server.clients.add(client)
 
