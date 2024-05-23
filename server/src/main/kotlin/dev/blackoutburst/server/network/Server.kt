@@ -31,6 +31,7 @@ object Server {
         val output = socket.getOutputStream()
         val entity = EntityPlayer(entityManger.newId.getAndIncrement())
         val client = Client(socket, null, input, output, entity.id)
+        println("New client detected entityId: ${client.entityId}")
 
         client.write(S03Identification(client.entityId))
 
@@ -66,6 +67,7 @@ object Server {
 
     fun removeClient(client: Client) {
         try {
+            println("Client with entityId ${client.entityId} connection closed")
             client.socket?.close()
             client.input?.close()
             client.output?.close()

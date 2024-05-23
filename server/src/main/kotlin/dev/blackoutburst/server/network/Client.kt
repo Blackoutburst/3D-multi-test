@@ -23,6 +23,7 @@ class Client(
 
             input?.let {
                 val data = it.readNBytes(5000)
+                println("Reading from client with entityId $entityId")
                 if (data.isEmpty()) {
                     Server.removeClient(this)
                 }
@@ -36,6 +37,7 @@ class Client(
     fun write(packet: PacketPlayOut) {
         try {
             output?.let {
+                println("Writing to client with entityId $entityId | ${packet::class.java.name}")
                 it.write(packet.buffer.array())
                 it.flush()
             }
