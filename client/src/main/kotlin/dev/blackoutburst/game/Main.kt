@@ -87,13 +87,14 @@ class Main {
                 blockType = BlockType.GRASS
             if (isKeyDown(Keyboard.NUM2))
                 blockType = BlockType.DIRT
+            if (isKeyDown(Keyboard.NUM3))
+                blockType = BlockType.STONE
 
             world.render()
 
             entityManager.render()
 
             window.update()
-
         }
 
         window.destroy()

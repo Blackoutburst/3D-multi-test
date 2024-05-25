@@ -93,8 +93,8 @@ class Cube(var position: Vector3f, var rotation: Vector2f, var color: Color) {
     }
 
     private fun setUniforms() {
-        val xRad = Math.toRadians(-rotation.x.toDouble()).toFloat()
-        val yRad = Math.toRadians(-rotation.y.toDouble()).toFloat()
+        val xRad = -rotation.x.toDouble().toFloat()
+        val yRad = -rotation.y.toDouble().toFloat()
 
         model.setIdentity()
             .translate(position)

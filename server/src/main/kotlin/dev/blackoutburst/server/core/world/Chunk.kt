@@ -30,6 +30,7 @@ class Chunk(
 
         return if (y > height) BlockType.AIR
         else if (y == height) BlockType.GRASS
+        else if (y < height - 3) BlockType.STONE
         else BlockType.DIRT
     }
 }

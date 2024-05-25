@@ -6,7 +6,7 @@ import dev.blackoutburst.server.network.Client
 import dev.blackoutburst.server.network.packets.PacketPlayIn
 import java.nio.ByteBuffer
 
-class C02UpdateBlock: PacketPlayIn() {
+class C01UpdateBlock(override val size: Int) : PacketPlayIn() {
 
     override fun decode(client: Client, buffer: ByteBuffer) {
         val blockType = buffer.get()

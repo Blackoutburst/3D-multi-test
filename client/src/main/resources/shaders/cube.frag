@@ -38,6 +38,8 @@ void main() {
     vec3 finalColor = color.xyz;
     if (vPos.y < 0.2 || blockType == 2.0)
         finalColor = vec3(0.82156862745, 0.51568627451, 0.3);
+    if (blockType == 3)
+        finalColor = vec3(0.5, 0.5, 0.5);
 
     vec3 result = (ambient + diffuse) * finalColor;
 

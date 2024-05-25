@@ -18,16 +18,21 @@ class Client(
     fun read(frame: Frame? = null) {
         try {
             frame?.let {
-                Server.packetManager.read(this, it.data)
+                Server.packetManager.readWS(this, it.data)
             }
 
             input?.let {
-                val data = it.readNBytes(5000)
-                if (data.isEmpty()) {
+                val idData = it.readNBytes(1)
+                if (idData.isEmpty()) {
                     Server.removeClient(this)
                     return
                 }
-                Server.packetManager.read(this, data)
+
+                val id = Server.packetManager.getId(idData)
+                val size = Server.packetManager.getSize(id)
+                val data = it.readNBytes(size)
+
+                Server.packetManager.read(id, this, data)
             }
         } catch (ignored: Exception) {
             Server.removeClient(this)
@@ -36,13 +41,19 @@ class Client(
 
     fun write(packet: PacketPlayOut) {
         try {
-            output?.let {
-                it.write(packet.buffer.array())
-                it.flush()
+            output?.let { out ->
+                packet.buffer?.let {
+                    out.write(it.array())
+                    out.flush()
+                }
             }
 
-            webSocket?.let {
-                io { it.send(packet.buffer.array()) }
+            webSocket?.let { ws ->
+                io {
+                    packet.buffer?.let {
+                        ws.send(it.array())
+                    }
+                }
             }
         } catch (ignored: Exception) {
             Server.removeClient(this)

@@ -3,10 +3,9 @@ package dev.blackoutburst.server.core.entity
 import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.server.network.Server
-import dev.blackoutburst.server.network.packets.server.S00MoveEntity
+import dev.blackoutburst.server.network.packets.server.S03UpdateEntity
 import dev.blackoutburst.server.network.packets.server.S01AddEntity
 import dev.blackoutburst.server.network.packets.server.S02RemoveEntity
-import dev.blackoutburst.server.network.packets.server.S04EntityRotation
 import java.util.concurrent.atomic.AtomicInteger
 
 class EntityManager {
@@ -24,19 +23,12 @@ class EntityManager {
         ))
     }
 
-    fun setPosition(id: Int, position: Vector3f) {
+    fun update(id: Int, position: Vector3f, rotation: Vector2f) {
         entities.find { it.id == id }?.let {
             it.position = position
-
-            Server.write(S00MoveEntity(it.id, position))
-        }
-    }
-
-    fun setRotation(id: Int, rotation: Vector2f) {
-        entities.find { it.id == id }?.let {
             it.rotation = rotation
 
-            Server.write(S04EntityRotation(it.id, rotation))
+            Server.write(S03UpdateEntity(it.id, position, rotation))
         }
     }
 

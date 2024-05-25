@@ -5,7 +5,7 @@ import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.network.packets.PacketPlayIn
 import java.nio.ByteBuffer
 
-class S05SendChunk: PacketPlayIn() {
+class S04SendChunk(override val size: Int) : PacketPlayIn() {
 
     override fun decode(buffer: ByteBuffer) {
         val x = buffer.getInt()

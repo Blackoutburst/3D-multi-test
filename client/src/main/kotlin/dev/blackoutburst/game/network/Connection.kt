@@ -40,12 +40,17 @@ class Connection {
     private fun read() {
         try {
             input?.let {
-                val data = it.readNBytes(5000)
-                if (data.isEmpty()) {
+                val idData = it.readNBytes(1)
+                if (idData.isEmpty()) {
                     close()
+                    return
                 }
 
-                manager.read(data)
+                val id = manager.getId(idData)
+                val size = manager.getSize(id)
+                val data = it.readNBytes(size)
+
+                manager.decode(id, data)
             }
         } catch (ignored: Exception) {
             close()
@@ -54,10 +59,12 @@ class Connection {
 
     fun write(packet: PacketPlayOut) {
         try {
-            output?.let {
+            output?.let { out ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    it.write(packet.buffer.array())
-                    it.flush()
+                    packet.buffer?.let {
+                        out.write(it.array())
+                        out.flush()
+                    }
                 }
             }
         } catch (ignored: Exception) {

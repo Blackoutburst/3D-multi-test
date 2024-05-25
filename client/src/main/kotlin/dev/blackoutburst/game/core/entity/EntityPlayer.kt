@@ -4,21 +4,18 @@ import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.core.Window
 import dev.blackoutburst.game.graphics.Color
 import dev.blackoutburst.game.graphics.Cube
-import dev.blackoutburst.game.graphics.WorldBlock
 import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.network.Connection
-import dev.blackoutburst.game.network.packets.client.C00MoveEntity
-import dev.blackoutburst.game.network.packets.client.C01EntityRotation
-import dev.blackoutburst.game.network.packets.client.C02UpdateBlock
+import dev.blackoutburst.game.network.packets.client.C00UpdateEntity
+import dev.blackoutburst.game.network.packets.client.C01UpdateBlock
 import dev.blackoutburst.game.utils.Keyboard
 import dev.blackoutburst.game.utils.Keyboard.isKeyDown
 import dev.blackoutburst.game.utils.Mouse
 import dev.blackoutburst.game.utils.Time
 import dev.blackoutburst.game.world.BlockType
 import dev.blackoutburst.game.world.World
-import javax.annotation.processing.SupportedSourceVersion
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -29,9 +26,6 @@ class EntityPlayer(
     private val world: World,
     private val connection: Connection,
 ): Entity(id, position, rotation) {
-    private val updateTime = 1e9f / 20.0
-    private var initTime = System.nanoTime()
-
     private var vHold = false
 
     private var renderBoundingBox = false
@@ -51,23 +45,26 @@ class EntityPlayer(
     private val sensitivity = 0.1f
 
     override fun update() {
+        networkUpdate()
         if (Window.showCursor) return
         mouseAction()
         rotate()
         move()
         updateCamera()
-        networkUpdate()
 
         val result = world.rayCast(Main.camera.position, Main.camera.getDirection(), 5f)
         result.block?.position?.let { b ->
             result.face?.let { f ->
-                boundingBox.position = Vector3f(b.x.toFloat() + f.x.toFloat(), b.y.toFloat() + f.y.toFloat(), b.z.toFloat() + f.z.toFloat())
+                boundingBox.position = Vector3f(
+                    b.x.toFloat() + f.x.toFloat(),
+                    b.y.toFloat() + f.y.toFloat(),
+                    b.z.toFloat() + f.z.toFloat()
+                )
                 renderBoundingBox = true
             }
         } ?: run {
             renderBoundingBox = false
         }
-
     }
 
     override fun render() {
@@ -76,11 +73,8 @@ class EntityPlayer(
     }
 
     private fun networkUpdate() {
-        if (System.nanoTime() - initTime > updateTime) {
-            initTime += updateTime.toLong()
-
-            connection.write(C00MoveEntity(id, position))
-            connection.write(C01EntityRotation(id, rotation))
+        if (Time.doUpdate()) {
+            connection.write(C00UpdateEntity(id, position, rotation))
         }
     }
 
@@ -148,12 +142,9 @@ class EntityPlayer(
     private fun move() {
         moving = false
 
-        if (isKeyDown(Keyboard.V) && !vHold) {
-            vHold = true
+        if (isKeyDown(Keyboard.V) && !vHold)
             flying = !flying
-        } else {
-            vHold = false
-        }
+        vHold = isKeyDown(Keyboard.V)
 
         var potentialX = position.x
         var potentialZ = position.z
@@ -245,6 +236,7 @@ class EntityPlayer(
 
         velocity.x = 0f
         velocity.z = 0f
+
     }
 
     private fun mouseAction() {
@@ -252,7 +244,7 @@ class EntityPlayer(
             val result = world.rayCast(Main.camera.position, Main.camera.getDirection(), 5f)
             result.block?.let { b ->
                 result.face?.let { f ->
-                    connection.write(C02UpdateBlock(Main.blockType.id, b.position + f))
+                    connection.write(C01UpdateBlock(Main.blockType.id, b.position + f))
                 }
             }
         }
@@ -260,7 +252,7 @@ class EntityPlayer(
         if (Mouse.leftButton.isPressed) {
             world.rayCast(Main.camera.position, Main.camera.getDirection(), 5f)
                 .block?.let {
-                    connection.write(C02UpdateBlock(BlockType.AIR.id, it.position))
+                    connection.write(C01UpdateBlock(BlockType.AIR.id, it.position))
                 }
         }
     }

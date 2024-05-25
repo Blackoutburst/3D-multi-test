@@ -7,7 +7,7 @@ import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.network.packets.PacketPlayIn
 import java.nio.ByteBuffer
 
-class S01AddEntity: PacketPlayIn() {
+class S01AddEntity(override val size: Int) : PacketPlayIn() {
 
     override fun decode(buffer: ByteBuffer) {
         val entityId = buffer.getInt()

@@ -121,7 +121,7 @@ class Window {
 
         if (Keyboard.isKeyDown(Keyboard.LEFT_ALT) && !toggleMousePressed) {
             showCursor = !showCursor
-            glfwSetInputMode(id, GLFW_CURSOR, if (showCursor) GLFW_CURSOR_NORMAL else org.lwjgl.glfw.GLFW.GLFW_CURSOR_DISABLED)
+            glfwSetInputMode(id, GLFW_CURSOR, if (showCursor) GLFW_CURSOR_NORMAL else GLFW_CURSOR_DISABLED)
         }
         toggleMousePressed = Keyboard.isKeyDown(Keyboard.LEFT_ALT)
 

@@ -4,6 +4,8 @@ import org.lwjgl.glfw.GLFW
 
 object Time {
     private var lastTime = System.nanoTime()
+    private val update = 1e9f / 5.0
+    private var init = System.nanoTime()
 
     private var deltaTime = 0.0
 
@@ -11,6 +13,14 @@ object Time {
         val time = System.nanoTime()
         deltaTime = ((time - lastTime) / 1e9f).toDouble()
         lastTime = time
+    }
+
+    fun doUpdate(): Boolean {
+        if (System.nanoTime() - init > update) {
+            init += update.toLong()
+            return (true)
+        }
+        return (false)
     }
 
     val delta: Double

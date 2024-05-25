@@ -4,11 +4,13 @@ import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.network.packets.PacketPlayIn
 import java.nio.ByteBuffer
 
-class S02RemoveEntity: PacketPlayIn() {
+class S02RemoveEntity(override val size: Int) : PacketPlayIn() {
 
     override fun decode(buffer: ByteBuffer) {
         val entityId = buffer.getInt()
 
-        Main.entityManager.removeEntity(entityId)
+        Main.glTaskQueue.add {
+            Main.entityManager.removeEntity(entityId)
+        }
     }
 }

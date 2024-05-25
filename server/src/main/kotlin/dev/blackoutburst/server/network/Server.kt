@@ -7,13 +7,10 @@ import dev.blackoutburst.server.core.world.World
 import dev.blackoutburst.server.network.packets.PacketManager
 import dev.blackoutburst.server.network.packets.PacketPlayOut
 import dev.blackoutburst.server.network.packets.server.S01AddEntity
-import dev.blackoutburst.server.network.packets.server.S03Identification
-import dev.blackoutburst.server.network.packets.server.S05SendChunk
+import dev.blackoutburst.server.network.packets.server.S00Identification
+import dev.blackoutburst.server.network.packets.server.S04SendChunk
 import dev.blackoutburst.server.utils.io
 import io.ktor.websocket.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.net.ServerSocket
 import java.util.*
 import kotlin.collections.LinkedHashSet
@@ -34,12 +31,12 @@ object Server {
         val entity = EntityPlayer(entityManger.newId.getAndIncrement())
         val client = Client(socket, null, input, output, entity.id)
 
-        client.write(S03Identification(client.entityId))
+        client.write(S00Identification(client.entityId))
 
         World.chunks.filter {
             it.value.blocks.any { b -> b.type != BlockType.AIR }
         }.forEach {
-            client.write(S05SendChunk(
+            client.write(S04SendChunk(
                 position = it.value.position,
                 blockData = it.value.blocks.map { b -> b.type.id }
             ))

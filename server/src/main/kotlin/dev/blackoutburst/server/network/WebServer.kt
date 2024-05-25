@@ -4,8 +4,8 @@ import dev.blackoutburst.server.core.entity.EntityPlayer
 import dev.blackoutburst.server.core.world.BlockType
 import dev.blackoutburst.server.core.world.World
 import dev.blackoutburst.server.network.packets.server.S01AddEntity
-import dev.blackoutburst.server.network.packets.server.S03Identification
-import dev.blackoutburst.server.network.packets.server.S05SendChunk
+import dev.blackoutburst.server.network.packets.server.S00Identification
+import dev.blackoutburst.server.network.packets.server.S04SendChunk
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -24,12 +24,12 @@ object WebServer {
                     val entity = EntityPlayer(Server.entityManger.newId.getAndIncrement())
                     val client = Client(null, this, null, null, entity.id)
 
-                    client.write(S03Identification(client.entityId))
+                    client.write(S00Identification(client.entityId))
 
                     World.chunks.filter {
                         it.value.blocks.any { b -> b.type != BlockType.AIR }
                     }.forEach {
-                        client.write(S05SendChunk(
+                        client.write(S04SendChunk(
                             position = it.value.position,
                             blockData = it.value.blocks.map { b -> b.type.id }
                         ))

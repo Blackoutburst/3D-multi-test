@@ -3,9 +3,11 @@ package dev.blackoutburst.game.core.entity
 import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
+import java.util.*
+import kotlin.collections.LinkedHashSet
 
 class EntityManager {
-    private val entities = mutableListOf<Entity>()
+    private val entities: MutableSet<Entity> = Collections.synchronizedSet(LinkedHashSet())
 
     fun addEntity(entity: Entity) {
         if (entity.id == Main.connection.id) return

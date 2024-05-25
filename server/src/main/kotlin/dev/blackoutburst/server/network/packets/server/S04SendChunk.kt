@@ -2,17 +2,20 @@ package dev.blackoutburst.server.network.packets.server
 
 import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.server.network.packets.PacketPlayOut
+import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-private const val ID: Byte = 0x05
+private const val ID: Byte = 0x04
 
-class S05SendChunk(
+class S04SendChunk(
     private val position: Vector3i,
     private val blockData: List<Byte>
 ): PacketPlayOut() {
 
     init {
-        buffer.apply {
+        buffer = ByteBuffer.allocate(4109).clear()
+
+        buffer?.apply {
             order(ByteOrder.BIG_ENDIAN)
             put(ID)
             putInt(position.x)

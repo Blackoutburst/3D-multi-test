@@ -2,7 +2,7 @@ package dev.blackoutburst.server.core.world
 
 import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.server.network.Server
-import dev.blackoutburst.server.network.packets.server.S05SendChunk
+import dev.blackoutburst.server.network.packets.server.S04SendChunk
 import dev.blackoutburst.server.utils.chunkFloor
 import kotlin.random.Random
 
@@ -37,7 +37,7 @@ object World {
             it.position.z == position.z
         }?.type = BlockType.getByID(blockType)
 
-        Server.write(S05SendChunk(
+        Server.write(S04SendChunk(
             index,
             blocks.map { it.type.id }
         ))
