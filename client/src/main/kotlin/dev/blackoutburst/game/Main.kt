@@ -10,7 +10,10 @@ import dev.blackoutburst.game.maths.Matrix
 import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.network.Connection
+import dev.blackoutburst.game.utils.Keyboard
+import dev.blackoutburst.game.utils.Keyboard.isKeyDown
 import dev.blackoutburst.game.utils.Time
+import dev.blackoutburst.game.world.BlockType
 import dev.blackoutburst.game.world.World
 import org.lwjgl.opengl.GL11.*
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -18,6 +21,8 @@ import java.util.concurrent.ConcurrentLinkedQueue
 class Main {
 
     companion object {
+        var blockType = BlockType.GRASS
+
         val glTaskQueue: ConcurrentLinkedQueue<() -> Unit> = ConcurrentLinkedQueue()
 
         val window = Window()
@@ -78,11 +83,14 @@ class Main {
 
             entityManager.update()
 
+            if (isKeyDown(Keyboard.NUM1))
+                blockType = BlockType.GRASS
+            if (isKeyDown(Keyboard.NUM2))
+                blockType = BlockType.DIRT
+
             world.render()
 
             entityManager.render()
-
-            println(getFps())
 
             window.update()
 

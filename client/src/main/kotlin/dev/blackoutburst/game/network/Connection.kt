@@ -21,7 +21,7 @@ class Connection {
 
     fun start() {
         try {
-            socket = Socket("127.0.0.1", 15000).let {
+            socket = Socket("localhost", 15000).let {
                 input = it.getInputStream()
                 output = it.getOutputStream()
                 it

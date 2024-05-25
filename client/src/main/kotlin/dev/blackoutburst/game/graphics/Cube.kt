@@ -60,8 +60,8 @@ class Cube(var position: Vector3f, var rotation: Vector2f, var color: Color) {
         -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
         -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
     )
-    private val vertexShader = Shader.loadShader(Shader.VERTEX, "/shaders/cube.vert")
-    private val fragmentShader = Shader.loadShader(Shader.FRAGMENT, "/shaders/cube.frag")
+    private val vertexShader = Shader.loadShader(Shader.VERTEX, "/shaders/bounding.vert")
+    private val fragmentShader = Shader.loadShader(Shader.FRAGMENT, "/shaders/bounding.frag")
     private val program = ShaderProgram(vertexShader, fragmentShader)
     private val model = Matrix()
 
@@ -102,6 +102,7 @@ class Cube(var position: Vector3f, var rotation: Vector2f, var color: Color) {
             .rotate(xRad, Vector3f(0f, 1f, 0f))
 
         program.setUniform4f("color", color)
+        program.setUniform1f("blockType", Main.blockType.id.toFloat())
         program.setUniform3f("lightColor", Color.WHITE)
         program.setUniform3f("viewPos", Main.camera.position)
 

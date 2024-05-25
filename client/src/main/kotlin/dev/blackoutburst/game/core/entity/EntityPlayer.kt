@@ -18,6 +18,7 @@ import dev.blackoutburst.game.utils.Mouse
 import dev.blackoutburst.game.utils.Time
 import dev.blackoutburst.game.world.BlockType
 import dev.blackoutburst.game.world.World
+import javax.annotation.processing.SupportedSourceVersion
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -28,9 +29,14 @@ class EntityPlayer(
     private val world: World,
     private val connection: Connection,
 ): Entity(id, position, rotation) {
+    private val updateTime = 1e9f / 20.0
+    private var initTime = System.nanoTime()
+
+    private var vHold = false
+
     private var renderBoundingBox = false
     private val boundingBox = Cube(Vector3f(), Vector2f(), Color(0.2f, 0.8f, 0.1f, 0.6f))
-    private val flying = false
+    private var flying = true
     private val hitbox = Vector3f(0.15f, 1.8f, 0.15f)
     private var velocity = Vector3f()
     private val runSpeed = 8f
@@ -70,8 +76,12 @@ class EntityPlayer(
     }
 
     private fun networkUpdate() {
-        connection.write(C00MoveEntity(id, position))
-        connection.write(C01EntityRotation(id, rotation))
+        if (System.nanoTime() - initTime > updateTime) {
+            initTime += updateTime.toLong()
+
+            connection.write(C00MoveEntity(id, position))
+            connection.write(C01EntityRotation(id, rotation))
+        }
     }
 
     private fun updateCamera() {
@@ -138,6 +148,13 @@ class EntityPlayer(
     private fun move() {
         moving = false
 
+        if (isKeyDown(Keyboard.V) && !vHold) {
+            vHold = true
+            flying = !flying
+        } else {
+            vHold = false
+        }
+
         var potentialX = position.x
         var potentialZ = position.z
         var potentialY = position.y
@@ -187,9 +204,9 @@ class EntityPlayer(
 
         val oldPosition = Vector3f(position.x, position.y, position.z)
         position.x = potentialX
-        if (collide()) position.x = oldPosition.x
+        if (collide() && !flying) position.x = oldPosition.x
         position.z = potentialZ
-        if (collide()) position.z = oldPosition.z
+        if (collide() && !flying) position.z = oldPosition.z
 
 
         if (isKeyDown(Keyboard.SPACE) && grounded()) {
@@ -207,7 +224,7 @@ class EntityPlayer(
 
         potentialY += velocity.y * Time.delta.toFloat()
         position.y = potentialY
-        if (collide()) {
+        if (collide() && !flying) {
             position.y = oldPosition.y
             velocity.y = 0f
             isJumping = false
@@ -235,7 +252,7 @@ class EntityPlayer(
             val result = world.rayCast(Main.camera.position, Main.camera.getDirection(), 5f)
             result.block?.let { b ->
                 result.face?.let { f ->
-                    connection.write(C02UpdateBlock(BlockType.GRASS.id, b.position + f))
+                    connection.write(C02UpdateBlock(Main.blockType.id, b.position + f))
                 }
             }
         }

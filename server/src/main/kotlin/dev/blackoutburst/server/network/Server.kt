@@ -15,12 +15,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.ServerSocket
+import java.util.*
+import kotlin.collections.LinkedHashSet
 
 object Server {
 
     private val server = ServerSocket(15000)
 
-    val clients = mutableListOf<Client>()
+    val clients: MutableSet<Client> = Collections.synchronizedSet(LinkedHashSet())
 
     val packetManager = PacketManager()
     val entityManger = EntityManager()
