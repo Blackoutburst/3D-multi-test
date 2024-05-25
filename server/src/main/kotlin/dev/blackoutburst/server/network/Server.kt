@@ -61,8 +61,8 @@ object Server {
     }
 
     fun write(packet: PacketPlayOut) {
-        for (client in clients) {
-            client.write(packet)
+        clients.forEach {
+            it.write(packet)
         }
     }
 
