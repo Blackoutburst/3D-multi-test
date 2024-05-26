@@ -16,7 +16,7 @@ class World {
 
     val chunks = mutableMapOf<String, Chunk>()
 
-    var worldBlocks = listOf<WorldBlock>()
+    var worldBlocks = mutableListOf<WorldBlock>()
 
     fun getCloseChunk(position: Vector3f): List<Chunk> {
         val indexes = mutableListOf<String>()
@@ -58,7 +58,7 @@ class World {
         val blockAsList = blocks.flatMap { it.flatMap { it.toList() } }.filter { it.type != BlockType.AIR }.filter { isFree(position, it, blocks) }
         chunks[position.toString()] = Chunk(position, blocks, blockAsList)
 
-        worldBlocks = chunks.map { it.value.blockAsList }.flatten()
+        worldBlocks = chunks.map { it.value.blockAsList }.flatten().toMutableList()
 
         update()
     }
@@ -80,7 +80,7 @@ class World {
         return false
     }
 
-    private fun update() = WorldBlock.setOffset(worldBlocks)
+    fun update() = WorldBlock.setOffset(worldBlocks)
 
     fun render() = WorldBlock.draw(worldBlocks.size)
 

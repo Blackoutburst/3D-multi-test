@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL31.glDrawArraysInstanced
 import java.nio.Buffer
 
 
-class WorldBlock(val type: BlockType, val position: Vector3i) {
+class WorldBlock(var type: BlockType, val position: Vector3i) {
     companion object {
         private var vaoID = 0
 

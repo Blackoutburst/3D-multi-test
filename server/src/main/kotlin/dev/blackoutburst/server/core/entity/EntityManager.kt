@@ -32,6 +32,12 @@ class EntityManager {
         }
     }
 
+    fun sendData() {
+        entities.forEach {
+            Server.write(S03UpdateEntity(it.id, it.position, it.rotation))
+        }
+    }
+
     fun removeEntity(id: Int) {
         entities.find { it.id == id }?.let {
             entities.remove(it)

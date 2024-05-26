@@ -55,6 +55,12 @@ class Vector2f {
         return (newVector)
     }
 
+    fun lerp(target: Vector2f, alpha: Float): Vector2f {
+        val newX = (1 - alpha) * x + alpha * target.x
+        val newY = (1 - alpha) * y + alpha * target.y
+        return Vector2f(newX, newY)
+    }
+
     override fun toString(): String {
         return "[$x, $y]"
     }

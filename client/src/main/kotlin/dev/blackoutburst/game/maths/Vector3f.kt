@@ -68,6 +68,13 @@ class Vector3f {
         return (newVector)
     }
 
+    fun lerp(target: Vector3f, alpha: Float): Vector3f {
+        val newX = (1 - alpha) * x + alpha * target.x
+        val newY = (1 - alpha) * y + alpha * target.y
+        val newZ = (1 - alpha) * z + alpha * target.z
+        return Vector3f(newX, newY, newZ)
+    }
+
     override fun toString(): String {
         return "[$x, $y, $z]"
     }

@@ -16,7 +16,13 @@ class EntityManager {
     }
 
     fun update() {
-        entities.forEach { it.update() }
+        entities.forEach {
+            if (it.id != Main.connection.id) {
+                it.position = it.position.lerp(it.pasSmoothPosition, 0.1f)
+                it.rotation = it.rotation.lerp(it.pasSmoothRotation, 0.1f)
+            }
+            it.update()
+        }
     }
 
     fun render() {
@@ -27,7 +33,7 @@ class EntityManager {
         if (id == Main.connection.id) return
 
         entities.find { it.id == id }?.let {
-            it.position = position
+            it.pasSmoothPosition = position
         }
     }
 
@@ -35,7 +41,7 @@ class EntityManager {
         if (id == Main.connection.id) return
 
         entities.find { it.id == id }?.let {
-            it.rotation = rotation
+            it.pasSmoothRotation = rotation
         }
     }
 

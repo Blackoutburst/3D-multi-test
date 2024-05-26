@@ -3,10 +3,10 @@ package dev.blackoutburst.game.utils
 import org.lwjgl.glfw.GLFW
 
 object Time {
-    private var lastTime = System.nanoTime()
-    private val update = 1e9f / 5.0
-    private var init = System.nanoTime()
+    private const val UPDATE = 1e9f / 20.0
 
+    private var lastTime = System.nanoTime()
+    private var init = System.nanoTime()
     private var deltaTime = 0.0
 
     internal fun updateDelta() {
@@ -16,8 +16,8 @@ object Time {
     }
 
     fun doUpdate(): Boolean {
-        if (System.nanoTime() - init > update) {
-            init += update.toLong()
+        if (System.nanoTime() - init > UPDATE) {
+            init += UPDATE.toLong()
             return (true)
         }
         return (false)
