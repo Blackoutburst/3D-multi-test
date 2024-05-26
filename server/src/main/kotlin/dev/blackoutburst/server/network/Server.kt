@@ -34,11 +34,11 @@ object Server {
         client.write(S00Identification(client.entityId))
 
         World.chunks.filter {
-            it.value.blocks.any { b -> b.type != BlockType.AIR }
+            it.value.blocks.any { b -> b != BlockType.AIR.id }
         }.forEach {
             client.write(S04SendChunk(
                 position = it.value.position,
-                blockData = it.value.blocks.map { b -> b.type.id }
+                blockData = it.value.blocks
             ))
         }
 

@@ -4,6 +4,7 @@ import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.core.Window
 import dev.blackoutburst.game.graphics.Color
 import dev.blackoutburst.game.graphics.Cube
+import dev.blackoutburst.game.graphics.WorldBlock
 import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.maths.Vector3i
@@ -15,6 +16,7 @@ import dev.blackoutburst.game.utils.Keyboard.isKeyDown
 import dev.blackoutburst.game.utils.Mouse
 import dev.blackoutburst.game.utils.Time
 import dev.blackoutburst.game.world.BlockType
+import dev.blackoutburst.game.world.Chunk
 import dev.blackoutburst.game.world.World
 import kotlin.math.cos
 import kotlin.math.sin
@@ -52,14 +54,14 @@ class EntityPlayer(
         move()
         updateCamera()
 
-        val result = world.rayCast(Main.camera.position, Main.camera.getDirection(), 5f)
+        val result = world.dda(Main.camera.position, Main.camera.getDirection(), 20)
         result.block?.position?.let { b ->
             result.face?.let { f ->
                 boundingBox.position = Vector3f(
                     b.x.toFloat() + f.x.toFloat(),
                     b.y.toFloat() + f.y.toFloat(),
                     b.z.toFloat() + f.z.toFloat()
-                )
+                ) + Vector3f(0.5f)
                 renderBoundingBox = true
             }
         } ?: run {
@@ -85,36 +87,44 @@ class EntityPlayer(
     }
 
     private fun collide(): Boolean {
-        val playerMin = position - Vector3f(-hitbox.x * 2f, hitbox.y/2f, -hitbox.z * 2f)
-        val playerMax = position + Vector3f(hitbox.x * 5f, hitbox.y/2f, hitbox.z * 5f)
+        val playerMin = position - Vector3f(-hitbox.x * 2f, hitbox.y/2f, -hitbox.z * 2f) - Vector3f(0.5f)
+        val playerMax = position + Vector3f(hitbox.x * 5f, hitbox.y/2f, hitbox.z * 5f) - Vector3f(0.5f)
 
-        for (block in world.getCloseChunk(position).flatMap { it.blockAsList }) {
-            val blockMin = block.position
-            val blockMax = block.position + Vector3i(1)
+        for (chunk in world.getCloseChunk(position)) {
+            for (i in 0 until chunk.blocks.size) {
+                val blockMin = chunk.indexToXYZ(i)
+                val blockMax = blockMin + Vector3i(1)
 
-            if (playerMin.x <= blockMax.x && playerMax.x >= blockMin.x &&
-                playerMin.y <= blockMax.y && playerMax.y >= blockMin.y &&
-                playerMin.z <= blockMax.z && playerMax.z >= blockMin.z) {
-                return true
+                if (playerMin.x <= blockMax.x && playerMax.x >= blockMin.x &&
+                    playerMin.y <= blockMax.y && playerMax.y >= blockMin.y &&
+                    playerMin.z <= blockMax.z && playerMax.z >= blockMin.z &&
+                    chunk.blocks[i] != BlockType.AIR.id
+                ) {
+                    return true
+                }
             }
         }
         return false
     }
 
     private fun grounded(): Boolean {
-        val playerMin = position - Vector3f(-hitbox.x * 2f, hitbox.y/2f, -hitbox.z * 2f)
-        val playerMax = position + Vector3f(hitbox.x * 5f, hitbox.y/2f, hitbox.z * 5f)
+        val playerMin = position - Vector3f(-hitbox.x * 2f, hitbox.y/2f, -hitbox.z * 2f) - Vector3f(0.5f)
+        val playerMax = position + Vector3f(hitbox.x * 5f, hitbox.y/2f, hitbox.z * 5f) - Vector3f(0.5f)
 
         val playerFeetY = playerMin.y - 0.1f
 
-        for (block in world.getCloseChunk(position).flatMap { it.blockAsList }) {
-            val blockMin = block.position
-            val blockMax = block.position + Vector3i(1)
+        for (chunk in world.getCloseChunk(position)) {
+            for (i in 0 until chunk.blocks.size) {
+                val blockMin = chunk.indexToXYZ(i)
+                val blockMax = blockMin + Vector3i(1)
 
-            if (playerMin.x < blockMax.x && playerMax.x > blockMin.x &&
-                playerFeetY < blockMax.y && playerMin.y >= blockMin.y &&
-                playerMin.z < blockMax.z && playerMax.z > blockMin.z) {
-                return true
+                if (playerMin.x < blockMax.x && playerMax.x > blockMin.x &&
+                    playerFeetY < blockMax.y && playerMin.y >= blockMin.y &&
+                    playerMin.z < blockMax.z && playerMax.z > blockMin.z &&
+                    chunk.blocks[i] != BlockType.AIR.id
+                ) {
+                    return true
+                }
             }
         }
         return false
@@ -241,7 +251,7 @@ class EntityPlayer(
 
     private fun mouseAction() {
         if (Mouse.rightButton.isPressed) {
-            val result = world.rayCast(Main.camera.position, Main.camera.getDirection(), 5f)
+            val result = world.dda(Main.camera.position, Main.camera.getDirection(), 20)
             result.block?.let { b ->
                 result.face?.let { f ->
                     connection.write(C01UpdateBlock(Main.blockType.id, b.position + f))
@@ -250,7 +260,7 @@ class EntityPlayer(
         }
 
         if (Mouse.leftButton.isPressed) {
-            world.rayCast(Main.camera.position, Main.camera.getDirection(), 5f)
+            world.dda(Main.camera.position, Main.camera.getDirection(), 20)
                 .block?.let {
                     connection.write(C01UpdateBlock(BlockType.AIR.id, it.position))
                 }

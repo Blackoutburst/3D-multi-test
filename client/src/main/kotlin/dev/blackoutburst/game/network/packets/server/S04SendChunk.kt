@@ -3,6 +3,7 @@ package dev.blackoutburst.game.network.packets.server
 import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.network.packets.PacketPlayIn
+import dev.blackoutburst.game.world.BlockType
 import java.nio.ByteBuffer
 
 class S04SendChunk(override val size: Int) : PacketPlayIn() {
@@ -13,10 +14,10 @@ class S04SendChunk(override val size: Int) : PacketPlayIn() {
         val z = buffer.getInt()
 
         val position = Vector3i(x, y, z)
-        val blockData = mutableListOf<Byte>()
+        val blockData = Array(4096) { BlockType.AIR.id }
 
         for (i in 0 until 4096)
-            blockData.add(buffer.get())
+            blockData[i] = buffer.get()
 
         Main.glTaskQueue.add {
             Main.world.updateChunk(position, blockData)

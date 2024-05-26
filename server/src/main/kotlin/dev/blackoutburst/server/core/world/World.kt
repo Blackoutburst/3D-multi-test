@@ -8,8 +8,8 @@ import kotlin.random.Random
 
 object World {
 
-    val WORLD_SIZE = 6
-    val WORLD_HEIGHT = 2
+    val WORLD_SIZE = 4
+    val WORLD_HEIGHT = 1
     val CHUNK_SIZE = 16
 
     val seed = Random.nextLong()
@@ -23,24 +23,20 @@ object World {
     }
 
     fun updateChunk(position: Vector3i, blockType: Byte) {
-        val index = (Vector3i(
-            chunkFloor(position.x.toFloat()),
-            chunkFloor(position.y.toFloat()),
-            chunkFloor(position.z.toFloat())
-        ) / CHUNK_SIZE * CHUNK_SIZE)
+        val index = (Vector3i(chunkFloor(position.x.toFloat()), chunkFloor(position.y.toFloat()), chunkFloor(position.z.toFloat())))
 
-        val blocks = chunks[index.toString()]?.blocks ?: return
+        val chunk = chunks[index.toString()] ?: return
 
-        blocks.find {
-            it.position.x == position.x &&
-            it.position.y == position.y &&
-            it.position.z == position.z
-        }?.type = BlockType.getByID(blockType)
+        val positionAsInt = Vector3i(
+            if (position.x % 16 < 0) position.x % 16 + CHUNK_SIZE else position.x % 16,
+            if (position.y % 16 < 0) position.y % 16 + CHUNK_SIZE else position.y % 16,
+            if (position.z % 16 < 0) position.z  % 16 + CHUNK_SIZE else position.z % 16,
+        )
 
-        Server.write(S04SendChunk(
-            index,
-            blocks.map { it.type.id }
-        ))
+        val blockId = chunk.xyzToIndex(positionAsInt.x, positionAsInt.y, positionAsInt.z)
+        chunk.blocks[blockId] = blockType
+
+        Server.write(S04SendChunk(index, chunk.blocks))
     }
 
     private fun addChunk(x: Int, y: Int, z: Int) {

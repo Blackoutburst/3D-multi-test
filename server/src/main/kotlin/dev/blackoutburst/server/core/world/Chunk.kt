@@ -5,24 +5,21 @@ import dev.blackoutburst.server.utils.OpenSimplex2
 
 class Chunk(
     val position: Vector3i,
-    val blocks: MutableList<Block> = mutableListOf()
+    val blocks: Array<Byte> = Array(4096) { BlockType.AIR.id }
 ) {
 
     init {
-        for (x in 0 until World.CHUNK_SIZE) {
-            for (y in 0 until World.CHUNK_SIZE) {
-                for (z in 0 until World.CHUNK_SIZE) {
-                    blocks.add(Block(
-                        type = getType(position.x + x, position.y + y, position.z + z),
-                        position = Vector3i(
-                            position.x + x,
-                            position.y + y,
-                            position.z + z
-                        ),
-                    ))
-                }
-            }
+        for (i in 0 until 4096) {
+            blocks[i] = getType(position.x + i % 16, position.y + (i / 16) % 16, position.z + (i / (16 * 16)) % 16).id
         }
+    }
+
+    fun xyzToIndex(x: Int, y: Int, z: Int): Int {
+        for (i in 0 until 4096) {
+            if (x == i % 16 && y == (i / 16) % 16 && z == (i / (16 * 16)) % 16)
+                return i
+        }
+        return 0
     }
 
     private fun getType(x:Int, y: Int, z: Int): BlockType {

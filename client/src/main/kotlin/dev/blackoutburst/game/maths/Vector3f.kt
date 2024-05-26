@@ -1,5 +1,6 @@
 package dev.blackoutburst.game.maths
 
+import kotlin.math.round
 import kotlin.math.sqrt
 
 class Vector3f {
@@ -31,10 +32,12 @@ class Vector3f {
         this.z = z
     }
 
-    operator fun plus(other: Vector3f) = Vector3f(x + other.x, y + other.y, z + other.z)
-    operator fun minus(other: Vector3f) = Vector3f(x - other.x, y - other.y, z - other.z)
     operator fun div(scalar: Float) = Vector3f(x / scalar, y / scalar, z / scalar)
+    operator fun minus(other: Vector3f) = Vector3f(x - other.x, y - other.y, z - other.z)
+    operator fun plus(other: Vector3f) = Vector3f(x + other.x, y + other.y, z + other.z)
+    operator fun plus(value: Float): Vector3f = Vector3f(this.x + value, this.y + value, this.z + value)
     operator fun times(scalar: Float) = Vector3f(x * scalar, y * scalar, z * scalar)
+    operator fun times(other: Vector3f): Vector3f = Vector3f(this.x * other.x, this.y * other.y, this.z * other.z)
 
     fun normalize(): Vector3f {
         val mag = sqrt((x * x + y * y + z * z).toDouble()).toFloat()
@@ -58,6 +61,8 @@ class Vector3f {
     fun length(): Float {
         return (sqrt((x * x + y * y + z * z).toDouble()).toFloat())
     }
+
+    fun toInt(): Vector3i = Vector3i(round(this.x).toInt(), round(this.y).toInt(), round(this.z).toInt())
 
     fun copy(): Vector3f {
         val newVector = Vector3f()
