@@ -8,7 +8,7 @@ import kotlin.math.sin
 
 
 class Camera {
-    var position = Vector3f(0f, 20f, 0f)
+    var position = Vector3f(0f, 50f, 0f)
     var rotation = Vector2f(0f)
 
     var view = Matrix()

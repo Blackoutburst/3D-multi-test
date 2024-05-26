@@ -15,7 +15,7 @@ class S00Identification(override val size: Int): PacketPlayIn() {
             Main.entityManager.addEntity(
                 EntityPlayer(
                     id = entityId,
-                    position = Vector3f(),
+                    position = Vector3f(0f, 50f, 0f),
                     world = Main.world,
                     connection = Main.connection,
                 )

@@ -14,13 +14,7 @@ class Chunk(
         }
     }
 
-    fun xyzToIndex(x: Int, y: Int, z: Int): Int {
-        for (i in 0 until 4096) {
-            if (x == i % 16 && y == (i / 16) % 16 && z == (i / (16 * 16)) % 16)
-                return i
-        }
-        return 0
-    }
+    fun xyzToIndex(x: Int, y: Int, z: Int): Int = x + 16 * (y + 16 * z)
 
     private fun getType(x:Int, y: Int, z: Int): BlockType {
         val height = (OpenSimplex2.noise2(World.seed, x / 100.0, z / 100.0) * 7).toInt() + 10

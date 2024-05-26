@@ -18,21 +18,13 @@ class Chunk(
         }
     }
 
-    fun blockAt(x: Int, y: Int, z: Int): Byte {
-        for (i in 0 until 4096) {
-            if (x == i % 16 && y == (i / 16) % 16 && z == (i / (16 * 16)) % 16)
-                return blocks[i]
-        }
-        return BlockType.AIR.id
-    }
+    fun blockAt(x: Int, y: Int, z: Int): Byte = blocks[xyzToIndex(x, y, z)]
 
-    fun xyzToIndex(x: Int, y: Int, z: Int): Int {
-        for (i in 0 until 4096) {
-            if (x == i % 16 && y == (i / 16) % 16 && z == (i / (16 * 16)) % 16)
-                return i
-        }
-        return 0
-    }
+    fun xyzToIndex(x: Int, y: Int, z: Int): Int = x + 16 * (y + 16 * z)
+
+    fun isAir(x: Int, y: Int, z: Int): Boolean = if (isWithinBounds(x, y, z)) blockAt(x, y, z) == BlockType.AIR.id else true
+
+    fun isWithinBounds(x: Int, y: Int, z: Int): Boolean = x in 0 until 16 && y in 0 until 16 && z in 0 until 16
 
     fun indexToXYZ(index: Int): Vector3i = Vector3i(index % 16, (index / 16) % 16, (index / (16 * 16)) % 16) + this.position
 }

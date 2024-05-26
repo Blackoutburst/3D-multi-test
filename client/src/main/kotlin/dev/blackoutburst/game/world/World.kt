@@ -44,10 +44,21 @@ class World {
         worldBlocks = chunks.map { c ->
             c.value.blocks.mapIndexed { index, value ->
                 WorldBlock(value, c.value.indexToXYZ(index))
-            }.filter { wb -> wb.type != BlockType.AIR.id }
+            }.filter { wb -> wb.type != BlockType.AIR.id && isVisible(wb, c.value) }
         }.flatten()
 
         update()
+    }
+
+    fun isVisible(worldBlock: WorldBlock, chunk: Chunk): Boolean {
+        val pos = worldBlock.position - chunk.position
+        val x = pos.x
+        val y = pos.y
+        val z = pos.z
+
+        return chunk.isAir(x + 1, y, z) || chunk.isAir(x - 1, y, z) ||
+                chunk.isAir(x, y + 1, z) || chunk.isAir(x, y - 1, z) ||
+                chunk.isAir(x, y, z + 1) || chunk.isAir(x, y, z - 1)
     }
 
     fun update() = WorldBlock.setOffset(worldBlocks)

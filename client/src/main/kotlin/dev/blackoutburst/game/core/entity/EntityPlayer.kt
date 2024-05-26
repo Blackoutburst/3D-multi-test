@@ -23,7 +23,7 @@ import kotlin.math.sin
 
 class EntityPlayer(
     id: Int,
-    position: Vector3f = Vector3f(),
+    position: Vector3f = Vector3f(0f, 50f, 0f),
     rotation: Vector2f = Vector2f(),
     private val world: World,
     private val connection: Connection,
@@ -232,7 +232,7 @@ class EntityPlayer(
         }
 
         if (position.y < -50f) {
-            position.y = 20f
+            position.y = 50f
             velocity.y = 0f
         }
 
