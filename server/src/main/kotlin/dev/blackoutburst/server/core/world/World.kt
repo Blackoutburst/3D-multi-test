@@ -8,18 +8,17 @@ import kotlin.random.Random
 
 object World {
 
-    val WORLD_SIZE = 4
-    val WORLD_HEIGHT = 1
     val CHUNK_SIZE = 16
 
     val seed = Random.nextLong()
     val chunks = mutableMapOf<String, Chunk>()
 
-    fun generate() {
-        for (x in -WORLD_SIZE until WORLD_SIZE)
-            for (y in 0 until WORLD_HEIGHT)
-                for (z in -WORLD_SIZE until WORLD_SIZE)
+    fun generate(size: Int, height: Int) {
+        for (x in -size until size)
+            for (y in 0 until height)
+                for (z in -size until size)
                     addChunk(x * CHUNK_SIZE, y * CHUNK_SIZE, z * CHUNK_SIZE)
+
     }
 
     fun updateChunk(position: Vector3i, blockType: Byte) {

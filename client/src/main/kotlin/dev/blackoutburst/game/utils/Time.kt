@@ -9,7 +9,7 @@ object Time {
     private var init = System.nanoTime()
     private var deltaTime = 0.0
 
-    internal fun updateDelta() {
+    fun updateDelta() {
         val time = System.nanoTime()
         deltaTime = ((time - lastTime) / 1e9f).toDouble()
         lastTime = time

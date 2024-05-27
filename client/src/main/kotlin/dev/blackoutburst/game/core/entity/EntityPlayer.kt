@@ -1,10 +1,9 @@
 package dev.blackoutburst.game.core.entity
 
 import dev.blackoutburst.game.Main
-import dev.blackoutburst.game.core.Window
+import dev.blackoutburst.game.core.Display
 import dev.blackoutburst.game.graphics.Color
 import dev.blackoutburst.game.graphics.Cube
-import dev.blackoutburst.game.graphics.WorldBlock
 import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.maths.Vector3i
@@ -16,7 +15,6 @@ import dev.blackoutburst.game.utils.Keyboard.isKeyDown
 import dev.blackoutburst.game.utils.Mouse
 import dev.blackoutburst.game.utils.Time
 import dev.blackoutburst.game.world.BlockType
-import dev.blackoutburst.game.world.Chunk
 import dev.blackoutburst.game.world.World
 import kotlin.math.cos
 import kotlin.math.sin
@@ -48,7 +46,7 @@ class EntityPlayer(
 
     override fun update() {
         networkUpdate()
-        if (Window.showCursor) return
+        if (Display.showCursor) return
         mouseAction()
         rotate()
         move()

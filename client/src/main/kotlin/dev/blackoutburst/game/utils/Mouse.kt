@@ -1,6 +1,6 @@
 package dev.blackoutburst.game.utils
 
-import dev.blackoutburst.game.core.Window
+import dev.blackoutburst.game.core.Display
 import dev.blackoutburst.game.maths.Vector2f
 import org.lwjgl.glfw.GLFW.glfwGetCursorPos
 import org.lwjgl.system.MemoryStack
@@ -23,7 +23,7 @@ object Mouse {
 			MemoryStack.stackPush().use { stack ->
 				val width = stack.mallocDouble(1)
 				val height = stack.mallocDouble(1)
-				glfwGetCursorPos(Window.id, width, height)
+				glfwGetCursorPos(Display.getWindow(), width, height)
 				size.set(width.get().toFloat(), height.get().toFloat())
 				(width as Buffer).clear()
 				(height as Buffer).clear()

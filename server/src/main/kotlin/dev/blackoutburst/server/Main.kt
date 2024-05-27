@@ -9,8 +9,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-fun main() {
-    World.generate()
+fun main(args: Array<String>) {
+    World.generate(args[0].toInt(), args[1].toInt())
 
     CoroutineScope(Dispatchers.IO).launch { WebServer }
 

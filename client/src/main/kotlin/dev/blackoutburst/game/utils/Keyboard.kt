@@ -1,6 +1,6 @@
 package dev.blackoutburst.game.utils
 
-import dev.blackoutburst.game.core.Window
+import dev.blackoutburst.game.core.Display
 import org.lwjgl.glfw.GLFW
 
 object Keyboard {
@@ -129,6 +129,6 @@ object Keyboard {
     const val LAST: Int = MENU
 
     fun isKeyDown(key: Int): Boolean {
-        return (GLFW.glfwGetKey(Window.id, key) == GLFW.GLFW_PRESS)
+        return (GLFW.glfwGetKey(Display.getWindow(), key) == GLFW.GLFW_PRESS)
     }
 }

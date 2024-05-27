@@ -1,14 +1,11 @@
 package dev.blackoutburst.game
 
 import dev.blackoutburst.game.core.Camera
-import dev.blackoutburst.game.core.Window
+import dev.blackoutburst.game.core.Display
 import dev.blackoutburst.game.core.entity.EntityManager
 import dev.blackoutburst.game.graphics.Color
-import dev.blackoutburst.game.graphics.Cube
 import dev.blackoutburst.game.graphics.Texture
 import dev.blackoutburst.game.maths.Matrix
-import dev.blackoutburst.game.maths.Vector2f
-import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.network.Connection
 import dev.blackoutburst.game.utils.Keyboard
 import dev.blackoutburst.game.utils.Keyboard.isKeyDown
@@ -25,12 +22,12 @@ class Main {
 
         val glTaskQueue: ConcurrentLinkedQueue<() -> Unit> = ConcurrentLinkedQueue()
 
-        val window = Window()
-            .setFullscreenMode(Window.FullScreenMode.NONE)
+        val window = Display()
+            .setFullscreenMode(Display.FullScreenMode.NONE)
             .setTitle("MeinRaft")
             .create()
 
-        val projection = Matrix()
+        var projection = Matrix()
             .projectionMatrix(90f, 1000f, 0.1f)
 
         val world = World()
@@ -56,6 +53,8 @@ class Main {
     }
 
     private fun setup() {
+        window.setClearColor(Color(0.67f, 0.80f, 0.92f))
+
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glEnable(GL_CULL_FACE)
@@ -79,7 +78,7 @@ class Main {
         while (window.isOpen) {
             pollGlTasks()
 
-            window.clear(Color(0.67f, 0.80f, 0.92f))
+            window.clear()
 
             entityManager.update()
 

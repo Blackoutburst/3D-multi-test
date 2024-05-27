@@ -1,6 +1,6 @@
 package dev.blackoutburst.game.maths
 
-import dev.blackoutburst.game.core.Window
+import dev.blackoutburst.game.core.Display
 import java.nio.FloatBuffer
 import kotlin.math.cos
 import kotlin.math.sin
@@ -30,7 +30,7 @@ class Matrix {
     }
 
     fun projectionMatrix(fov: Float, far: Float, near: Float): Matrix {
-        val aspectRatio = Window.width.toFloat() / Window.height.toFloat()
+        val aspectRatio = Display.getWidth().toFloat() / Display.getHeight().toFloat()
         val y_scale = ((1f / tan(Math.toRadians((fov / 2f).toDouble()))) * aspectRatio).toFloat()
         val x_scale = y_scale / aspectRatio
         val frustum_length = far - near
