@@ -1,11 +1,11 @@
 # Current Protocol
 
 ## Client bound
-Move Entity: `0x00`
-| id   | entityId | x     | y     | z     |
-|------|----------|-------|-------|-------|
-| byte | int      | float | float | float |
 
+Identification: `0x00`
+| id   | entityId |
+|------|----------|
+| byte | int      |
 
 Add Entity: `0x01`
 | id   | entityId | x     | y     | z     | yaw   | pitch |
@@ -17,33 +17,24 @@ Remove Entity: `0x02`
 |------|----------|
 | byte | int      |
 
-Identification: `0x03`
-| id   | entityId |
-|------|----------|
-| byte | int      |
 
-Entity Rotation: `0x04`
-| id   | entityId | yaw   | pitch |
-|------|----------|-------|-------|
-| byte | int      | float | float |
+Update Entity: `0x03`
+| id   | entityId | x     | y     | z     | yaw   | pitch |
+|------|----------|-------|-------|-------|-------|-------|
+| byte | int      | float | float | float | float | float |
 
-Send Chunk: `0x05`
+Send Chunk: `0x04`
 | id   | x   | y   | z   | BlockType  |
 |------|-----|-----|-----|------------|
 | byte | int | int | int | byte[4096] |
 
 ## Server bound
-Move Entity: `0x00`
-| id   | entityId | x     | y     | z     |
-|------|----------|-------|-------|-------|
-| byte | int      | float | float | float |
+Update Entity: `0x00`
+| id   | entityId | x     | y     | z     | yaw   | pitch |
+|------|----------|-------|-------|-------|-------|-------|
+| byte | int      | float | float | float | float | float |
 
-Entity Rotation: `0x01`
-| id   | entityId | yaw   | pitch |
-|------|----------|-------|-------|
-| byte | int      | float | float |
-
-Update Block: `0x02`
+Update Block: `0x01`
 | id   | BlockType | x   | y   | z   |
 |------|-----------|-----|-----|-----|
 | byte | byte      | int | int | int |
@@ -53,12 +44,14 @@ Update Block: `0x02`
 |----|-------|
 | 0  | Air   |
 | 1  | Grass |
+| 2  | Dirt  |
+| 3  | Stone |
 
-
-## Limitation
-Packet size is `5000 bytes` (r/w)
 
 ## Information
-- Packets **Server bound** `[0x00, 0x01]` check the client `entityId`. Client must save the `entityId` received by the packet **Client Bound** `0x03` upon connecting to the server. Without this ID client wont be able to move
+- Packets **Server bound** `[0x00]` check the client `entityId`. Client must save the `entityId` received by the packet **Client Bound** `0x00` upon connecting to the server. Without this ID client won't be able to move
 - This protocol uses **BIG ENDIAN**
 - Server doesn't send empty chunk
+
+## Intended way to read data
+First read the first byte to determine which packet you received. Then read the rest of the data
