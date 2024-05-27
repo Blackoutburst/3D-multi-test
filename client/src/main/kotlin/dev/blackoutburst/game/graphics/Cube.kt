@@ -114,9 +114,7 @@ class Cube(var position: Vector3f, var rotation: Vector2f, var color: Color) {
     fun draw() {
         setUniforms()
 
-        glBindTexture(GL_TEXTURE_2D, 1)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, 1)
 
         glUseProgram(program.id)
         glBindVertexArray(vaoID)

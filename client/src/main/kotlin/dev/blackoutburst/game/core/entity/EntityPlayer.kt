@@ -29,7 +29,7 @@ class EntityPlayer(
     private var vHold = false
 
     private var renderBoundingBox = false
-    private val boundingBox = Cube(Vector3f(), Vector2f(), Color(0.2f, 0.8f, 0.1f, 0.6f))
+    private val boundingBox = Cube(Vector3f(), Vector2f(), Color(1f,1f,1f,0.5f))
     private var flying = true
     private val hitbox = Vector3f(0.15f, 1.8f, 0.15f)
     private var velocity = Vector3f()

@@ -11,7 +11,7 @@ in vec2 uv;
 in vec3 normals;
 
 uniform float blockType;
-uniform sampler2D text;
+uniform sampler2DArray text;
 uniform vec3 lightColor;
 uniform vec3 viewPos;
 
@@ -35,13 +35,7 @@ void main() {
 
     vec3 ambient = ambientStrength * lightColor;
 
-    vec3 finalColor = color.xyz;
-    if (blockType == 2.0)
-        finalColor = vec3(0.82156862745, 0.51568627451, 0.3);
-    if (blockType == 3)
-        finalColor = vec3(0.5, 0.5, 0.5);
+    vec3 result = (ambient + diffuse) * color.xyz;
 
-    vec3 result = (ambient + diffuse) * finalColor;
-
-    FragColor = vec4(result, color.w) * texture(text, uv);
+    FragColor = vec4(result, color.w) * texture(text, vec3(uv, blockType - 1));
 }

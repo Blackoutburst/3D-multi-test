@@ -14,12 +14,12 @@ out vec2 uv;
 out vec3 vertPos;
 out vec3 normals;
 out vec4 vPos;
-flat out float blockType;
+flat out float layer;
 
 void main() {
 	uv = textCoord;
 	normals = normal;
-	blockType = type;
+	layer = type - 1;
 
 	vPos = vec4(position, 1.0);
 	vertPos = vec3(model * vec4(position, 1.0));

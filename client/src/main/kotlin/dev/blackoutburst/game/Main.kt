@@ -5,6 +5,7 @@ import dev.blackoutburst.game.core.Display
 import dev.blackoutburst.game.core.entity.EntityManager
 import dev.blackoutburst.game.graphics.Color
 import dev.blackoutburst.game.graphics.Texture
+import dev.blackoutburst.game.graphics.TextureArray
 import dev.blackoutburst.game.maths.Matrix
 import dev.blackoutburst.game.network.Connection
 import dev.blackoutburst.game.utils.Keyboard
@@ -61,7 +62,7 @@ class Main {
         glCullFace(GL_BACK)
         glEnable(GL_DEPTH_TEST)
 
-        Texture("grass.png")
+        TextureArray(listOf("./blocks/grass_top.png", "./blocks/dirt.png", "./blocks/stone.png"))
 
         connection.start()
     }

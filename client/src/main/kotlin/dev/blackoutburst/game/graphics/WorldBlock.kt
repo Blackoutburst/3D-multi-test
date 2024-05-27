@@ -95,7 +95,7 @@ class WorldBlock(var type: Byte, val position: Vector3i) {
         }
 
         private fun setUniforms() {
-            program.setUniform4f("color", Color(0.2f, 0.8f, 0.1f))
+            program.setUniform4f("color", Color.WHITE)
             program.setUniform3f("lightColor", Color.WHITE)
             program.setUniform3f("viewPos", Main.camera.position)
 
@@ -171,10 +171,7 @@ class WorldBlock(var type: Byte, val position: Vector3i) {
         fun draw(size: Int) {
             setUniforms()
 
-            glBindTexture(GL_TEXTURE_2D, 1)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-
+            glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, 1)
             glUseProgram(program.id)
             glBindVertexArray(vaoID)
 
