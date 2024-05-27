@@ -1,6 +1,17 @@
-# Current Protocol
+# 3D Multi Test
+This project is a Minecraft cloe in OpenGL/WebGL using a custom network protocol
 
-## Client bound
+## Clients
+
+### Kotlin client (OpenGL)
+The kotlin client is up to date and ready to use
+
+### JavaScript client (WebGL)
+The JavaScript client is not up to date
+
+## Current Protocol
+
+### Client bound
 
 Identification: `0x00`
 | id   | entityId |
@@ -28,7 +39,7 @@ Send Chunk: `0x04`
 |------|-----|-----|-----|------------|
 | byte | int | int | int | byte[4096] |
 
-## Server bound
+### Server bound
 Update Entity: `0x00`
 | id   | entityId | x     | y     | z     | yaw   | pitch |
 |------|----------|-------|-------|-------|-------|-------|
@@ -39,7 +50,7 @@ Update Block: `0x01`
 |------|-----------|-----|-----|-----|
 | byte | byte      | int | int | int |
 
-## BlockType
+### BlockType
 | id | Name  |
 |----|-------|
 | 0  | Air   |
@@ -48,10 +59,10 @@ Update Block: `0x01`
 | 3  | Stone |
 
 
-## Information
+### Information
 - Packets **Server bound** `[0x00]` check the client `entityId`. Client must save the `entityId` received by the packet **Client Bound** `0x00` upon connecting to the server. Without this ID client won't be able to move
 - This protocol uses **BIG ENDIAN**
 - Server doesn't send empty chunk
 
-## Intended way to read data
+### Intended way to read data
 First read the first byte to determine which packet you received. Then read the rest of the data
