@@ -35,13 +35,12 @@ class TextureArray(files: List<String>) {
                     GL30.GL_TEXTURE_2D_ARRAY, 0, 0, 0, index,
                     width, height, 1, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, data
                 )
+                GL30.glGenerateMipmap(GL30.GL_TEXTURE_2D_ARRAY)
                 STBImage.stbi_image_free(data)
             }
 
-            GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST)
+            GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_NEAREST)
             GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST)
-            GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE)
-            GL11.glTexParameteri(GL30.GL_TEXTURE_2D_ARRAY, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE)
         }
     }
 }

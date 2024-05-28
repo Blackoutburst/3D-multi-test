@@ -16,6 +16,8 @@ class S04SendChunk(override val size: Int) : PacketPlayIn() {
         val position = Vector3i(x, y, z)
         val blockData = Array(4096) { BlockType.AIR.id }
 
+        println(position.toString())
+
         for (i in 0 until 4096)
             blockData[i] = buffer.get()
 

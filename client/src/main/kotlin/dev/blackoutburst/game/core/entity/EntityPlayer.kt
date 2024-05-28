@@ -10,10 +10,12 @@ import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.network.Connection
 import dev.blackoutburst.game.network.packets.client.C00UpdateEntity
 import dev.blackoutburst.game.network.packets.client.C01UpdateBlock
+import dev.blackoutburst.game.network.packets.client.C02BlockBulkEdit
 import dev.blackoutburst.game.utils.Keyboard
 import dev.blackoutburst.game.utils.Keyboard.isKeyDown
 import dev.blackoutburst.game.utils.Mouse
 import dev.blackoutburst.game.utils.Time
+import dev.blackoutburst.game.world.Block
 import dev.blackoutburst.game.world.BlockType
 import dev.blackoutburst.game.world.World
 import kotlin.math.cos
@@ -253,6 +255,7 @@ class EntityPlayer(
             result.block?.let { b ->
                 result.face?.let { f ->
                     connection.write(C01UpdateBlock(Main.blockType.id, b.position + f))
+                    //connection.write(C02BlockBulkEdit(sphere(b.position + f, 20, Main.blockType)))
                 }
             }
         }
@@ -261,7 +264,32 @@ class EntityPlayer(
             world.dda(Main.camera.position, Main.camera.getDirection(), 20)
                 .block?.let {
                     connection.write(C01UpdateBlock(BlockType.AIR.id, it.position))
+                    //connection.write(C02BlockBulkEdit(sphere(it.position, 20, BlockType.AIR)))
                 }
         }
+
+        if (Mouse.middleButton.isPressed) {
+            world.dda(Main.camera.position, Main.camera.getDirection(), 20).block?.let {
+                Main.blockType = it.type
+            }
+        }
     }
+}
+
+private fun sphere(center: Vector3i, radius: Int, type: BlockType): List<Block> {
+    val blocks = mutableListOf<Block>()
+    for (x in center.x - radius..center.x + radius) {
+        for (y in center.y - radius..center.y + radius) {
+            for (z in center.z - radius..center.z + radius) {
+                val position = Vector3i(x, y, z)
+                val distanceSquared = (x - center.x) * (x - center.x) +
+                        (y - center.y) * (y - center.y) +
+                        (z - center.z) * (z - center.z)
+                if (distanceSquared <= radius * radius) {
+                    blocks.add(Block(type, position))
+                }
+            }
+        }
+    }
+    return blocks
 }

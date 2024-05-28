@@ -37,4 +37,8 @@ void main() {
     vec3 result = (ambient + diffuse) * color.xyz;
 
     FragColor = vec4(result, color.w) * texture(text, vec3(uv, blockType));
+
+    if (FragColor.a == 0.0) {
+        discard;
+    }
 }
