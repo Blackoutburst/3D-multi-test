@@ -51,12 +51,14 @@ Update Block: `0x01`
 | byte | byte      | int | int | int |
 
 ### BlockType
-| id | Name  |
-|----|-------|
-| 0  | Air   |
-| 1  | Grass |
-| 2  | Dirt  |
-| 3  | Stone |
+| id | Name       |
+|----|------------|
+| 0  | Air        |
+| 1  | Grass      |
+| 2  | Dirt       |
+| 3  | Stone      |
+| 4  | Oak Log    |
+| 5  | Oak Leaves |
 
 
 ### Information
