@@ -55,10 +55,10 @@ object World {
         }
     }
 
-    fun updateChunk(position: Vector3i, blockType: Byte, write: Boolean = true) {
+    fun updateChunk(position: Vector3i, blockType: Byte, write: Boolean = true): Chunk? {
         val index = (Vector3i(chunkFloor(position.x.toFloat()), chunkFloor(position.y.toFloat()), chunkFloor(position.z.toFloat())))
 
-        val chunk = chunks[index.toString()] ?: return
+        val chunk = chunks[index.toString()] ?: return null
 
         val positionAsInt = Vector3i(
             if (position.x % 16 < 0) position.x % 16 + CHUNK_SIZE else position.x % 16,
@@ -71,6 +71,8 @@ object World {
 
         if (write)
             Server.write(S04SendChunk(index, chunk.blocks))
+
+        return chunk
     }
 
     private fun addChunk(x: Int, y: Int, z: Int) {
