@@ -50,6 +50,11 @@ Update Block: `0x01`
 |------|-----------|-----|-----|-----|
 | byte | byte      | int | int | int |
 
+Block Bulk Edit: `0x02`
+| id   | blockCount | BlockType | x   | y   | z   | BlockType | x   | y   | z   | ... |
+|------|------------|-----------|-----|-----|-----|-----------|-----|-----|-----|-----|
+| byte | Int        | byte      | int | int | int | byte      | int | int | int | ... |
+
 ### BlockType
 | id | Name       |
 |----|------------|
