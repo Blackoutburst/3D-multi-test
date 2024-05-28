@@ -101,8 +101,9 @@ class Cube(var position: Vector3f, var rotation: Vector2f, var color: Color) {
             .rotate(yRad, Vector3f(cos(xRad), 0f, -sin(xRad)))
             .rotate(xRad, Vector3f(0f, 1f, 0f))
 
+        println("${Main.blockType} ${Main.blockType.textures[0].toFloat()}")
         program.setUniform4f("color", color)
-        program.setUniform1f("blockType", Main.blockType.id.toFloat())
+        program.setUniform1f("blockType", Main.blockType.textures[0].toFloat())
         program.setUniform3f("lightColor", Color.WHITE)
         program.setUniform3f("viewPos", Main.camera.position)
 

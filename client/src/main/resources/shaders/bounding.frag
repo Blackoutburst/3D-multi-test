@@ -5,7 +5,6 @@
 
 precision mediump float;
 
-in vec4 vPos;
 in vec3 vertPos;
 in vec2 uv;
 in vec3 normals;
@@ -37,5 +36,5 @@ void main() {
 
     vec3 result = (ambient + diffuse) * color.xyz;
 
-    FragColor = vec4(result, color.w) * texture(text, vec3(uv, blockType - 1));
+    FragColor = vec4(result, color.w) * texture(text, vec3(uv, blockType));
 }

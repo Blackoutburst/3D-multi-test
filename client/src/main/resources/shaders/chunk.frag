@@ -3,9 +3,6 @@
 #define ambientStrength 0.8
 #define specularStrength 0.2
 
-precision mediump float;
-
-in vec4 vPos;
 in vec3 vertPos;
 in vec2 uv;
 in vec3 normals;

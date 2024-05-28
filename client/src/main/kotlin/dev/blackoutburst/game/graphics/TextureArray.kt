@@ -8,7 +8,7 @@ import org.lwjgl.stb.STBImage
 import org.lwjgl.system.MemoryStack
 import java.nio.ByteBuffer
 
-class TextureArray(filePaths: List<String>) {
+class TextureArray(files: List<String>) {
     private val width: Int = 16
     private val height: Int = 16
     var id: Int = 0
@@ -23,12 +23,12 @@ class TextureArray(filePaths: List<String>) {
             GL11.glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, id)
             GL30.glTexImage3D(
                 GL30.GL_TEXTURE_2D_ARRAY, 0, GL11.GL_RGBA8,
-                width, height, filePaths.size, 0,
+                width, height, files.size, 0,
                 GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, null as ByteBuffer?
             )
 
-            for ((index, filePath) in filePaths.withIndex()) {
-                val data = STBImage.stbi_load_from_memory(IOUtils.ioResourceToByteBuffer(filePath, 1024), widthBuffer, heightBuffer, comp, 4)
+            for ((index, file) in files.withIndex()) {
+                val data = STBImage.stbi_load_from_memory(IOUtils.ioResourceToByteBuffer("./blocks/$file", 1024), widthBuffer, heightBuffer, comp, 4)
                     ?: continue
 
                 GL30.glTexSubImage3D(

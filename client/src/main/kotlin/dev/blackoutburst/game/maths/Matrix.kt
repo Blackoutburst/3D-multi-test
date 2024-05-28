@@ -473,6 +473,18 @@ class Matrix {
         return (this)
     }
 
+    fun translate(vec: Vector3i): Matrix {
+        val src = Matrix()
+        load(this, src)
+
+        this.m30 += src.m00 * vec.x + src.m10 * vec.y + src.m20 * vec.z
+        this.m31 += src.m01 * vec.x + src.m11 * vec.y + src.m21 * vec.z
+        this.m32 += src.m02 * vec.x + src.m12 * vec.y + src.m22 * vec.z
+        this.m33 += src.m03 * vec.x + src.m13 * vec.y + src.m23 * vec.z
+
+        return (this)
+    }
+
     fun transpose(src: Matrix, dest: Matrix?): Matrix {
         var dest = dest
         if (dest == null) dest = Matrix()

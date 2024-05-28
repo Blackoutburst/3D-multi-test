@@ -4,12 +4,12 @@ import dev.blackoutburst.game.core.Camera
 import dev.blackoutburst.game.core.Display
 import dev.blackoutburst.game.core.entity.EntityManager
 import dev.blackoutburst.game.graphics.Color
-import dev.blackoutburst.game.graphics.Texture
 import dev.blackoutburst.game.graphics.TextureArray
 import dev.blackoutburst.game.maths.Matrix
 import dev.blackoutburst.game.network.Connection
 import dev.blackoutburst.game.utils.Keyboard
 import dev.blackoutburst.game.utils.Keyboard.isKeyDown
+import dev.blackoutburst.game.utils.Textures
 import dev.blackoutburst.game.utils.Time
 import dev.blackoutburst.game.world.BlockType
 import dev.blackoutburst.game.world.World
@@ -62,7 +62,7 @@ class Main {
         glCullFace(GL_BACK)
         glEnable(GL_DEPTH_TEST)
 
-        TextureArray(listOf("./blocks/grass_top.png", "./blocks/dirt.png", "./blocks/stone.png"))
+        TextureArray(Textures.entries.map { it.file })
 
         connection.start()
     }

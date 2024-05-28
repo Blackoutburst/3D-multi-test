@@ -15,7 +15,7 @@ object World {
 
     fun generate(size: Int, height: Int) {
         for (x in -size until size)
-            for (y in 0 until height)
+            for (y in -height until height)
                 for (z in -size until size)
                     addChunk(x * CHUNK_SIZE, y * CHUNK_SIZE, z * CHUNK_SIZE)
 

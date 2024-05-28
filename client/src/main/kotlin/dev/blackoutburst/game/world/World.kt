@@ -1,6 +1,7 @@
 package dev.blackoutburst.game.world
 
-import dev.blackoutburst.game.graphics.WorldBlock
+import dev.blackoutburst.game.graphics.Shader
+import dev.blackoutburst.game.graphics.ShaderProgram
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.utils.RayCastResult
@@ -16,7 +17,6 @@ class World {
     }
 
     val chunks = mutableMapOf<String, Chunk>()
-    var worldBlocks = listOf<WorldBlock>()
 
     fun getCloseChunk(position: Vector3f): List<Chunk> {
         val indexes = mutableListOf<String>()
@@ -39,31 +39,13 @@ class World {
     }
 
     fun updateChunk(position: Vector3i, blockData: Array<Byte>) {
-        chunks[position.toString()] = Chunk(position, blockData)
-
-        worldBlocks = chunks.map { c ->
-            c.value.blocks.mapIndexed { index, value ->
-                WorldBlock(value, c.value.indexToXYZ(index))
-            }.filter { wb -> wb.type != BlockType.AIR.id && isVisible(wb, c.value) }
-        }.flatten()
-
-        update()
+        val chunk = Chunk(position, blockData)
+        chunk.update()
+        chunks[position.toString()] = chunk
     }
 
-    fun isVisible(worldBlock: WorldBlock, chunk: Chunk): Boolean {
-        val pos = worldBlock.position - chunk.position
-        val x = pos.x
-        val y = pos.y
-        val z = pos.z
 
-        return chunk.isAir(x + 1, y, z) || chunk.isAir(x - 1, y, z) ||
-                chunk.isAir(x, y + 1, z) || chunk.isAir(x, y - 1, z) ||
-                chunk.isAir(x, y, z + 1) || chunk.isAir(x, y, z - 1)
-    }
-
-    fun update() = WorldBlock.setOffset(worldBlocks)
-
-    fun render() = WorldBlock.draw(worldBlocks.size)
+    fun render() = chunks.forEach { it.value.render()  }
 
     fun dda(rayPos: Vector3f, rayDir: Vector3f, maxRaySteps: Int): RayCastResult {
         val mapPos = Vector3i(floor(rayPos.x).toInt(), floor(rayPos.y).toInt(), floor(rayPos.z).toInt())
@@ -105,7 +87,7 @@ class World {
         return RayCastResult(null, mask)
     }
 
-    fun getBlockAt(position: Vector3i): WorldBlock? {
+    fun getBlockAt(position: Vector3i): Block? {
         val chunkPosition = Chunk.getIndex(position, CHUNK_SIZE)
         val chunk = chunks[chunkPosition.toString()] ?: return null
         val positionAsInt = Vector3i(
@@ -118,6 +100,6 @@ class World {
         val blockType = chunk.blocks[blockId]
         if (blockType == BlockType.AIR.id) return null
 
-        return WorldBlock(chunk.blocks[blockId], chunk.indexToXYZ(blockId))
+        return Block(BlockType.getByID(chunk.blocks[blockId]), chunk.indexToXYZ(blockId))
     }
 }
