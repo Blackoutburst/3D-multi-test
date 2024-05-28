@@ -1,9 +1,5 @@
 package dev.blackoutburst.game.world
 
-import dev.blackoutburst.game.Main
-import dev.blackoutburst.game.graphics.Color
-import dev.blackoutburst.game.graphics.Shader
-import dev.blackoutburst.game.graphics.ShaderProgram
 import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.utils.concatenateFloatArray
 import org.lwjgl.BufferUtils
@@ -67,12 +63,9 @@ class Chunk(
     val blocks: Array<Byte> = Array(4096) { BlockType.AIR.id }
 ) {
     private var vaoID = 0
-    private var size = 0
+    private var vertexCount = 0
 
     companion object {
-        private val vertexShader = Shader.loadShader(Shader.VERTEX, "/shaders/chunk.vert")
-        private val fragmentShader = Shader.loadShader(Shader.FRAGMENT, "/shaders/chunk.frag")
-        private val program = ShaderProgram(vertexShader, fragmentShader)
 
         fun getIndex(position: Vector3i, chunkSize: Int): Vector3i {
             return Vector3i(
@@ -87,7 +80,13 @@ class Chunk(
 
     fun xyzToIndex(x: Int, y: Int, z: Int): Int = x + 16 * (y + 16 * z)
 
-    fun isAir(x: Int, y: Int, z: Int): Boolean = if (isWithinBounds(x, y, z)) blockAt(x, y, z) == BlockType.AIR.id else true
+    fun isAir(x: Int, y: Int, z: Int): Boolean {
+        return if (isWithinBounds(x, y, z)) {
+            val type = BlockType.getByID(blockAt(x, y, z))
+
+            type == BlockType.AIR || type.transparent
+        } else true
+    }
 
     fun isWithinBounds(x: Int, y: Int, z: Int): Boolean = x in 0 until 16 && y in 0 until 16 && z in 0 until 16
 
@@ -114,7 +113,7 @@ class Chunk(
             getVertices(it.position, it.type.textures)
         })
 
-        size = vertices.size
+        vertexCount = vertices.size / 9
 
         vaoID = GL30C.glGenVertexArrays()
 
@@ -122,7 +121,7 @@ class Chunk(
 
         GL30C.glBindVertexArray(vaoID)
 
-        val verticesBuffer = BufferUtils.createFloatBuffer(size)
+        val verticesBuffer = BufferUtils.createFloatBuffer(vertices.size)
         (verticesBuffer.put(vertices) as Buffer).flip()
 
         GL15C.glBindBuffer(GL15C.GL_ARRAY_BUFFER, vbo)
@@ -145,25 +144,11 @@ class Chunk(
         GL20C.glEnableVertexAttribArray(3)
 
         GL15C.glBindBuffer(GL15C.GL_ARRAY_BUFFER, 0)
-
     }
 
-
-    private fun setUniforms() {
-        program.setUniform4f("color", Color.WHITE)
-        program.setUniform3f("lightColor", Color.WHITE)
-        program.setUniform3f("viewPos", Main.camera.position)
-
-        program.setUniformMat4("projection", Main.projection)
-        program.setUniformMat4("view", Main.camera.view)
-    }
 
     fun render() {
-        setUniforms()
-        glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, 1)
-        glUseProgram(program.id)
         glBindVertexArray(vaoID)
-
-        glDrawArrays(GL_TRIANGLES, 0, size)
+        glDrawArrays(GL_TRIANGLES, 0, vertexCount)
     }
 }

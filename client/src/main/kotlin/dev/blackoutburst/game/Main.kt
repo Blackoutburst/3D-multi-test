@@ -89,6 +89,10 @@ class Main {
                 blockType = BlockType.DIRT
             if (isKeyDown(Keyboard.NUM3))
                 blockType = BlockType.STONE
+            if (isKeyDown(Keyboard.NUM4))
+                blockType = BlockType.OAK_LOG
+            if (isKeyDown(Keyboard.NUM5))
+                blockType = BlockType.OAK_LEAVES
 
             world.render()
 

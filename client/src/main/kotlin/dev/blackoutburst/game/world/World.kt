@@ -1,16 +1,25 @@
 package dev.blackoutburst.game.world
 
+import dev.blackoutburst.game.Main
+import dev.blackoutburst.game.graphics.Color
 import dev.blackoutburst.game.graphics.Shader
 import dev.blackoutburst.game.graphics.ShaderProgram
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.utils.RayCastResult
 import dev.blackoutburst.game.utils.chunkFloor
+import org.lwjgl.opengl.GL20.glBindTexture
+import org.lwjgl.opengl.GL20.glUseProgram
+import org.lwjgl.opengl.GL30
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.sign
 
 class World {
+
+    private val vertexShader = Shader.loadShader(Shader.VERTEX, "/shaders/chunk.vert")
+    private val fragmentShader = Shader.loadShader(Shader.FRAGMENT, "/shaders/chunk.frag")
+    private val chunkProgram = ShaderProgram(vertexShader, fragmentShader)
 
     companion object {
         val CHUNK_SIZE = 16
@@ -45,7 +54,21 @@ class World {
     }
 
 
-    fun render() = chunks.forEach { it.value.render()  }
+    private fun setUniforms() {
+        chunkProgram.setUniform4f("color", Color.WHITE)
+        chunkProgram.setUniform3f("lightColor", Color.WHITE)
+        chunkProgram.setUniform3f("viewPos", Main.camera.position)
+
+        chunkProgram.setUniformMat4("projection", Main.projection)
+        chunkProgram.setUniformMat4("view", Main.camera.view)
+    }
+
+    fun render() {
+        setUniforms()
+        glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, 1)
+        glUseProgram(chunkProgram.id)
+        chunks.forEach { it.value.render() }
+    }
 
     fun dda(rayPos: Vector3f, rayDir: Vector3f, maxRaySteps: Int): RayCastResult {
         val mapPos = Vector3i(floor(rayPos.x).toInt(), floor(rayPos.y).toInt(), floor(rayPos.z).toInt())
