@@ -1,5 +1,5 @@
 # 3D Multi Test
-This project is a Minecraft cloe in OpenGL/WebGL using a custom network protocol
+This project is a Minecraft clone in OpenGL/WebGL using a custom network protocol
 ![image](https://github.com/Blackoutburst/3D-multi-test/assets/30992311/906bb644-0de8-405d-b252-dc319272b508)
 
 ## Clients
