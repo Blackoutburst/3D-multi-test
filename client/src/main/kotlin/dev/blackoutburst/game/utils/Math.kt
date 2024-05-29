@@ -17,3 +17,16 @@ fun concatenateFloatArray(listOfArrays: List<FloatArray>): FloatArray {
 
     return result
 }
+
+fun concatenateIntArray(listOfArrays: List<IntArray>): IntArray {
+    val totalSize = listOfArrays.sumOf { it.size }
+    val result = IntArray(totalSize)
+
+    var offset = 0
+    for (array in listOfArrays) {
+        System.arraycopy(array, 0, result, offset, array.size)
+        offset += array.size
+    }
+
+    return result
+}

@@ -11,6 +11,8 @@ import dev.blackoutburst.game.utils.chunkFloor
 import org.lwjgl.opengl.GL20.glBindTexture
 import org.lwjgl.opengl.GL20.glUseProgram
 import org.lwjgl.opengl.GL30
+import java.text.NumberFormat
+import java.util.*
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.sign
@@ -67,6 +69,12 @@ class World {
         setUniforms()
         glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, 1)
         glUseProgram(chunkProgram.id)
+
+
+        val vCount = chunks.map { it.value.vertexCount }.sum()
+        val format = NumberFormat.getNumberInstance(Locale.FRANCE)
+
+        println("Total vertex count: ${format.format(vCount).replace(',', ' ')}")
         chunks.forEach { it.value.render() }
     }
 
