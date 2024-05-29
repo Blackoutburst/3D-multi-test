@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 class Main {
 
     companion object {
+        val osName = System.getProperty("os.name").toString()
         var blockType = BlockType.GRASS
 
         val glTaskQueue: ConcurrentLinkedQueue<() -> Unit> = ConcurrentLinkedQueue()
@@ -27,7 +28,7 @@ class Main {
             .setFullscreenMode(Display.FullScreenMode.NONE)
             .setTitle("MeinRaft")
             .create()
-            .setVSync(false)
+            .setVSync(osName.contains("mac"))
 
         var projection = Matrix()
             .projectionMatrix(90f, 1000f, 0.1f)
@@ -100,7 +101,6 @@ class Main {
             entityManager.render()
 
             window.update()
-            println(getFps())
         }
 
         window.destroy()
