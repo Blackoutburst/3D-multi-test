@@ -27,6 +27,7 @@ class Main {
             .setFullscreenMode(Display.FullScreenMode.NONE)
             .setTitle("MeinRaft")
             .create()
+            .setVSync(false)
 
         var projection = Matrix()
             .projectionMatrix(90f, 1000f, 0.1f)
@@ -99,6 +100,7 @@ class Main {
             entityManager.render()
 
             window.update()
+            println(getFps())
         }
 
         window.destroy()
