@@ -1,5 +1,6 @@
 package dev.blackoutburst.game.world
 
+import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.utils.concatenateFloatArray
 import dev.blackoutburst.game.utils.concatenateIntArray
@@ -121,16 +122,20 @@ class Chunk(
         }
     }
 
-    fun blockAt(x: Int, y: Int, z: Int): Byte = blocks[xyzToIndex(x, y, z)]
+    fun blockAt(chunk: Chunk, x: Int, y: Int, z: Int): Byte = chunk.blocks[xyzToIndex(x, y, z)]
 
     fun xyzToIndex(x: Int, y: Int, z: Int): Int = x + 16 * (y + 16 * z)
 
     fun isAir(x: Int, y: Int, z: Int): Boolean {
         return if (isWithinBounds(x, y, z)) {
-            val type = BlockType.getByID(blockAt(x, y, z))
+            val type = BlockType.getByID(blockAt(this, x, y, z))
 
             type == BlockType.AIR || type.transparent
-        } else true
+        } else {
+            val type = Main.world.getBlockAt(Vector3i(x + this.position.x, y + this.position.y, z + this.position.z))?.type
+            return if (type == null) true
+            else type == BlockType.AIR || type.transparent
+        }
     }
 
     fun isWithinBounds(x: Int, y: Int, z: Int): Boolean = x in 0 until 16 && y in 0 until 16 && z in 0 until 16

@@ -53,6 +53,13 @@ class World {
         val chunk = Chunk(position, blockData)
         chunk.update()
         chunks[position.toString()] = chunk
+
+        chunks[Vector3i(position.x + CHUNK_SIZE, position.y, position.z).toString()]?.update()
+        chunks[Vector3i(position.x - CHUNK_SIZE, position.y, position.z).toString()]?.update()
+        chunks[Vector3i(position.x, position.y + CHUNK_SIZE, position.z).toString()]?.update()
+        chunks[Vector3i(position.x, position.y - CHUNK_SIZE, position.z).toString()]?.update()
+        chunks[Vector3i(position.x, position.y, position.z + CHUNK_SIZE).toString()]?.update()
+        chunks[Vector3i(position.x, position.y, position.z - CHUNK_SIZE).toString()]?.update()
     }
 
 
@@ -70,12 +77,16 @@ class World {
         glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, 1)
         glUseProgram(chunkProgram.id)
 
+        //printVertexCount()
 
+        chunks.forEach { it.value.render() }
+    }
+
+    private fun printVertexCount() {
         val vCount = chunks.map { it.value.vertexCount }.sum()
         val format = NumberFormat.getNumberInstance(Locale.FRANCE)
 
         println("Total vertex count: ${format.format(vCount).replace(',', ' ')}")
-        chunks.forEach { it.value.render() }
     }
 
     fun dda(rayPos: Vector3f, rayDir: Vector3f, maxRaySteps: Int): RayCastResult {
