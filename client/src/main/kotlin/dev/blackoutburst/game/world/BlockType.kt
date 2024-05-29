@@ -3,6 +3,7 @@ package dev.blackoutburst.game.world
 import dev.blackoutburst.game.utils.Textures
 
 enum class BlockType(val id: Byte, val transparent: Boolean, val textures: Array<Int>) {
+    ERROR(-1, false, Array(6) { Textures.ERROR.ordinal }),
     AIR(0, true, emptyArray()),
     GRASS(1, false, arrayOf(Textures.GRASS_TOP.ordinal, Textures.GRASS_SIDE.ordinal, Textures.GRASS_SIDE.ordinal, Textures.GRASS_SIDE.ordinal, Textures.GRASS_SIDE.ordinal, Textures.DIRT.ordinal)),
     DIRT(2, false, Array(6) { Textures.DIRT.ordinal }),
@@ -11,7 +12,7 @@ enum class BlockType(val id: Byte, val transparent: Boolean, val textures: Array
     OAK_LEAVES(5, true, Array(6) { Textures.OAK_LEAVES.ordinal });
     companion object {
         fun getByID(id: Byte): BlockType {
-            return entries.first { it.id == id }
+            return entries.firstOrNull { it.id == id } ?: ERROR
         }
     }
 }

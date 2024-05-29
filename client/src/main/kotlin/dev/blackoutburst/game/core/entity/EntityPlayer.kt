@@ -30,12 +30,13 @@ class EntityPlayer(
 ): Entity(id, position, rotation) {
     private var vHold = false
 
+    private var range = 2000
     private var renderBoundingBox = false
     private val boundingBox = Cube(Vector3f(), Vector2f(), Color(1f,1f,1f,0.5f))
     private var flying = true
     private val hitbox = Vector3f(0.15f, 1.8f, 0.15f)
     private var velocity = Vector3f()
-    private val runSpeed = 8f
+    private val runSpeed = 20f //8f
     private val walkSpeed = 5f
     private var moving = false
     private val gravity = -40f
@@ -54,7 +55,7 @@ class EntityPlayer(
         move()
         updateCamera()
 
-        val result = world.dda(Main.camera.position, Main.camera.getDirection(), 20)
+        val result = world.dda(Main.camera.position, Main.camera.getDirection(), range)
         result.block?.position?.let { b ->
             result.face?.let { f ->
                 boundingBox.position = Vector3f(
@@ -231,7 +232,7 @@ class EntityPlayer(
             isJumping = false
         }
 
-        if (position.y < -50f) {
+        if (position.y < -100f) {
             position.y = 50f
             velocity.y = 0f
         }
@@ -251,25 +252,25 @@ class EntityPlayer(
 
     private fun mouseAction() {
         if (Mouse.rightButton.isPressed) {
-            val result = world.dda(Main.camera.position, Main.camera.getDirection(), 20)
+            val result = world.dda(Main.camera.position, Main.camera.getDirection(), range)
             result.block?.let { b ->
                 result.face?.let { f ->
-                    connection.write(C01UpdateBlock(Main.blockType.id, b.position + f))
-                    //connection.write(C02BlockBulkEdit(sphere(b.position + f, 20, Main.blockType)))
+                    //connection.write(C01UpdateBlock(Main.blockType.id, b.position + f))
+                    connection.write(C02BlockBulkEdit(sphere(b.position + f, 10, Main.blockType)))
                 }
             }
         }
 
         if (Mouse.leftButton.isPressed) {
-            world.dda(Main.camera.position, Main.camera.getDirection(), 20)
+            world.dda(Main.camera.position, Main.camera.getDirection(), range)
                 .block?.let {
-                    connection.write(C01UpdateBlock(BlockType.AIR.id, it.position))
-                    //connection.write(C02BlockBulkEdit(sphere(it.position, 20, BlockType.AIR)))
+                    //connection.write(C01UpdateBlock(BlockType.AIR.id, it.position))
+                    connection.write(C02BlockBulkEdit(sphere(it.position, 10, BlockType.AIR)))
                 }
         }
 
         if (Mouse.middleButton.isPressed) {
-            world.dda(Main.camera.position, Main.camera.getDirection(), 20).block?.let {
+            world.dda(Main.camera.position, Main.camera.getDirection(), range).block?.let {
                 Main.blockType = it.type
             }
         }
