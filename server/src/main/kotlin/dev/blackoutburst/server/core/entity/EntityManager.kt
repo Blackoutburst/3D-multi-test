@@ -6,12 +6,14 @@ import dev.blackoutburst.server.network.Server
 import dev.blackoutburst.server.network.packets.server.S03UpdateEntity
 import dev.blackoutburst.server.network.packets.server.S01AddEntity
 import dev.blackoutburst.server.network.packets.server.S02RemoveEntity
+import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.collections.LinkedHashSet
 
 class EntityManager {
     var newId = AtomicInteger(0)
 
-    val entities = mutableListOf<Entity>()
+    val entities: MutableSet<Entity> = Collections.synchronizedSet(LinkedHashSet())
 
     fun addEntity(entity: Entity) {
         entities.add(entity)
