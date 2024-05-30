@@ -33,8 +33,14 @@ object Server {
 
         client.write(S00Identification(client.entityId))
 
-        World.chunks.filter {
+        println("Original: ${World.chunks.filter {
+            it.value.blocks.any { b -> b != BlockType.AIR.id } && it.value.isVisible()
+        }.size} Saved: ${World.chunks.filter {
             it.value.blocks.any { b -> b != BlockType.AIR.id }
+        }.size}")
+
+        World.chunks.filter {
+            it.value.blocks.any { b -> b != BlockType.AIR.id } && it.value.isVisible()
         }.forEach {
             client.write(S04SendChunk(
                 position = it.value.position,

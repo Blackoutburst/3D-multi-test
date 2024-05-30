@@ -112,7 +112,6 @@ class Chunk(
     var indexCount = 0
 
     companion object {
-
         fun getIndex(position: Vector3i, chunkSize: Int): Vector3i {
             return Vector3i(
                 (if (position.x < 0) (position.x + 1) / chunkSize - 1 else position.x / chunkSize) * chunkSize,

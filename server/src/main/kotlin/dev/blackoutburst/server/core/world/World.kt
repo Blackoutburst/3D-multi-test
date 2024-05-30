@@ -69,7 +69,7 @@ object World {
         val blockId = chunk.xyzToIndex(positionAsInt.x, positionAsInt.y, positionAsInt.z)
         chunk.blocks[blockId] = blockType
 
-        if (write)
+        if (write && chunk.isVisible())
             Server.write(S04SendChunk(index, chunk.blocks))
 
         return chunk
@@ -79,5 +79,21 @@ object World {
         val position = Vector3i(x, y, z)
 
         chunks[position.toString()] = Chunk(position)
+    }
+
+    fun getBlockAt(position: Vector3i): Block? {
+        val chunkPosition = Chunk.getIndex(position, CHUNK_SIZE)
+        val chunk = chunks[chunkPosition.toString()] ?: return null
+        val positionAsInt = Vector3i(
+            ((position.x - chunk.position.x) % CHUNK_SIZE + CHUNK_SIZE) % CHUNK_SIZE,
+            ((position.y - chunk.position.y) % CHUNK_SIZE + CHUNK_SIZE) % CHUNK_SIZE,
+            ((position.z - chunk.position.z) % CHUNK_SIZE + CHUNK_SIZE) % CHUNK_SIZE
+        )
+
+        val blockId = chunk.xyzToIndex(positionAsInt.x, positionAsInt.y, positionAsInt.z)
+        val blockType = chunk.blocks[blockId]
+        if (blockType == BlockType.AIR.id) return null
+
+        return Block(BlockType.getByID(chunk.blocks[blockId]), chunk.indexToXYZ(blockId))
     }
 }
