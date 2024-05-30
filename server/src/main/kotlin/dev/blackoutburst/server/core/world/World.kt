@@ -70,10 +70,25 @@ object World {
         val blockId = chunk.xyzToIndex(positionAsInt.x, positionAsInt.y, positionAsInt.z)
         chunk.blocks[blockId] = blockType
 
+        val secondChunk = if (positionAsInt.x == 0) chunks[Vector3i(index.x - 16, index.y, index.z).toString()]
+        else if (positionAsInt.y == 0) chunks[Vector3i(index.x, index.y - 16, index.z).toString()]
+        else if (positionAsInt.z == 0) chunks[Vector3i(index.x, index.y, index.z - 16).toString()]
+        else if (positionAsInt.x == 15) chunks[Vector3i(index.x + 16, index.y, index.z).toString()]
+        else if (positionAsInt.y == 15) chunks[Vector3i(index.x, index.y + 16, index.z).toString()]
+        else if (positionAsInt.z == 15) chunks[Vector3i(index.x, index.y, index.z + 16).toString()]
+        else null
+
         if (write && chunk.isVisible())
             Server.write(S04SendChunk(index, chunk.blocks))
         else if (write)
             Server.write(S05SendPlaceholderChunk(index))
+
+        secondChunk?.let {
+            if (write && it.isVisible())
+                Server.write(S04SendChunk(it.position, it.blocks))
+            else if (write)
+                Server.write(S05SendPlaceholderChunk(it.position))
+        }
 
         return chunk
     }
