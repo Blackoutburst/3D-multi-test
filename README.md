@@ -40,6 +40,11 @@ Send Chunk: `0x04`
 |------|-----|-----|-----|------------|
 | byte | int | int | int | byte[4096] |
 
+Send Placeholder Chunk: `0x05`
+| id   | x   | y   | z   |
+|------|-----|-----|-----|
+| byte | int | int | int |
+
 ### Server bound
 Update Entity: `0x00`
 | id   | entityId | x     | y     | z     | yaw   | pitch |
