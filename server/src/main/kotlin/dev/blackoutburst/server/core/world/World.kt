@@ -3,6 +3,7 @@ package dev.blackoutburst.server.core.world
 import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.server.network.Server
 import dev.blackoutburst.server.network.packets.server.S04SendChunk
+import dev.blackoutburst.server.network.packets.server.S05SendPlaceholderChunk
 import dev.blackoutburst.server.utils.OpenSimplex2
 import dev.blackoutburst.server.utils.chunkFloor
 import kotlin.random.Random
@@ -71,6 +72,8 @@ object World {
 
         if (write && chunk.isVisible())
             Server.write(S04SendChunk(index, chunk.blocks))
+        else if (write)
+            Server.write(S05SendPlaceholderChunk(index))
 
         return chunk
     }

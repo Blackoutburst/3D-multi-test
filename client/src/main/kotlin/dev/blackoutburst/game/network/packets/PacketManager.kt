@@ -13,6 +13,7 @@ class PacketManager {
         packets[0x02] = S02RemoveEntity(4)
         packets[0x03] = S03UpdateEntity(24)
         packets[0x04] = S04SendChunk(4108)
+        packets[0x05] = S05SendPlaceholderChunk(12)
     }
 
     fun getId(data: ByteArray): Int {

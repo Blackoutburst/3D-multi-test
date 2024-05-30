@@ -9,6 +9,7 @@ import dev.blackoutburst.server.network.packets.PacketPlayOut
 import dev.blackoutburst.server.network.packets.server.S01AddEntity
 import dev.blackoutburst.server.network.packets.server.S00Identification
 import dev.blackoutburst.server.network.packets.server.S04SendChunk
+import dev.blackoutburst.server.network.packets.server.S05SendPlaceholderChunk
 import dev.blackoutburst.server.utils.io
 import io.ktor.websocket.*
 import java.net.ServerSocket
@@ -33,19 +34,19 @@ object Server {
 
         client.write(S00Identification(client.entityId))
 
-        println("Original: ${World.chunks.filter {
-            it.value.blocks.any { b -> b != BlockType.AIR.id } && it.value.isVisible()
-        }.size} Saved: ${World.chunks.filter {
-            it.value.blocks.any { b -> b != BlockType.AIR.id }
-        }.size}")
-
         World.chunks.filter {
-            it.value.blocks.any { b -> b != BlockType.AIR.id } && it.value.isVisible()
+            it.value.blocks.any { b -> b != BlockType.AIR.id }
         }.forEach {
-            client.write(S04SendChunk(
-                position = it.value.position,
-                blockData = it.value.blocks
-            ))
+            if (it.value.isVisible()) {
+                client.write(S04SendChunk(
+                    position = it.value.position,
+                    blockData = it.value.blocks
+                ))
+            } else {
+                client.write(S05SendPlaceholderChunk(
+                    position = it.value.position,
+                ))
+            }
         }
 
         entityManger.entities.forEach {
