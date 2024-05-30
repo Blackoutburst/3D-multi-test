@@ -14,12 +14,13 @@ import dev.blackoutburst.game.utils.Time
 import dev.blackoutburst.game.world.BlockType
 import dev.blackoutburst.game.world.World
 import org.lwjgl.opengl.GL11.*
+import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class Main {
 
     companion object {
-        val osName = System.getProperty("os.name").toString()
+        val osName = System.getProperty("os.name").toString().toLowerCase()
         var blockType = BlockType.GRASS
 
         val glTaskQueue: ConcurrentLinkedQueue<() -> Unit> = ConcurrentLinkedQueue()

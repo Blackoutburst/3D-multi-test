@@ -137,7 +137,7 @@ public class Display {
 		
 		if (window == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
-		
+
 		setIcons("icon.png");
 		
 		glfwMakeContextCurrent(window);
@@ -593,6 +593,8 @@ public class Display {
 	 * @author Blackoutburst
 	 */
 	public Display setIcons(String filePath) {
+		if (Main.Companion.getOsName().contains("mac")) return (this);
+
 		GLFWImage image = GLFWImage.malloc(); 
 		GLFWImage.Buffer imageBuffer = GLFWImage.malloc(1);
 		try {
