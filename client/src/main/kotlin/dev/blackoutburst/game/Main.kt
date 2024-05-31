@@ -71,7 +71,7 @@ class Main {
     }
 
     private fun pollGlTasks() {
-        while (glTaskQueue.isNotEmpty()) {
+        if (glTaskQueue.isNotEmpty()) {
             glTaskQueue.poll()?.invoke()
         }
     }

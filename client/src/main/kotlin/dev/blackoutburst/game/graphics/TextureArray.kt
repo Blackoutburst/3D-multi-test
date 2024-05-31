@@ -28,7 +28,7 @@ class TextureArray(files: List<String>) {
             )
 
             for ((index, file) in files.withIndex()) {
-                val data = STBImage.stbi_load_from_memory(IOUtils.ioResourceToByteBuffer("./blocks/$file", 1024), widthBuffer, heightBuffer, comp, 4)
+                val data = STBImage.stbi_load_from_memory(IOUtils.ioResourceToByteBuffer("./blocks/$file", 256), widthBuffer, heightBuffer, comp, 4)
                     ?: continue
 
                 GL30.glTexSubImage3D(
