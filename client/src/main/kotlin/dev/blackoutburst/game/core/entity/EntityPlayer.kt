@@ -255,8 +255,8 @@ class EntityPlayer(
             val result = world.dda(Main.camera.position, Main.camera.getDirection(), range)
             result.block?.let { b ->
                 result.face?.let { f ->
-                    //connection.write(C01UpdateBlock(Main.blockType.id, b.position + f))
-                    connection.write(C02BlockBulkEdit(sphere(b.position + f, 20, Main.blockType)))
+                    connection.write(C01UpdateBlock(Main.blockType.id, b.position + f))
+                    //connection.write(C02BlockBulkEdit(sphere(b.position + f, 10, Main.blockType)))
                 }
             }
         }
@@ -264,8 +264,8 @@ class EntityPlayer(
         if (Mouse.leftButton.isPressed) {
             world.dda(Main.camera.position, Main.camera.getDirection(), range)
                 .block?.let {
-                    //connection.write(C01UpdateBlock(BlockType.AIR.id, it.position))
-                    connection.write(C02BlockBulkEdit(sphere(it.position, 20, BlockType.AIR)))
+                    connection.write(C01UpdateBlock(BlockType.AIR.id, it.position))
+                    //connection.write(C02BlockBulkEdit(sphere(it.position, 10, BlockType.AIR)))
                 }
         }
 

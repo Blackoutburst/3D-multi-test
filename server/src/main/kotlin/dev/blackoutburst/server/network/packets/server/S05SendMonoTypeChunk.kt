@@ -1,6 +1,6 @@
 package dev.blackoutburst.server.network.packets.server
 
-import dev.blackoutburst.game.maths.Vector3i
+import dev.blackoutburst.server.maths.Vector3i
 import dev.blackoutburst.server.network.packets.PacketPlayOut
 import java.nio.ByteBuffer
 import java.nio.ByteOrder

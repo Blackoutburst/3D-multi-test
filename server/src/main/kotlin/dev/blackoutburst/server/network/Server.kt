@@ -4,6 +4,7 @@ import dev.blackoutburst.server.core.entity.EntityManager
 import dev.blackoutburst.server.core.entity.EntityPlayer
 import dev.blackoutburst.server.core.world.BlockType
 import dev.blackoutburst.server.core.world.World
+import dev.blackoutburst.server.maths.Vector3i
 import dev.blackoutburst.server.network.packets.PacketManager
 import dev.blackoutburst.server.network.packets.PacketPlayOut
 import dev.blackoutburst.server.network.packets.server.S01AddEntity
@@ -34,18 +35,20 @@ object Server {
 
         client.write(S00Identification(client.entityId))
 
-        World.chunks.filter {
-            it.value.blocks.any { b -> b != BlockType.AIR.id }
-        }.forEach {
-            if (it.value.isMonoType()) {
+        World.chunks
+        .map { it.value }
+        .filter { it.blocks.any { b -> b != BlockType.AIR.id } }
+        .sortedBy { it.position.distance(Vector3i(0, 100, 0)) }
+        .forEach {
+            if (it.isMonoType()) {
                 client.write(S05SendMonoTypeChunk(
-                    position = it.value.position,
-                    type = it.value.blocks.first()
+                    position = it.position,
+                    type = it.blocks.first()
                 ))
             } else {
                 client.write(S04SendChunk(
-                    position = it.value.position,
-                    blockData = it.value.blocks
+                    position = it.position,
+                    blockData = it.blocks
                 ))
             }
         }

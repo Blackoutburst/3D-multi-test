@@ -1,4 +1,4 @@
-package dev.blackoutburst.game.maths
+package dev.blackoutburst.server.maths
 
 import kotlin.math.sqrt
 
@@ -30,6 +30,8 @@ class Vector3i {
         this.y = y
         this.z = z
     }
+
+    fun distance(pos: Vector3i): Int = (pos.x - this.x) * (pos.x - this.x) + (pos.y - this.y) * (pos.y - this.y) + (pos.z - this.z) * (pos.z - this.z)
 
     fun normalize(): Vector3i {
         val mag = sqrt((x * x + y * y + z * z).toDouble()).toFloat()

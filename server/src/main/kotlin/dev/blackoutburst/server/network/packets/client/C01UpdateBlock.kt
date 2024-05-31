@@ -1,6 +1,6 @@
 package dev.blackoutburst.server.network.packets.client
 
-import dev.blackoutburst.game.maths.Vector3i
+import dev.blackoutburst.server.maths.Vector3i
 import dev.blackoutburst.server.core.world.World
 import dev.blackoutburst.server.network.Client
 import dev.blackoutburst.server.network.packets.PacketPlayIn
