@@ -38,7 +38,7 @@ object Server {
         World.chunks
         .map { it.value }
         .filter { it.blocks.any { b -> b != BlockType.AIR.id } }
-        .sortedBy { it.position.distance(Vector3i(0, 100, 0)) }
+        .sortedBy { it.position.distance(Vector3i(0, 100, 0)) + if (it.isMonoType()) 100000 else 0 }
         .forEach {
             if (it.isMonoType()) {
                 client.write(S05SendMonoTypeChunk(

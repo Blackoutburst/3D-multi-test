@@ -36,7 +36,7 @@ class EntityPlayer(
     private var flying = true
     private val hitbox = Vector3f(0.15f, 1.8f, 0.15f)
     private var velocity = Vector3f()
-    private val runSpeed = 20f //8f
+    private val runSpeed = 100f //8f
     private val walkSpeed = 5f
     private var moving = false
     private val gravity = -40f

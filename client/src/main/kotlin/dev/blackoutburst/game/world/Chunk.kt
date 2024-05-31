@@ -9,47 +9,47 @@ import org.lwjgl.opengl.*
 import org.lwjgl.opengl.GL30.*
 import java.nio.Buffer
 
-private fun getVertices(position: Vector3i, textures: Array<Int>, faces: Array<Boolean>): FloatArray {
+private fun getVertices(position: Vector3i, textures: Array<Int>, faces: Array<Boolean>, scale: Float = 1.0f): FloatArray {
     val top = floatArrayOf(
-        0.0f + position.x, 1.0f + position.y, 0.0f + position.z, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, textures[0].toFloat(),
-        1.0f + position.x, 1.0f + position.y, 0.0f + position.z, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, textures[0].toFloat(),
-        1.0f + position.x, 1.0f + position.y, 1.0f + position.z, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, textures[0].toFloat(),
-        0.0f + position.x, 1.0f + position.y, 1.0f + position.z, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, textures[0].toFloat(),
+        scale * 0.0f + position.x, scale * 1.0f + position.y, scale * 0.0f + position.z, 0.0f* scale, 0.0f* scale, 0.0f, 1.0f, 0.0f, textures[0].toFloat(),
+        scale * 1.0f + position.x, scale * 1.0f + position.y, scale * 0.0f + position.z, 1.0f* scale, 0.0f* scale, 0.0f, 1.0f, 0.0f, textures[0].toFloat(),
+        scale * 1.0f + position.x, scale * 1.0f + position.y, scale * 1.0f + position.z, 1.0f* scale, 1.0f* scale, 0.0f, 1.0f, 0.0f, textures[0].toFloat(),
+        scale * 0.0f + position.x, scale * 1.0f + position.y, scale * 1.0f + position.z, 0.0f* scale, 1.0f* scale, 0.0f, 1.0f, 0.0f, textures[0].toFloat(),
     )
 
     val front = floatArrayOf(
-        0.0f + position.x, 0.0f + position.y, 0.0f + position.z, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f, textures[1].toFloat(),
-        1.0f + position.x, 0.0f + position.y, 0.0f + position.z, 0.0f, 1.0f, 0.0f, 0.0f, -1.0f, textures[1].toFloat(),
-        1.0f + position.x, 1.0f + position.y, 0.0f + position.z, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, textures[1].toFloat(),
-        0.0f + position.x, 1.0f + position.y, 0.0f + position.z, 1.0f, 0.0f, 0.0f, 0.0f, -1.0f, textures[1].toFloat(),
+        scale * 0.0f + position.x, scale * 0.0f + position.y, scale * 0.0f + position.z, 1.0f* scale, 1.0f* scale, 0.0f, 0.0f, -1.0f, textures[1].toFloat(),
+        scale * 1.0f + position.x, scale * 0.0f + position.y, scale * 0.0f + position.z, 0.0f* scale, 1.0f* scale, 0.0f, 0.0f, -1.0f, textures[1].toFloat(),
+        scale * 1.0f + position.x, scale * 1.0f + position.y, scale * 0.0f + position.z, 0.0f* scale, 0.0f* scale, 0.0f, 0.0f, -1.0f, textures[1].toFloat(),
+        scale * 0.0f + position.x, scale * 1.0f + position.y, scale * 0.0f + position.z, 1.0f* scale, 0.0f* scale, 0.0f, 0.0f, -1.0f, textures[1].toFloat(),
     )
 
     val back = floatArrayOf(
-        0.0f + position.x, 0.0f + position.y, 1.0f + position.z, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, textures[2].toFloat(),
-        1.0f + position.x, 0.0f + position.y, 1.0f + position.z, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f, textures[2].toFloat(),
-        1.0f + position.x, 1.0f + position.y, 1.0f + position.z, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, textures[2].toFloat(),
-        0.0f + position.x, 1.0f + position.y, 1.0f + position.z, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, textures[2].toFloat(),
+        scale * 0.0f + position.x, scale * 0.0f + position.y, scale * 1.0f + position.z, 0.0f* scale, 1.0f* scale, 0.0f, 0.0f, 1.0f, textures[2].toFloat(),
+        scale * 1.0f + position.x, scale * 0.0f + position.y, scale * 1.0f + position.z, 1.0f* scale, 1.0f* scale, 0.0f, 0.0f, 1.0f, textures[2].toFloat(),
+        scale * 1.0f + position.x, scale * 1.0f + position.y, scale * 1.0f + position.z, 1.0f* scale, 0.0f* scale, 0.0f, 0.0f, 1.0f, textures[2].toFloat(),
+        scale * 0.0f + position.x, scale * 1.0f + position.y, scale * 1.0f + position.z, 0.0f* scale, 0.0f* scale, 0.0f, 0.0f, 1.0f, textures[2].toFloat(),
     )
 
     val left = floatArrayOf(
-        0.0f + position.x, 0.0f + position.y, 0.0f + position.z, 1.0f, 1.0f, -1.0f, 0.0f, 0.0f, textures[3].toFloat(),
-        0.0f + position.x, 1.0f + position.y, 0.0f + position.z, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f, textures[3].toFloat(),
-        0.0f + position.x, 1.0f + position.y, 1.0f + position.z, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, textures[3].toFloat(),
-        0.0f + position.x, 0.0f + position.y, 1.0f + position.z, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, textures[3].toFloat(),
+        scale * 0.0f + position.x, scale * 0.0f + position.y, scale * 0.0f + position.z, 1.0f* scale, 1.0f* scale, -1.0f, 0.0f, 0.0f, textures[3].toFloat(),
+        scale * 0.0f + position.x, scale * 1.0f + position.y, scale * 0.0f + position.z, 1.0f* scale, 0.0f* scale, -1.0f, 0.0f, 0.0f, textures[3].toFloat(),
+        scale * 0.0f + position.x, scale * 1.0f + position.y, scale * 1.0f + position.z, 0.0f* scale, 0.0f* scale, -1.0f, 0.0f, 0.0f, textures[3].toFloat(),
+        scale * 0.0f + position.x, scale * 0.0f + position.y, scale * 1.0f + position.z, 0.0f* scale, 1.0f* scale, -1.0f, 0.0f, 0.0f, textures[3].toFloat(),
     )
 
     val right = floatArrayOf(
-        1.0f + position.x, 0.0f + position.y, 0.0f + position.z, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, textures[4].toFloat(),
-        1.0f + position.x, 1.0f + position.y, 0.0f + position.z, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, textures[4].toFloat(),
-        1.0f + position.x, 1.0f + position.y, 1.0f + position.z, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, textures[4].toFloat(),
-        1.0f + position.x, 0.0f + position.y, 1.0f + position.z, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, textures[4].toFloat(),
+        scale * 1.0f + position.x, scale * 0.0f + position.y, scale * 0.0f + position.z, 0.0f* scale, 1.0f* scale, 1.0f, 0.0f, 0.0f, textures[4].toFloat(),
+        scale * 1.0f + position.x, scale * 1.0f + position.y, scale * 0.0f + position.z, 0.0f* scale, 0.0f* scale, 1.0f, 0.0f, 0.0f, textures[4].toFloat(),
+        scale * 1.0f + position.x, scale * 1.0f + position.y, scale * 1.0f + position.z, 1.0f* scale, 0.0f* scale, 1.0f, 0.0f, 0.0f, textures[4].toFloat(),
+        scale * 1.0f + position.x, scale * 0.0f + position.y, scale * 1.0f + position.z, 1.0f* scale, 1.0f* scale, 1.0f, 0.0f, 0.0f, textures[4].toFloat(),
     )
 
     val bottom = floatArrayOf(
-        0.0f + position.x, 0.0f + position.y, 0.0f + position.z, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f, textures[5].toFloat(),
-        1.0f + position.x, 0.0f + position.y, 0.0f + position.z, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f, textures[5].toFloat(),
-        1.0f + position.x, 0.0f + position.y, 1.0f + position.z, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f, textures[5].toFloat(),
-        0.0f + position.x, 0.0f + position.y, 1.0f + position.z, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, textures[5].toFloat(),
+        scale * 0.0f + position.x, scale * 0.0f + position.y, scale * 0.0f + position.z, 0.0f* scale, 1.0f* scale, 0.0f, -1.0f, 0.0f, textures[5].toFloat(),
+        scale * 1.0f + position.x, scale * 0.0f + position.y, scale * 0.0f + position.z, 1.0f* scale, 1.0f* scale, 0.0f, -1.0f, 0.0f, textures[5].toFloat(),
+        scale * 1.0f + position.x, scale * 0.0f + position.y, scale * 1.0f + position.z, 1.0f* scale, 0.0f* scale, 0.0f, -1.0f, 0.0f, textures[5].toFloat(),
+        scale * 0.0f + position.x, scale * 0.0f + position.y, scale * 1.0f + position.z, 0.0f* scale, 0.0f* scale, 0.0f, -1.0f, 0.0f, textures[5].toFloat(),
     )
 
     val result = mutableListOf<Float>()
@@ -141,7 +141,7 @@ class Chunk(
 
     fun indexToXYZ(index: Int): Vector3i = Vector3i(index % 16, (index / 16) % 16, (index / (16 * 16)) % 16) + this.position
 
-    fun isVisible(block: ChunkBlock, chunk: Chunk): Boolean {
+    fun isVisibleBlock(block: ChunkBlock, chunk: Chunk): Boolean {
         val pos = block.position - chunk.position
         val x = pos.x
         val y = pos.y
@@ -150,6 +150,40 @@ class Chunk(
         return chunk.isAir(x + 1, y, z) || chunk.isAir(x - 1, y, z) ||
                 chunk.isAir(x, y + 1, z) || chunk.isAir(x, y - 1, z) ||
                 chunk.isAir(x, y, z + 1) || chunk.isAir(x, y, z - 1)
+    }
+
+    fun isMonoType(): Boolean = this.blocks.all { it == this.blocks.first() }
+
+    fun getVisibleFaces(): Array<Boolean> {
+        val faces = Array(6) { false }
+
+        for (x in 0 until 16) {
+            for (z in 0 until 16) {
+                val t = Main.world.getBlockAt(Vector3i(this.position.x + x, this.position.y - 1, this.position.z + z))
+                if (t == null || t.type == BlockType.AIR) faces[5] = true
+                val b = Main.world.getBlockAt(Vector3i(this.position.x + x, this.position.y + 16, this.position.z + z))
+                if (b == null || b.type == BlockType.AIR) faces[0] = true
+            }
+        }
+        for (x in 0 until 16) {
+            for (y in 0 until 16) {
+                val b = Main.world.getBlockAt(Vector3i(this.position.x + x, this.position.y + y, this.position.z + 16))
+                if (b == null || b.type == BlockType.AIR) faces[2] = true
+                val f = Main.world.getBlockAt(Vector3i(this.position.x + x, this.position.y + y, this.position.z - 1))
+                if (f == null || f.type == BlockType.AIR) faces[1] = true
+            }
+        }
+
+        for (y in 0 until 16) {
+            for (z in 0 until 16) {
+                val l = Main.world.getBlockAt(Vector3i(this.position.x + 16, this.position.y + y, this.position.z + z))
+                if (l == null || l.type == BlockType.AIR) faces[4] = true
+                val r = Main.world.getBlockAt(Vector3i(this.position.x - 1, this.position.y + y, this.position.z + z))
+                if (r == null || r.type == BlockType.AIR) faces[3] = true
+            }
+        }
+
+        return faces
     }
 
     fun getVisibleFaces(block: ChunkBlock, chunk: Chunk): Array<Boolean> {
@@ -169,24 +203,33 @@ class Chunk(
     }
 
     fun update() {
-        val filteredBlocks = blocks
-            .mapIndexed { index, value ->
-                ChunkBlock(BlockType.getByID(value), indexToXYZ(index), Array(6) { true })
-            }.filter {
-                b -> b.type != BlockType.AIR && isVisible(b, this)
-            }.map {
-                it.faces = getVisibleFaces(it, this)
-                it
-            }
+        val vertices: FloatArray
+        val indices: IntArray
 
-        val vertices = concatenateFloatArray(filteredBlocks.map { getVertices(it.position, it.type.textures, it.faces) })
-        var iIndex = 0
-        val indices = concatenateIntArray(filteredBlocks.map { b ->
-            val inds = getIndices(iIndex, b.faces)
-            iIndex += (b.faces.count { it } * 4)
+        if (isMonoType()) {
+            val faces = getVisibleFaces()
+            vertices = getVertices(position, BlockType.getByID(blocks[0]).textures, faces, 16.0f)
+            indices = getIndices(0, faces)
+        } else {
+            val filteredBlocks = blocks
+                .mapIndexed { index, value ->
+                    ChunkBlock(BlockType.getByID(value), indexToXYZ(index), Array(6) { true })
+                }.filter { b ->
+                    b.type != BlockType.AIR && isVisibleBlock(b, this)
+                }.map {
+                    it.faces = getVisibleFaces(it, this)
+                    it
+                }
 
-            inds
-        })
+            vertices = concatenateFloatArray(filteredBlocks.map { getVertices(it.position, it.type.textures, it.faces) })
+            var iIndex = 0
+            indices = concatenateIntArray(filteredBlocks.map { b ->
+                val inds = getIndices(iIndex, b.faces)
+                iIndex += (b.faces.count { it } * 4)
+
+                inds
+            })
+        }
 
         vertexCount = vertices.size / 9
 
