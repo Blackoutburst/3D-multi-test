@@ -3,7 +3,7 @@ package dev.blackoutburst.server.core.world
 import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.server.network.Server
 import dev.blackoutburst.server.network.packets.server.S04SendChunk
-import dev.blackoutburst.server.network.packets.server.S05SendPlaceholderChunk
+import dev.blackoutburst.server.network.packets.server.S05SendMonoTypeChunk
 import dev.blackoutburst.server.utils.OpenSimplex2
 import dev.blackoutburst.server.utils.chunkFloor
 import kotlin.random.Random
@@ -70,25 +70,11 @@ object World {
         val blockId = chunk.xyzToIndex(positionAsInt.x, positionAsInt.y, positionAsInt.z)
         chunk.blocks[blockId] = blockType
 
-        val secondChunk = if (positionAsInt.x == 0) chunks[Vector3i(index.x - 16, index.y, index.z).toString()]
-        else if (positionAsInt.y == 0) chunks[Vector3i(index.x, index.y - 16, index.z).toString()]
-        else if (positionAsInt.z == 0) chunks[Vector3i(index.x, index.y, index.z - 16).toString()]
-        else if (positionAsInt.x == 15) chunks[Vector3i(index.x + 16, index.y, index.z).toString()]
-        else if (positionAsInt.y == 15) chunks[Vector3i(index.x, index.y + 16, index.z).toString()]
-        else if (positionAsInt.z == 15) chunks[Vector3i(index.x, index.y, index.z + 16).toString()]
-        else null
-
-        if (write && chunk.isVisible())
-            Server.write(S04SendChunk(index, chunk.blocks))
+        if (write && chunk.isMonoType())
+            Server.write(S05SendMonoTypeChunk(index, chunk.blocks.first()))
         else if (write)
-            Server.write(S05SendPlaceholderChunk(index))
+            Server.write(S04SendChunk(index, chunk.blocks))
 
-        secondChunk?.let {
-            if (write && it.isVisible())
-                Server.write(S04SendChunk(it.position, it.blocks))
-            else if (write)
-                Server.write(S05SendPlaceholderChunk(it.position))
-        }
 
         return chunk
     }

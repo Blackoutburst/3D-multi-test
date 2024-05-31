@@ -7,12 +7,13 @@ import java.nio.ByteOrder
 
 private const val ID: Byte = 0x05
 
-class S05SendPlaceholderChunk(
-    private val position: Vector3i
+class S05SendMonoTypeChunk(
+    private val position: Vector3i,
+    private val type: Byte
 ): PacketPlayOut() {
 
     init {
-        buffer = ByteBuffer.allocate(13).clear()
+        buffer = ByteBuffer.allocate(14).clear()
 
         buffer?.apply {
             order(ByteOrder.BIG_ENDIAN)
@@ -20,6 +21,7 @@ class S05SendPlaceholderChunk(
             putInt(position.x)
             putInt(position.y)
             putInt(position.z)
+            put(type)
         }
     }
 }

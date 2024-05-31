@@ -9,7 +9,7 @@ import dev.blackoutburst.server.network.packets.PacketPlayOut
 import dev.blackoutburst.server.network.packets.server.S01AddEntity
 import dev.blackoutburst.server.network.packets.server.S00Identification
 import dev.blackoutburst.server.network.packets.server.S04SendChunk
-import dev.blackoutburst.server.network.packets.server.S05SendPlaceholderChunk
+import dev.blackoutburst.server.network.packets.server.S05SendMonoTypeChunk
 import dev.blackoutburst.server.utils.io
 import io.ktor.websocket.*
 import java.net.ServerSocket
@@ -37,14 +37,15 @@ object Server {
         World.chunks.filter {
             it.value.blocks.any { b -> b != BlockType.AIR.id }
         }.forEach {
-            if (it.value.isVisible()) {
+            if (it.value.isMonoType()) {
+                client.write(S05SendMonoTypeChunk(
+                    position = it.value.position,
+                    type = it.value.blocks.first()
+                ))
+            } else {
                 client.write(S04SendChunk(
                     position = it.value.position,
                     blockData = it.value.blocks
-                ))
-            } else {
-                client.write(S05SendPlaceholderChunk(
-                    position = it.value.position,
                 ))
             }
         }

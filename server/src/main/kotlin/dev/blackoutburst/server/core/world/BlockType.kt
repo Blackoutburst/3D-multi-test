@@ -1,6 +1,7 @@
 package dev.blackoutburst.server.core.world
 
 enum class BlockType(val id: Byte, val transparent: Boolean) {
+    ERROR(-1, false),
     AIR(0, true),
     GRASS(1, false),
     DIRT(2, false),
@@ -10,7 +11,7 @@ enum class BlockType(val id: Byte, val transparent: Boolean) {
 
     companion object {
         fun getByID(id: Byte): BlockType {
-            return entries.first { it.id == id }
+            return entries.firstOrNull { it.id == id } ?: ERROR
         }
     }
 }

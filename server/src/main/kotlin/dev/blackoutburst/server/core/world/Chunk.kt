@@ -24,6 +24,8 @@ class Chunk(
         }
     }
 
+    fun isMonoType(): Boolean = this.blocks.all { it == this.blocks.first() }
+
     fun isVisible(): Boolean {
         val top = World.chunks[Vector3i(this.position.x, this.position.y + 16, this.position.z).toString()]
         val bottom = World.chunks[Vector3i(this.position.x, this.position.y - 16, this.position.z).toString()]
