@@ -87,11 +87,11 @@ void main() {
     vec3 specular = specularStrength * spec * lightColor;
 
     //shadow
-    //float shadow = ShadowCalculation(FragPosLightSpace, normal);
+    float shadow = ShadowCalculation(FragPosLightSpace, normal);
 
-    vec3 result = (ambient + diffuse + specular) * color.rgb;
+    //vec3 result = (ambient + diffuse + specular) * color.rgb;
     //vec3 result = (ambient + diffuse) * color.rgb;
-    //vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * color.rgb;
+    vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * color.rgb;
     //vec3 result = (ambient + (1.0 - shadow)) * color.rgb;
     FragColor = vec4(result, color.a) * texture(text, vec3(uv, layer));
 

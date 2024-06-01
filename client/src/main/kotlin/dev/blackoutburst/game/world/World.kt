@@ -73,7 +73,7 @@ class World {
 
 
     private fun setUniforms() {
-        val lightPos = Vector3f(1.0f, 0.0f, 1.0f)
+        val lightPos = Vector3f(-30.0f, 50.0f, -20.0f)
         val projection = Matrix().ortho2D(-100.0f, 100.0f, -100.0f, 100.0f, 30.0f, 100f)
         val view = Matrix().lookAt(
             lightPos,
