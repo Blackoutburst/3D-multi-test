@@ -23,7 +23,7 @@ import kotlin.math.sin
 
 class EntityPlayer(
     id: Int,
-    position: Vector3f = Vector3f(0f, 50f, 0f),
+    position: Vector3f = Vector3f(100f, 100f, 100f),
     rotation: Vector2f = Vector2f(),
     private val world: World,
     private val connection: Connection,

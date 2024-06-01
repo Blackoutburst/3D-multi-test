@@ -8,17 +8,22 @@ layout(location = 3) in float textId;
 uniform mat4 view;
 uniform mat4 projection;
 
+uniform mat4 lightView;
+uniform mat4 lightProjection;
+
 out vec2 uv;
-out vec3 vertPos;
 out vec3 normals;
 flat out float layer;
+out vec3 FragPos;
+out vec4 FragPosLightSpace;
 
 void main() {
 	uv = textCoord;
 	normals = normal;
 	layer = textId;
 
-	vertPos = vec3(vec4(position, 1.0));
+	FragPos = vec3(vec4(position, 1.0));
+	FragPosLightSpace = lightProjection * lightView * vec4(FragPos, 1.0);
 
 	gl_Position = projection * view * vec4(position, 1.0);
 }

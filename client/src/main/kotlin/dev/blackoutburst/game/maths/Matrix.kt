@@ -29,6 +29,62 @@ class Matrix {
         setIdentity()
     }
 
+    fun lookAt(eye: Vector3f, center: Vector3f, up: Vector3f): Matrix {
+        val f = (center - eye).normalize()
+        val u = f.cross(up).normalize()
+        val s = f.cross(u)
+
+        this.m00 = s.x
+        this.m01 = s.y
+        this.m02 = s.z
+        this.m10 = u.x
+        this.m11 = u.y
+        this.m12 = u.z
+        this.m20 = -f.x
+        this.m21 = -f.y
+        this.m22 = -f.z
+        this.m30 = -s.dot(eye)
+        this.m31 = -u.dot(eye)
+        this.m32 = f.dot(eye)
+
+        return this
+    }
+
+    infix fun DoubleArray.dot(other: DoubleArray): Double {
+        var out = 0.0
+        for (i in 0 until size) out += this[i] * other[i]
+        return out
+    }
+
+    fun ortho2D(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float): Matrix {
+        val x_orth = 2.0f / (right - left)
+        val y_orth = 2.0f / (top - bottom)
+        val z_orth = -2.0f / (far - near)
+
+        val tx = -(right + left) / (right - left)
+        val ty = -(top + bottom) / (top - bottom)
+        val tz = -(far + near) / (far - near)
+
+        this.m00 = x_orth
+        this.m10 = 0f
+        this.m20 = 0f
+        this.m30 = tx
+        this.m01 = 0f
+        this.m11 = y_orth
+        this.m21 = 0f
+        this.m31 = ty
+        this.m02 = 0f
+        this.m12 = 0f
+        this.m22 = z_orth
+        this.m32 = tz
+        this.m03 = 0f
+        this.m13 = 0f
+        this.m23 = 0f
+        this.m33 = 1f
+
+        return (this)
+    }
+
     fun projectionMatrix(fov: Float, far: Float, near: Float): Matrix {
         val aspectRatio = Display.getWidth().toFloat() / Display.getHeight().toFloat()
         val y_scale = ((1f / tan(Math.toRadians((fov / 2f).toDouble()))) * aspectRatio).toFloat()
@@ -630,32 +686,4 @@ class Matrix {
         return dest
     }
 
-    companion object {
-        fun ortho2D(m: Matrix, left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float) {
-            val x_orth = 2.0f / (right - left)
-            val y_orth = 2.0f / (top - bottom)
-            val z_orth = -2.0f / (far - near)
-
-            val tx = -(right + left) / (right - left)
-            val ty = -(top + bottom) / (top - bottom)
-            val tz = -(far + near) / (far - near)
-
-            m.m00 = x_orth
-            m.m10 = 0f
-            m.m20 = 0f
-            m.m30 = tx
-            m.m01 = 0f
-            m.m11 = y_orth
-            m.m21 = 0f
-            m.m31 = ty
-            m.m02 = 0f
-            m.m12 = 0f
-            m.m22 = z_orth
-            m.m32 = tz
-            m.m03 = 0f
-            m.m13 = 0f
-            m.m23 = 0f
-            m.m33 = 1f
-        }
-    }
 }

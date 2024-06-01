@@ -31,6 +31,11 @@ class ShaderProgram(
         GL20.glDeleteProgram(id)
     }
 
+    fun setUniform1i(varName: String, x: Int) {
+        val loc = GL20.glGetUniformLocation(id, varName)
+        GL41.glProgramUniform1i(id, loc, x)
+    }
+
     fun setUniform1f(varName: String, x: Float) {
         val loc = GL20.glGetUniformLocation(id, varName)
         GL41.glProgramUniform1f(id, loc, x)

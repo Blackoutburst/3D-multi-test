@@ -64,12 +64,14 @@ class Main {
         glCullFace(GL_BACK)
         glEnable(GL_DEPTH_TEST)
 
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
         TextureArray(Textures.entries.map { it.file })
 
         connection.start()
+
+        world.createDepthMap()
     }
 
     private fun pollGlTasks() {

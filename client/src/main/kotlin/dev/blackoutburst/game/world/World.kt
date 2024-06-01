@@ -1,16 +1,17 @@
 package dev.blackoutburst.game.world
 
 import dev.blackoutburst.game.Main
+import dev.blackoutburst.game.core.Display
 import dev.blackoutburst.game.graphics.Color
 import dev.blackoutburst.game.graphics.Shader
 import dev.blackoutburst.game.graphics.ShaderProgram
+import dev.blackoutburst.game.maths.Matrix
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.utils.RayCastResult
 import dev.blackoutburst.game.utils.chunkFloor
-import org.lwjgl.opengl.GL20.glBindTexture
-import org.lwjgl.opengl.GL20.glUseProgram
-import org.lwjgl.opengl.GL30
+import org.lwjgl.opengl.GL30.*
+import org.lwjgl.system.MemoryUtil.NULL
 import java.text.NumberFormat
 import java.util.*
 import kotlin.math.abs
@@ -22,6 +23,14 @@ class World {
     private val vertexShader = Shader.loadShader(Shader.VERTEX, "/shaders/chunk.vert")
     private val fragmentShader = Shader.loadShader(Shader.FRAGMENT, "/shaders/chunk.frag")
     private val chunkProgram = ShaderProgram(vertexShader, fragmentShader)
+
+    private val depthVertexShader = Shader.loadShader(Shader.VERTEX, "/shaders/shadow.vert")
+    private val depthFragmentShader = Shader.loadShader(Shader.FRAGMENT, "/shaders/shadow.frag")
+    private val depthProgram = ShaderProgram(depthVertexShader, depthFragmentShader)
+
+    var depthMap = 0
+    val depthMapSZize = 4096
+    var depthMapFBO = 0
 
     companion object {
         val CHUNK_SIZE = 16
@@ -64,6 +73,21 @@ class World {
 
 
     private fun setUniforms() {
+        val lightPos = Vector3f(-30.0f, 50.0f, -20.0f)
+        val projection = Matrix().ortho2D(-100.0f, 100.0f, -100.0f, 100.0f, 30.0f, 100f)
+        val view = Matrix().lookAt(
+            lightPos,
+            Vector3f(0.0f, 0.0f, 0.0f),
+            Vector3f(0.0f, 1.0f, 0.0f))
+
+        depthProgram.setUniformMat4("projection", projection)
+        depthProgram.setUniformMat4("view", view)
+
+        chunkProgram.setUniform1i("shadowMap", 1)
+        chunkProgram.setUniform3f("lightPos", lightPos)
+        chunkProgram.setUniformMat4("lightProjection", projection)
+        chunkProgram.setUniformMat4("lightView", view)
+
         chunkProgram.setUniform4f("color", Color.WHITE)
         chunkProgram.setUniform3f("lightColor", Color.WHITE)
         chunkProgram.setUniform3f("viewPos", Main.camera.position)
@@ -72,13 +96,48 @@ class World {
         chunkProgram.setUniformMat4("view", Main.camera.view)
     }
 
+    fun createDepthMap() {
+        depthMap = glGenTextures()
+
+        depthMapFBO = glGenFramebuffers()
+
+        glBindTexture(GL_TEXTURE_2D, depthMap)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER)
+        val borderColor = floatArrayOf(1.0.toFloat(), 1.0.toFloat(), 1.0.toFloat(), 1.0.toFloat())
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor)
+
+        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, depthMapSZize, depthMapSZize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL)
+        glDrawBuffer(GL_NONE)
+        glReadBuffer(GL_NONE)
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0)
+    }
+
     fun render() {
         setUniforms()
-        glBindTexture(GL30.GL_TEXTURE_2D_ARRAY, 1)
+
+        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO)
+
+        glUseProgram(depthProgram.id)
+
+        glViewport(0, 0, depthMapSZize, depthMapSZize)
+        glClear(GL_DEPTH_BUFFER_BIT)
+
+        chunks.forEach { it.value.render() }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0)
+
+        glViewport(0, 0, Display.getWidth(), Display.getHeight())
+        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+
+
+        glActiveTexture(GL_TEXTURE0)
+        glBindTexture(GL_TEXTURE_2D_ARRAY, 1)
+        glActiveTexture(GL_TEXTURE1)
+        glBindTexture(GL_TEXTURE_2D, depthMap)
         glUseProgram(chunkProgram.id)
-
-        //printVertexCount()
-
         chunks.forEach { it.value.render() }
     }
 

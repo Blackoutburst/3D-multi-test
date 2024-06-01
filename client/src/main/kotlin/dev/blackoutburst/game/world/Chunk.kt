@@ -125,15 +125,15 @@ class Chunk(
 
     fun xyzToIndex(x: Int, y: Int, z: Int): Int = x + 16 * (y + 16 * z)
 
-    fun isAir(x: Int, y: Int, z: Int): Boolean {
+    fun isAir(x: Int, y: Int, z: Int, currentType: BlockType): Boolean {
         return if (isWithinBounds(x, y, z)) {
             val type = BlockType.getByID(blockAt(this, x, y, z))
 
-            type == BlockType.AIR || type.transparent
+            (type == BlockType.AIR || type.transparent && !currentType.transparent)
         } else {
             val type = Main.world.getBlockAt(Vector3i(x + this.position.x, y + this.position.y, z + this.position.z))?.type
             return if (type == null) true
-            else type == BlockType.AIR || type.transparent
+            else (type == BlockType.AIR || type.transparent && !currentType.transparent)
         }
     }
 
@@ -143,13 +143,14 @@ class Chunk(
 
     fun isVisibleBlock(block: ChunkBlock, chunk: Chunk): Boolean {
         val pos = block.position - chunk.position
+        val type = block.type
         val x = pos.x
         val y = pos.y
         val z = pos.z
 
-        return chunk.isAir(x + 1, y, z) || chunk.isAir(x - 1, y, z) ||
-                chunk.isAir(x, y + 1, z) || chunk.isAir(x, y - 1, z) ||
-                chunk.isAir(x, y, z + 1) || chunk.isAir(x, y, z - 1)
+        return chunk.isAir(x + 1, y, z, type) || chunk.isAir(x - 1, y, z, type) ||
+                chunk.isAir(x, y + 1, z, type) || chunk.isAir(x, y - 1, z, type) ||
+                chunk.isAir(x, y, z + 1, type) || chunk.isAir(x, y, z - 1, type)
     }
 
     fun isMonoType(): Boolean = this.blocks.all { it == this.blocks.first() }
@@ -188,21 +189,27 @@ class Chunk(
 
     fun getVisibleFaces(block: ChunkBlock, chunk: Chunk): Array<Boolean> {
         val pos = block.position - chunk.position
+        val type = block.type
         val x = pos.x
         val y = pos.y
         val z = pos.z
 
         return arrayOf(
-            chunk.isAir(x, y + 1, z),
-            chunk.isAir(x, y, z - 1),
-            chunk.isAir(x, y, z + 1),
-            chunk.isAir(x - 1, y, z),
-            chunk.isAir(x + 1, y, z),
-            chunk.isAir(x, y - 1, z),
+            chunk.isAir(x, y + 1, z, type),
+            chunk.isAir(x, y, z - 1, type),
+            chunk.isAir(x, y, z + 1, type),
+            chunk.isAir(x - 1, y, z, type),
+            chunk.isAir(x + 1, y, z, type),
+            chunk.isAir(x, y - 1, z, type),
         )
     }
 
     fun update() {
+        if (isMonoType() && BlockType.getByID(blocks[0]) == BlockType.AIR) {
+            Main.world.chunks.remove(this.position.toString())
+            return
+        }
+
         val vertices: FloatArray
         val indices: IntArray
 
@@ -217,7 +224,7 @@ class Chunk(
                 }.filter { b ->
                     b.type != BlockType.AIR && isVisibleBlock(b, this)
                 }.map {
-                    it.faces = getVisibleFaces(it, this)
+                    it.faces = if (it.type.transparent) Array(6) { true } else getVisibleFaces(it, this)
                     it
                 }
 
