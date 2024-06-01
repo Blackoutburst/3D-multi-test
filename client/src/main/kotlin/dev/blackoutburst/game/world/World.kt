@@ -2,13 +2,12 @@ package dev.blackoutburst.game.world
 
 import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.core.Display
-import dev.blackoutburst.game.graphics.Color
-import dev.blackoutburst.game.graphics.Shader
-import dev.blackoutburst.game.graphics.ShaderProgram
+import dev.blackoutburst.game.graphics.*
 import dev.blackoutburst.game.maths.Matrix
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.utils.RayCastResult
+import dev.blackoutburst.game.utils.Textures
 import dev.blackoutburst.game.utils.chunkFloor
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil.NULL
@@ -31,6 +30,7 @@ class World {
     var depthMap = 0
     val depthMapSZize = 4096
     var depthMapFBO = 0
+    var normalMap = 0
 
     companion object {
         val CHUNK_SIZE = 16
@@ -73,7 +73,7 @@ class World {
 
 
     private fun setUniforms() {
-        val lightPos = Vector3f(-30.0f, 50.0f, -20.0f)
+        val lightPos = Vector3f(1.0f, 0.0f, 1.0f)
         val projection = Matrix().ortho2D(-100.0f, 100.0f, -100.0f, 100.0f, 30.0f, 100f)
         val view = Matrix().lookAt(
             lightPos,
@@ -84,6 +84,7 @@ class World {
         depthProgram.setUniformMat4("view", view)
 
         chunkProgram.setUniform1i("shadowMap", 1)
+        chunkProgram.setUniform1i("normalMap", 2)
         chunkProgram.setUniform3f("lightPos", lightPos)
         chunkProgram.setUniformMat4("lightProjection", projection)
         chunkProgram.setUniformMat4("lightView", view)
@@ -97,6 +98,7 @@ class World {
     }
 
     fun createDepthMap() {
+        normalMap = TextureArray(Textures.entries.map { "normal/${it.file}" }, 256).id
         depthMap = glGenTextures()
 
         depthMapFBO = glGenFramebuffers()
@@ -137,6 +139,13 @@ class World {
         glBindTexture(GL_TEXTURE_2D_ARRAY, 1)
         glActiveTexture(GL_TEXTURE1)
         glBindTexture(GL_TEXTURE_2D, depthMap)
+        glActiveTexture(GL_TEXTURE2)
+        glBindTexture(GL_TEXTURE_2D_ARRAY, normalMap)
+
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST)
+        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
         glUseProgram(chunkProgram.id)
         chunks.forEach { it.value.render() }
     }

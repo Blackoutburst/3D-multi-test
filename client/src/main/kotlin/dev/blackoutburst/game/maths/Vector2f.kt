@@ -64,4 +64,6 @@ class Vector2f {
     override fun toString(): String {
         return "[$x, $y]"
     }
+
+    operator fun minus(other: Vector2f) = Vector2f(x - other.x, y - other.y)
 }

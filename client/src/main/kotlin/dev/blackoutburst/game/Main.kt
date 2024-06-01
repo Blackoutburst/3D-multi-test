@@ -59,7 +59,6 @@ class Main {
     private fun setup() {
         window.setClearColor(Color(0.67f, 0.80f, 0.92f))
 
-        glEnable(GL_BLEND)
         glEnable(GL_CULL_FACE)
         glCullFace(GL_BACK)
         glEnable(GL_DEPTH_TEST)
@@ -75,7 +74,7 @@ class Main {
     }
 
     private fun pollGlTasks() {
-        while (glTaskQueue.isNotEmpty()) {
+        if (glTaskQueue.isNotEmpty()) {
             glTaskQueue.poll()?.invoke()
         }
     }

@@ -8,9 +8,9 @@ import org.lwjgl.stb.STBImage
 import org.lwjgl.system.MemoryStack
 import java.nio.ByteBuffer
 
-class TextureArray(files: List<String>) {
-    private val width: Int = 16
-    private val height: Int = 16
+class TextureArray(files: List<String>, size: Int = 16) {
+    private val width: Int = size
+    private val height: Int = size
     var id: Int = 0
 
     init {
@@ -28,7 +28,7 @@ class TextureArray(files: List<String>) {
             )
 
             for ((index, file) in files.withIndex()) {
-                val data = STBImage.stbi_load_from_memory(IOUtils.ioResourceToByteBuffer("./blocks/$file", 256), widthBuffer, heightBuffer, comp, 4)
+                val data = STBImage.stbi_load_from_memory(IOUtils.ioResourceToByteBuffer("./blocks/$file", 1024), widthBuffer, heightBuffer, comp, 4)
                     ?: continue
 
                 GL30.glTexSubImage3D(
