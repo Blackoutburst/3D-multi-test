@@ -93,7 +93,7 @@ class EntityPlayer(
 
         for (chunk in world.getCloseChunk(position)) {
             for (i in 0 until chunk.blocks.size) {
-                val blockMin = chunk.indexToXYZ(i)
+                val blockMin = chunk.indexToXYZPosition(i)
                 val blockMax = blockMin + Vector3i(1)
 
                 if (playerMin.x <= blockMax.x && playerMax.x >= blockMin.x &&
@@ -116,7 +116,7 @@ class EntityPlayer(
 
         for (chunk in world.getCloseChunk(position)) {
             for (i in 0 until chunk.blocks.size) {
-                val blockMin = chunk.indexToXYZ(i)
+                val blockMin = chunk.indexToXYZPosition(i)
                 val blockMax = blockMin + Vector3i(1)
 
                 if (playerMin.x < blockMax.x && playerMax.x > blockMin.x &&

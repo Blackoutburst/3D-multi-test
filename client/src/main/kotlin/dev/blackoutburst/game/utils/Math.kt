@@ -30,3 +30,16 @@ fun concatenateIntArray(listOfArrays: List<IntArray>): IntArray {
 
     return result
 }
+
+fun concatenateUByteArray(listOfArrays: List<ByteArray>): ByteArray {
+    val totalSize = listOfArrays.sumOf { it.size }
+    val result = ByteArray(totalSize)
+
+    var offset = 0
+    for (array in listOfArrays) {
+        System.arraycopy(array, 0, result, offset, array.size)
+        offset += array.size
+    }
+
+    return result
+}

@@ -10,6 +10,7 @@ import dev.blackoutburst.game.utils.RayCastResult
 import dev.blackoutburst.game.utils.Textures
 import dev.blackoutburst.game.utils.chunkFloor
 import org.lwjgl.opengl.GL30.*
+import org.lwjgl.opengl.GL42.glDrawArraysInstancedBaseInstance
 import org.lwjgl.system.MemoryUtil.NULL
 import java.text.NumberFormat
 import java.util.*
@@ -19,8 +20,8 @@ import kotlin.math.sign
 
 class World {
 
-    private val vertexShader = Shader.loadShader(Shader.VERTEX, "/shaders/chunk.vert")
-    private val fragmentShader = Shader.loadShader(Shader.FRAGMENT, "/shaders/chunk.frag")
+    private val vertexShader = Shader.loadShader(Shader.VERTEX, "/shaders/phongChunk.vert")
+    private val fragmentShader = Shader.loadShader(Shader.FRAGMENT, "/shaders/phongChunk.frag")
     private val chunkProgram = ShaderProgram(vertexShader, fragmentShader)
 
     private val depthVertexShader = Shader.loadShader(Shader.VERTEX, "/shaders/shadow.vert")
@@ -30,6 +31,7 @@ class World {
     var depthMap = 0
     val depthMapSZize = 4096
     var depthMapFBO = 0
+    var diffuseMap = 0
     var normalMap = 0
 
     companion object {
@@ -83,8 +85,8 @@ class World {
         depthProgram.setUniformMat4("projection", projection)
         depthProgram.setUniformMat4("view", view)
 
-        chunkProgram.setUniform1i("shadowMap", 1)
-        chunkProgram.setUniform1i("normalMap", 2)
+        //chunkProgram.setUniform1i("shadowMap", 1)
+        //chunkProgram.setUniform1i("normalMap", 2)
         chunkProgram.setUniform3f("lightPos", lightPos)
         chunkProgram.setUniformMat4("lightProjection", projection)
         chunkProgram.setUniformMat4("lightView", view)
@@ -97,7 +99,8 @@ class World {
         chunkProgram.setUniformMat4("view", Main.camera.view)
     }
 
-    fun createDepthMap() {
+    fun createTextureMaps() {
+        diffuseMap = TextureArray(Textures.entries.map { it.file }).id
         normalMap = TextureArray(Textures.entries.map { "normal/${it.file}" }, 256).id
         depthMap = glGenTextures()
 
@@ -116,38 +119,42 @@ class World {
         glDrawBuffer(GL_NONE)
         glReadBuffer(GL_NONE)
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0)
+        glBindFramebuffer(GL_FRAMEBUFFER, 0)
     }
 
     fun render() {
         setUniforms()
 
-        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO)
+        //glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO)
 
-        glUseProgram(depthProgram.id)
+        //glUseProgram(depthProgram.id)
 
-        glViewport(0, 0, depthMapSZize, depthMapSZize)
-        glClear(GL_DEPTH_BUFFER_BIT)
+        //glViewport(0, 0, depthMapSZize, depthMapSZize)
+        //glClear(GL_DEPTH_BUFFER_BIT)
 
-        chunks.forEach { it.value.render() }
-        glBindFramebuffer(GL_FRAMEBUFFER, 0)
+        //chunks.forEach { it.value.render() }
+        //glBindFramebuffer(GL_FRAMEBUFFER, 0)
 
-        glViewport(0, 0, Display.getWidth(), Display.getHeight())
-        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+        //glViewport(0, 0, Display.getWidth(), Display.getHeight())
+        //glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
 
         glActiveTexture(GL_TEXTURE0)
-        glBindTexture(GL_TEXTURE_2D_ARRAY, 1)
-        glActiveTexture(GL_TEXTURE1)
-        glBindTexture(GL_TEXTURE_2D, depthMap)
-        glActiveTexture(GL_TEXTURE2)
-        glBindTexture(GL_TEXTURE_2D_ARRAY, normalMap)
+        glBindTexture(GL_TEXTURE_2D_ARRAY, diffuseMap)
+        //glActiveTexture(GL_TEXTURE1)
+        //glBindTexture(GL_TEXTURE_2D, depthMap)
+        //glActiveTexture(GL_TEXTURE2)
+        //glBindTexture(GL_TEXTURE_2D_ARRAY, normalMap)
 
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST)
-        glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+        //glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST)
+        //glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
         glUseProgram(chunkProgram.id)
-        chunks.forEach { it.value.render() }
+        chunks.forEach {
+            chunkProgram.setUniform3f("chunkPos", it.value.position.toFloat())
+            it.value.render()
+        }
     }
 
     private fun printVertexCount() {
@@ -210,6 +217,6 @@ class World {
         val blockType = chunk.blocks[blockId]
         if (blockType == BlockType.AIR.id) return null
 
-        return Block(BlockType.getByID(chunk.blocks[blockId]), chunk.indexToXYZ(blockId))
+        return Block(BlockType.getByID(chunk.blocks[blockId]), chunk.indexToXYZPosition(blockId))
     }
 }

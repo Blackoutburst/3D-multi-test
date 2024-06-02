@@ -63,6 +63,10 @@ class Vector3i {
         return (newVector)
     }
 
+    fun toFloat(): Vector3f {
+        return Vector3f(this.x.toFloat(), this.y.toFloat(), this.z.toFloat())
+    }
+
     override fun toString(): String {
         return "[$x, $y, $z]"
     }

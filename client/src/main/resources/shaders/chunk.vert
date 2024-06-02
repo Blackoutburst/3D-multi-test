@@ -2,7 +2,7 @@
 
 layout(location = 0) in vec3 aPos;
 layout(location = 1) in vec2 aTexCoord;
-layout(location = 2) in vec3 aNormal;
+layout(location = 2) in float aNormal;
 layout(location = 3) in float aTexId;
 layout(location = 4) in vec3 aTangent;
 layout(location = 5) in vec3 aBitangent;
@@ -26,16 +26,29 @@ out vec3 TangentLightPos;
 out vec3 TangentViewPos;
 out vec3 TangentFragPos;
 
+vec3 getNormal(int index) {
+	const vec3 normals[6] = vec3[6](
+		vec3(0.0f, 1.0f, 0.0f), // TOP
+		vec3(0.0f, 0.0f, -1.0f), // FRONT
+		vec3(0.0f, 0.0f, 1.0f), // BACK
+		vec3(-1.0f, 0.0f, 0.0f), // LEFT
+		vec3(1.0f, 0.0f, 0.0f), // RIGHT
+		vec3(0.0f, -1.0f, 0.0f) // BOTTOM
+	);
+	return normals[index];
+}
+
 void main() {
+
 	uv = aTexCoord;
 	layer = aTexId;
-	norm = aNormal;
+	norm = getNormal(int(aNormal));
 
 	FragPos = vec3(vec4(aPos, 1.0));
 	FragPosLightSpace = lightProjection * lightView * vec4(FragPos, 1.0);
 
 	vec3 T = normalize(aTangent);
-	vec3 N = normalize(aNormal);
+	vec3 N = normalize(getNormal(int(aNormal)));
 	T = normalize(T - dot(T, N) * N);
 	vec3 B = cross(N, T);
 

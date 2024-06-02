@@ -1,15 +1,54 @@
 package dev.blackoutburst.game.world
 
 import dev.blackoutburst.game.Main
-import dev.blackoutburst.game.maths.Vector2f
-import dev.blackoutburst.game.maths.Vector3f
-import dev.blackoutburst.game.maths.Vector3i
-import dev.blackoutburst.game.utils.concatenateFloatArray
+import dev.blackoutburst.game.maths.*
 import dev.blackoutburst.game.utils.concatenateIntArray
+import dev.blackoutburst.game.utils.concatenateUByteArray
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.*
 import org.lwjgl.opengl.GL30.*
+import org.lwjgl.system.MemoryUtil
+import org.lwjgl.system.MemoryUtil.NULL
 import java.nio.Buffer
+import java.nio.IntBuffer
+
+private fun packData(
+    x: Int,
+    y: Int,
+    z: Int,
+    u: Int,
+    v: Int,
+    n: Int,
+    t: Int,
+):Int = (x and 31) or
+        ((y and 31) shl 5) or
+        ((z and 31) shl 10) or
+        ((u and 15) shl 15) or
+        ((v and 15) shl 19) or
+        ((n and 15) shl 23) or
+        ((t and 15) shl 27)
+
+private fun getFace(
+    pos1: Vector3i,
+    pos2: Vector3i,
+    pos3: Vector3i,
+    pos4: Vector3i,
+    uv1: Vector2i,
+    uv2: Vector2i,
+    uv3: Vector2i,
+    uv4: Vector2i,
+    normal: Int,
+    texture: Int
+): IntArray = intArrayOf(
+        packData(pos1.x, pos1.y, pos1.z, uv1.x, uv1.y, normal, texture),
+        packData(pos2.x, pos2.y, pos2.z, uv2.x, uv2.y, normal, texture),
+        packData(pos3.x, pos3.y, pos3.z, uv3.x, uv3.y, normal, texture),
+        packData(pos4.x, pos4.y, pos4.z, uv4.x, uv4.y, normal, texture),
+    )
+
+
+/*
+NORMALS MAP
 
 private fun getFace(
     pos1: Vector3f,
@@ -20,7 +59,7 @@ private fun getFace(
     uv2: Vector2f,
     uv3: Vector2f,
     uv4: Vector2f,
-    normal: Vector3f,
+    normal: Float,
     texture: Float
 ): FloatArray {
 
@@ -62,93 +101,95 @@ private fun getFace(
     bitangent2.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z)
 
     return floatArrayOf(
-        pos1.x, pos1.y, pos1.z, uv1.x, uv1.y, normal.x, normal.y, normal.z, texture, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
-        pos2.x, pos2.y, pos2.z, uv2.x, uv2.y, normal.x, normal.y, normal.z, texture, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
-        pos3.x, pos3.y, pos3.z, uv3.x, uv3.y, normal.x, normal.y, normal.z, texture, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
-        pos4.x, pos4.y, pos4.z, uv4.x, uv4.y, normal.x, normal.y, normal.z, texture, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
+        pos1.x, pos1.y, pos1.z, uv1.x, uv1.y, normal, texture, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+        pos2.x, pos2.y, pos2.z, uv2.x, uv2.y, normal, texture, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
+        pos3.x, pos3.y, pos3.z, uv3.x, uv3.y, normal, texture, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
+        pos4.x, pos4.y, pos4.z, uv4.x, uv4.y, normal, texture, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
     )
 }
 
-private fun getVertices(position: Vector3i, textures: Array<Int>, faces: Array<Boolean>, scale: Float = 1.0f): FloatArray {
-    val topPos1 = Vector3f(scale * 0.0f + position.x, scale * 1.0f + position.y, scale * 0.0f + position.z)
-    val topPos2 = Vector3f(scale * 1.0f + position.x, scale * 1.0f + position.y, scale * 0.0f + position.z)
-    val topPos3 = Vector3f(scale * 1.0f + position.x, scale * 1.0f + position.y, scale * 1.0f + position.z)
-    val topPos4 = Vector3f(scale * 0.0f + position.x, scale * 1.0f + position.y, scale * 1.0f + position.z)
-    val topUv1 = Vector2f(0.0f * scale, 0.0f * scale)
-    val topUv2 = Vector2f(1.0f * scale, 0.0f * scale)
-    val topUv3 = Vector2f(1.0f * scale, 1.0f * scale)
-    val topUv4 = Vector2f(0.0f * scale, 1.0f * scale)
-    val topNormal = Vector3f(0.0f, 1.0f, 0.0f)
-    val topTexture = textures[0].toFloat()
+ */
+
+private fun getVertices(position: Vector3i, textures: Array<Int>, faces: Array<Boolean>, scale: Int = 1): IntArray {
+    val topPos1 = Vector3i((scale * 0 + position.x), (scale * 1 + position.y), (scale * 0 + position.z))
+    val topPos2 = Vector3i((scale * 1 + position.x), (scale * 1 + position.y), (scale * 0 + position.z))
+    val topPos3 = Vector3i((scale * 1 + position.x), (scale * 1 + position.y), (scale * 1 + position.z))
+    val topPos4 = Vector3i((scale * 0 + position.x), (scale * 1 + position.y), (scale * 1 + position.z))
+    val topUv1 = Vector2i((0 * scale), (0 * scale))
+    val topUv2 = Vector2i((1 * scale), (0 * scale))
+    val topUv3 = Vector2i((1 * scale), (1 * scale))
+    val topUv4 = Vector2i((0 * scale), (1 * scale))
+    val topNormal: Int = 0
+    val topTexture = textures[0]
 
     val top = getFace(topPos1, topPos2, topPos3, topPos4, topUv1, topUv2, topUv3, topUv4, topNormal, topTexture)
 
-    val frontPos1 = Vector3f(scale * 0.0f + position.x, scale * 0.0f + position.y, scale * 0.0f + position.z)
-    val frontPos2 = Vector3f(scale * 1.0f + position.x, scale * 0.0f + position.y, scale * 0.0f + position.z)
-    val frontPos3 = Vector3f(scale * 1.0f + position.x, scale * 1.0f + position.y, scale * 0.0f + position.z)
-    val frontPos4 = Vector3f(scale * 0.0f + position.x, scale * 1.0f + position.y, scale * 0.0f + position.z)
-    val frontUv1 = Vector2f(1.0f * scale, 1.0f * scale)
-    val frontUv2 = Vector2f(0.0f * scale, 1.0f * scale)
-    val frontUv3 = Vector2f(0.0f * scale, 0.0f * scale)
-    val frontUv4 = Vector2f(1.0f * scale, 0.0f * scale)
-    val frontNormal = Vector3f(0.0f, 0.0f, -1.0f)
-    val frontTexture = textures[1].toFloat()
+    val frontPos1 = Vector3i((scale * 0 + position.x), (scale * 0 + position.y), (scale * 0 + position.z))
+    val frontPos2 = Vector3i((scale * 1 + position.x), (scale * 0 + position.y), (scale * 0 + position.z))
+    val frontPos3 = Vector3i((scale * 1 + position.x), (scale * 1 + position.y), (scale * 0 + position.z))
+    val frontPos4 = Vector3i((scale * 0 + position.x), (scale * 1 + position.y), (scale * 0 + position.z))
+    val frontUv1 = Vector2i((1 * scale), (1 * scale))
+    val frontUv2 = Vector2i((0 * scale), (1 * scale))
+    val frontUv3 = Vector2i((0 * scale), (0 * scale))
+    val frontUv4 = Vector2i((1 * scale), (0 * scale))
+    val frontNormal: Int = 1
+    val frontTexture = textures[1]
 
     val front = getFace(frontPos1, frontPos2, frontPos3, frontPos4, frontUv1, frontUv2, frontUv3, frontUv4, frontNormal, frontTexture)
 
-    val backPos1 = Vector3f(scale * 0.0f + position.x, scale * 0.0f + position.y, scale * 1.0f + position.z)
-    val backPos2 = Vector3f(scale * 1.0f + position.x, scale * 0.0f + position.y, scale * 1.0f + position.z)
-    val backPos3 = Vector3f(scale * 1.0f + position.x, scale * 1.0f + position.y, scale * 1.0f + position.z)
-    val backPos4 = Vector3f(scale * 0.0f + position.x, scale * 1.0f + position.y, scale * 1.0f + position.z)
-    val backUv1 = Vector2f(0.0f * scale, 1.0f * scale)
-    val backUv2 = Vector2f(1.0f * scale, 1.0f * scale)
-    val backUv3 = Vector2f(1.0f * scale, 0.0f * scale)
-    val backUv4 = Vector2f(0.0f * scale, 0.0f * scale)
-    val backNormal = Vector3f(0.0f, 0.0f, 1.0f)
-    val backTexture = textures[2].toFloat()
+    val backPos1 = Vector3i((scale * 0 + position.x), (scale * 0 + position.y), (scale * 1 + position.z))
+    val backPos2 = Vector3i((scale * 1 + position.x), (scale * 0 + position.y), (scale * 1 + position.z))
+    val backPos3 = Vector3i((scale * 1 + position.x), (scale * 1 + position.y), (scale * 1 + position.z))
+    val backPos4 = Vector3i((scale * 0 + position.x), (scale * 1 + position.y), (scale * 1 + position.z))
+    val backUv1 = Vector2i((0 * scale), (1 * scale))
+    val backUv2 = Vector2i((1 * scale), (1 * scale))
+    val backUv3 = Vector2i((1 * scale), (0 * scale))
+    val backUv4 = Vector2i((0 * scale), (0 * scale))
+    val backNormal: Int = 2
+    val backTexture = textures[2]
 
     val back = getFace(backPos1, backPos2, backPos3, backPos4, backUv1, backUv2, backUv3, backUv4, backNormal, backTexture)
 
-    val leftPos1 = Vector3f(scale * 0.0f + position.x, scale * 0.0f + position.y, scale * 0.0f + position.z)
-    val leftPos2 = Vector3f(scale * 0.0f + position.x, scale * 1.0f + position.y, scale * 0.0f + position.z)
-    val leftPos3 = Vector3f(scale * 0.0f + position.x, scale * 1.0f + position.y, scale * 1.0f + position.z)
-    val leftPos4 = Vector3f(scale * 0.0f + position.x, scale * 0.0f + position.y, scale * 1.0f + position.z)
-    val leftUv1 = Vector2f(1.0f * scale, 1.0f * scale)
-    val leftUv2 = Vector2f(1.0f * scale, 0.0f * scale)
-    val leftUv3 = Vector2f(0.0f * scale, 0.0f * scale)
-    val leftUv4 = Vector2f(0.0f * scale, 1.0f * scale)
-    val leftNormal = Vector3f(-1.0f, 0.0f, 0.0f)
-    val leftTexture = textures[3].toFloat()
+    val leftPos1 = Vector3i((scale * 0 + position.x), (scale * 0 + position.y), (scale * 0 + position.z))
+    val leftPos2 = Vector3i((scale * 0 + position.x), (scale * 1 + position.y), (scale * 0 + position.z))
+    val leftPos3 = Vector3i((scale * 0 + position.x), (scale * 1 + position.y), (scale * 1 + position.z))
+    val leftPos4 = Vector3i((scale * 0 + position.x), (scale * 0 + position.y), (scale * 1 + position.z))
+    val leftUv1 = Vector2i((1 * scale), (1 * scale))
+    val leftUv2 = Vector2i((1 * scale), (0 * scale))
+    val leftUv3 = Vector2i((0 * scale), (0 * scale))
+    val leftUv4 = Vector2i((0 * scale), (1 * scale))
+    val leftNormal: Int = 3
+    val leftTexture = textures[3]
 
     val left = getFace(leftPos1, leftPos2, leftPos3, leftPos4, leftUv1, leftUv2, leftUv3, leftUv4, leftNormal, leftTexture)
 
-    val rightPos1 = Vector3f(scale * 1.0f + position.x, scale * 0.0f + position.y, scale * 0.0f + position.z)
-    val rightPos2 = Vector3f(scale * 1.0f + position.x, scale * 1.0f + position.y, scale * 0.0f + position.z)
-    val rightPos3 = Vector3f(scale * 1.0f + position.x, scale * 1.0f + position.y, scale * 1.0f + position.z)
-    val rightPos4 = Vector3f(scale * 1.0f + position.x, scale * 0.0f + position.y, scale * 1.0f + position.z)
-    val rightUv1 = Vector2f(0.0f * scale, 1.0f * scale)
-    val rightUv2 = Vector2f(0.0f * scale, 0.0f * scale)
-    val rightUv3 = Vector2f(1.0f * scale, 0.0f * scale)
-    val rightUv4 = Vector2f(1.0f * scale, 1.0f * scale)
-    val rightNormal = Vector3f(1.0f, 0.0f, 0.0f)
-    val rightTexture = textures[4].toFloat()
+    val rightPos1 = Vector3i((scale * 1 + position.x), (scale * 0 + position.y), (scale * 0 + position.z))
+    val rightPos2 = Vector3i((scale * 1 + position.x), (scale * 1 + position.y), (scale * 0 + position.z))
+    val rightPos3 = Vector3i((scale * 1 + position.x), (scale * 1 + position.y), (scale * 1 + position.z))
+    val rightPos4 = Vector3i((scale * 1 + position.x), (scale * 0 + position.y), (scale * 1 + position.z))
+    val rightUv1 = Vector2i((0 * scale), (1 * scale))
+    val rightUv2 = Vector2i((0 * scale), (0 * scale))
+    val rightUv3 = Vector2i((1 * scale), (0 * scale))
+    val rightUv4 = Vector2i((1 * scale), (1 * scale))
+    val rightNormal: Int = 4
+    val rightTexture = textures[4]
 
     val right = getFace(rightPos1, rightPos2, rightPos3, rightPos4, rightUv1, rightUv2, rightUv3, rightUv4, rightNormal, rightTexture)
 
-    val bottomPos1 = Vector3f(scale * 0.0f + position.x, scale * 0.0f + position.y, scale * 0.0f + position.z)
-    val bottomPos2 = Vector3f(scale * 1.0f + position.x, scale * 0.0f + position.y, scale * 0.0f + position.z)
-    val bottomPos3 = Vector3f(scale * 1.0f + position.x, scale * 0.0f + position.y, scale * 1.0f + position.z)
-    val bottomPos4 = Vector3f(scale * 0.0f + position.x, scale * 0.0f + position.y, scale * 1.0f + position.z)
-    val bottomUv1 = Vector2f(0.0f * scale, 1.0f * scale)
-    val bottomUv2 = Vector2f(1.0f * scale, 1.0f * scale)
-    val bottomUv3 = Vector2f(1.0f * scale, 0.0f * scale)
-    val bottomUv4 = Vector2f(0.0f * scale, 0.0f * scale)
-    val bottomNormal = Vector3f(1.0f, 0.0f, 0.0f)
-    val bottomTexture = textures[5].toFloat()
+    val bottomPos1 = Vector3i((scale * 0 + position.x), (scale * 0 + position.y), (scale * 0 + position.z))
+    val bottomPos2 = Vector3i((scale * 1 + position.x), (scale * 0 + position.y), (scale * 0 + position.z))
+    val bottomPos3 = Vector3i((scale * 1 + position.x), (scale * 0 + position.y), (scale * 1 + position.z))
+    val bottomPos4 = Vector3i((scale * 0 + position.x), (scale * 0 + position.y), (scale * 1 + position.z))
+    val bottomUv1 = Vector2i((0 * scale), (1 * scale))
+    val bottomUv2 = Vector2i((1 * scale), (1 * scale))
+    val bottomUv3 = Vector2i((1 * scale), (0 * scale))
+    val bottomUv4 = Vector2i((0 * scale), (0 * scale))
+    val bottomNormal: Int = 5
+    val bottomTexture = textures[5]
 
     val bottom = getFace(bottomPos1, bottomPos2, bottomPos3, bottomPos4, bottomUv1, bottomUv2, bottomUv3, bottomUv4, bottomNormal, bottomTexture)
 
-    val result = mutableListOf<Float>()
+    val result = mutableListOf<Int>()
     if (faces[0]) result.addAll(top.asIterable())
     if (faces[1]) result.addAll(front.asIterable())
     if (faces[2]) result.addAll(back.asIterable())
@@ -156,7 +197,7 @@ private fun getVertices(position: Vector3i, textures: Array<Int>, faces: Array<B
     if (faces[4]) result.addAll(right.asIterable())
     if (faces[5]) result.addAll(bottom.asIterable())
 
-    return result.toFloatArray()
+    return result.toIntArray()
 }
 
 private fun getIndices(offset: Int, faces: Array<Boolean>): IntArray {
@@ -194,6 +235,7 @@ private fun getIndices(offset: Int, faces: Array<Boolean>): IntArray {
 data class ChunkBlock(
     val type: BlockType,
     val position: Vector3i,
+    val vertPosition: Vector3i,
     var faces: Array<Boolean>
 )
 
@@ -235,7 +277,9 @@ class Chunk(
 
     fun isWithinBounds(x: Int, y: Int, z: Int): Boolean = x in 0 until 16 && y in 0 until 16 && z in 0 until 16
 
-    fun indexToXYZ(index: Int): Vector3i = Vector3i(index % 16, (index / 16) % 16, (index / (16 * 16)) % 16) + this.position
+    fun indexToXYZ(index: Int): Vector3i = Vector3i(index % 16, (index / 16) % 16, (index / (16 * 16)) % 16)
+
+    fun indexToXYZPosition(index: Int): Vector3i = Vector3i(index % 16, (index / 16) % 16, (index / (16 * 16)) % 16) + this.position
 
     fun isVisibleBlock(block: ChunkBlock, chunk: Chunk): Boolean {
         val pos = block.position - chunk.position
@@ -306,39 +350,28 @@ class Chunk(
             return
         }
 
-        val vertices: FloatArray
-        val indices: IntArray
+        val filteredBlocks = blocks
+            .mapIndexed { index, value ->
+                ChunkBlock(BlockType.getByID(value), indexToXYZPosition(index), indexToXYZ(index), Array(6) { true })
+            }.filter { b ->
+                b.type != BlockType.AIR && isVisibleBlock(b, this)
+            }.map {
+                it.faces = if (it.type.transparent) Array(6) { true } else getVisibleFaces(it, this)
+                it
+            }
 
-        if (isMonoType()) {
-            val faces = getVisibleFaces()
-            vertices = getVertices(position, BlockType.getByID(blocks[0]).textures, faces, 16.0f)
-            indices = getIndices(0, faces)
-        } else {
-            val filteredBlocks = blocks
-                .mapIndexed { index, value ->
-                    ChunkBlock(BlockType.getByID(value), indexToXYZ(index), Array(6) { true })
-                }.filter { b ->
-                    b.type != BlockType.AIR && isVisibleBlock(b, this)
-                }.map {
-                    it.faces = if (it.type.transparent) Array(6) { true } else getVisibleFaces(it, this)
-                    it
-                }
+        val vertices = concatenateIntArray(filteredBlocks.map { getVertices(it.vertPosition, it.type.textures, it.faces) })
+        var iIndex = 0
+        val indices = concatenateIntArray(filteredBlocks.map { b ->
+            val inds = getIndices(iIndex, b.faces)
+            iIndex += (b.faces.count { it } * 4)
 
-            vertices = concatenateFloatArray(filteredBlocks.map { getVertices(it.position, it.type.textures, it.faces) })
-            var iIndex = 0
-            indices = concatenateIntArray(filteredBlocks.map { b ->
-                val inds = getIndices(iIndex, b.faces)
-                iIndex += (b.faces.count { it } * 4)
+            inds
+        })
 
-                inds
-            })
-        }
-
-        vertexCount = vertices.size / 15
+        vertexCount = vertices.size
 
         glDeleteVertexArrays(vaoID)
-        glDeleteBuffers(vboID)
-        glDeleteBuffers(eboID)
 
         vaoID = glGenVertexArrays()
         vboID = glGenBuffers()
@@ -347,7 +380,7 @@ class Chunk(
         glBindVertexArray(vaoID)
 
         // VBO
-        val vertexBuffer = BufferUtils.createFloatBuffer(vertices.size)
+        val vertexBuffer = BufferUtils.createIntBuffer(vertices.size)
         (vertexBuffer.put(vertices) as Buffer).flip()
 
         glBindBuffer(GL_ARRAY_BUFFER, vboID)
@@ -358,35 +391,40 @@ class Chunk(
         (indexBuffer.put(indices) as Buffer).flip()
 
         indexCount = indices.size
-
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW)
 
+        glEnableVertexAttribArray(0)
+        glVertexAttribIPointer(0, 1, GL_INT, 4, 0)
+
+        /*
+        NORMAL
         // Pos
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 60, 0)
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 52, 0)
         glEnableVertexAttribArray(0)
 
         // UV
-        glVertexAttribPointer(1, 2, GL_FLOAT, false, 60, 12)
+        glVertexAttribPointer(1, 2, GL_FLOAT, false, 52, 12)
         glEnableVertexAttribArray(1)
 
         // Norm
-        glVertexAttribPointer(2, 3, GL_FLOAT, false, 60, 20)
+        glVertexAttribPointer(2, 1, GL_FLOAT, false, 52, 20)
         glEnableVertexAttribArray(2)
 
         // Tex
-        glVertexAttribPointer(3, 1, GL_FLOAT, false, 60, 32)
+        glVertexAttribPointer(3, 1, GL_FLOAT, false, 52, 24)
         glEnableVertexAttribArray(3)
 
         // Tangent
-        glVertexAttribPointer(4, 3, GL_FLOAT, false, 60, 36)
+        glVertexAttribPointer(4, 3, GL_FLOAT, false, 52, 28)
         glEnableVertexAttribArray(4)
 
         // Bi Tangent
-        glVertexAttribPointer(5, 3, GL_FLOAT, false, 60, 48)
+        glVertexAttribPointer(5, 3, GL_FLOAT, false, 52, 40)
         glEnableVertexAttribArray(5)
 
-        glBindBuffer(GL15.GL_ARRAY_BUFFER, 0)
+         */
+
     }
 
 

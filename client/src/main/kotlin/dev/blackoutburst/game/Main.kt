@@ -66,15 +66,13 @@ class Main {
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
-        TextureArray(Textures.entries.map { it.file })
-
         connection.start()
 
-        world.createDepthMap()
+        world.createTextureMaps()
     }
 
     private fun pollGlTasks() {
-        if (glTaskQueue.isNotEmpty()) {
+        while (glTaskQueue.isNotEmpty()) {
             glTaskQueue.poll()?.invoke()
         }
     }
@@ -106,6 +104,7 @@ class Main {
 
             window.update()
         }
+
 
         window.destroy()
         connection.close()
