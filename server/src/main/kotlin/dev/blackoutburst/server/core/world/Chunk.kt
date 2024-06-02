@@ -87,7 +87,7 @@ class Chunk(
 
 
     private fun getType(x:Int, y: Int, z: Int): BlockType {
-        val height = (OpenSimplex2.noise2(World.seed, x / 100.0, z / 100.0) * 7).toInt() + 10
+        val height = (OpenSimplex2.noise2(World.seed, x / 200.0, z / 200.0) * 20).toInt() + 10
 
         return if (y == height) BlockType.GRASS
         else if (y < height - 3) BlockType.STONE

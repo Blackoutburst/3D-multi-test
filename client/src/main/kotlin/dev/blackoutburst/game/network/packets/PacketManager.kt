@@ -1,7 +1,10 @@
 package dev.blackoutburst.game.network.packets
 
 import dev.blackoutburst.game.network.packets.server.*
+import dev.blackoutburst.game.utils.default
+import dev.blackoutburst.game.utils.unconfined
 import java.nio.ByteBuffer
+import kotlin.concurrent.thread
 
 class PacketManager {
 
@@ -27,7 +30,9 @@ class PacketManager {
     fun decode(id: Int, data: ByteArray) {
         val buffer = ByteBuffer.wrap(data)
 
-        packets[id]?.decode(buffer)
+        default {
+            packets[id]?.decode(buffer)
+        }
     }
 
 }

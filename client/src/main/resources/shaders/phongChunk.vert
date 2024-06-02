@@ -25,13 +25,15 @@ vec3 getNormal(int index) {
 
 
 void main() {
+	//XXXXX YYYYY ZZZZZ UUUUU VVVVV NNN TTT
+
 	int X = data & 31;
 	int Y = (data >> 5) & 31;
 	int Z = (data >> 10) & 31;
-	int U = (data >> 15) & 15;
-	int V = (data >> 19) & 15;
-	int N = (data >> 23) & 15;
-	int T = (data >> 27) & 15;
+	int U = (data >> 15) & 31;
+	int V = (data >> 20) & 31;
+	int N = (data >> 25) & 7;
+	int T = (data >> 28) & 15;
 
 	FragPos = vec3(X, Y, Z) + chunkPos;
 	uv = vec2(U, V);

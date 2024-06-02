@@ -3,12 +3,9 @@ package dev.blackoutburst.game.world
 import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.maths.*
 import dev.blackoutburst.game.utils.concatenateIntArray
-import dev.blackoutburst.game.utils.concatenateUByteArray
+import dev.blackoutburst.game.utils.main
 import org.lwjgl.BufferUtils
-import org.lwjgl.opengl.*
 import org.lwjgl.opengl.GL30.*
-import org.lwjgl.system.MemoryUtil
-import org.lwjgl.system.MemoryUtil.NULL
 import java.nio.Buffer
 import java.nio.IntBuffer
 
@@ -23,10 +20,10 @@ private fun packData(
 ):Int = (x and 31) or
         ((y and 31) shl 5) or
         ((z and 31) shl 10) or
-        ((u and 15) shl 15) or
-        ((v and 15) shl 19) or
-        ((n and 15) shl 23) or
-        ((t and 15) shl 27)
+        ((u and 31) shl 15) or
+        ((v and 31) shl 20) or
+        ((n and 7) shl 25) or
+        ((t and 15) shl 28)
 
 private fun getFace(
     pos1: Vector3i,
@@ -119,7 +116,7 @@ private fun getVertices(position: Vector3i, textures: Array<Int>, faces: Array<B
     val topUv2 = Vector2i((1 * scale), (0 * scale))
     val topUv3 = Vector2i((1 * scale), (1 * scale))
     val topUv4 = Vector2i((0 * scale), (1 * scale))
-    val topNormal: Int = 0
+    val topNormal = 0
     val topTexture = textures[0]
 
     val top = getFace(topPos1, topPos2, topPos3, topPos4, topUv1, topUv2, topUv3, topUv4, topNormal, topTexture)
@@ -132,7 +129,7 @@ private fun getVertices(position: Vector3i, textures: Array<Int>, faces: Array<B
     val frontUv2 = Vector2i((0 * scale), (1 * scale))
     val frontUv3 = Vector2i((0 * scale), (0 * scale))
     val frontUv4 = Vector2i((1 * scale), (0 * scale))
-    val frontNormal: Int = 1
+    val frontNormal = 1
     val frontTexture = textures[1]
 
     val front = getFace(frontPos1, frontPos2, frontPos3, frontPos4, frontUv1, frontUv2, frontUv3, frontUv4, frontNormal, frontTexture)
@@ -145,7 +142,7 @@ private fun getVertices(position: Vector3i, textures: Array<Int>, faces: Array<B
     val backUv2 = Vector2i((1 * scale), (1 * scale))
     val backUv3 = Vector2i((1 * scale), (0 * scale))
     val backUv4 = Vector2i((0 * scale), (0 * scale))
-    val backNormal: Int = 2
+    val backNormal = 2
     val backTexture = textures[2]
 
     val back = getFace(backPos1, backPos2, backPos3, backPos4, backUv1, backUv2, backUv3, backUv4, backNormal, backTexture)
@@ -158,7 +155,7 @@ private fun getVertices(position: Vector3i, textures: Array<Int>, faces: Array<B
     val leftUv2 = Vector2i((1 * scale), (0 * scale))
     val leftUv3 = Vector2i((0 * scale), (0 * scale))
     val leftUv4 = Vector2i((0 * scale), (1 * scale))
-    val leftNormal: Int = 3
+    val leftNormal = 3
     val leftTexture = textures[3]
 
     val left = getFace(leftPos1, leftPos2, leftPos3, leftPos4, leftUv1, leftUv2, leftUv3, leftUv4, leftNormal, leftTexture)
@@ -171,7 +168,7 @@ private fun getVertices(position: Vector3i, textures: Array<Int>, faces: Array<B
     val rightUv2 = Vector2i((0 * scale), (0 * scale))
     val rightUv3 = Vector2i((1 * scale), (0 * scale))
     val rightUv4 = Vector2i((1 * scale), (1 * scale))
-    val rightNormal: Int = 4
+    val rightNormal = 4
     val rightTexture = textures[4]
 
     val right = getFace(rightPos1, rightPos2, rightPos3, rightPos4, rightUv1, rightUv2, rightUv3, rightUv4, rightNormal, rightTexture)
@@ -184,7 +181,7 @@ private fun getVertices(position: Vector3i, textures: Array<Int>, faces: Array<B
     val bottomUv2 = Vector2i((1 * scale), (1 * scale))
     val bottomUv3 = Vector2i((1 * scale), (0 * scale))
     val bottomUv4 = Vector2i((0 * scale), (0 * scale))
-    val bottomNormal: Int = 5
+    val bottomNormal = 5
     val bottomTexture = textures[5]
 
     val bottom = getFace(bottomPos1, bottomPos2, bottomPos3, bottomPos4, bottomUv1, bottomUv2, bottomUv3, bottomUv4, bottomNormal, bottomTexture)
@@ -241,12 +238,11 @@ data class ChunkBlock(
 
 class Chunk(
     val position: Vector3i,
-    val blocks: Array<Byte> = Array(4096) { BlockType.AIR.id }
+    var blocks: Array<Byte> = Array(4096) { BlockType.AIR.id }
 ) {
-    private var vaoID = 0
-    private var vboID = 0
-    private var eboID = 0
-    var vertexCount = 0
+    var vaoID = 0
+    var vboID = 0
+    var eboID = 0
     var indexCount = 0
 
     companion object {
@@ -295,6 +291,7 @@ class Chunk(
 
     fun isMonoType(): Boolean = this.blocks.all { it == this.blocks.first() }
 
+
     fun getVisibleFaces(): Array<Boolean> {
         val faces = Array(6) { false }
 
@@ -327,6 +324,7 @@ class Chunk(
         return faces
     }
 
+
     fun getVisibleFaces(block: ChunkBlock, chunk: Chunk): Array<Boolean> {
         val pos = block.position - chunk.position
         val type = block.type
@@ -345,91 +343,80 @@ class Chunk(
     }
 
     fun update() {
-        if (isMonoType() && BlockType.getByID(blocks[0]) == BlockType.AIR) {
-            Main.world.chunks.remove(this.position.toString())
+        val isMonoType = isMonoType()
+        if (isMonoType && BlockType.getByID(blocks[0]) == BlockType.AIR) {
+            Main.world.removeChunk(this)
             return
         }
 
-        val filteredBlocks = blocks
-            .mapIndexed { index, value ->
-                ChunkBlock(BlockType.getByID(value), indexToXYZPosition(index), indexToXYZ(index), Array(6) { true })
-            }.filter { b ->
-                b.type != BlockType.AIR && isVisibleBlock(b, this)
-            }.map {
-                it.faces = if (it.type.transparent) Array(6) { true } else getVisibleFaces(it, this)
-                it
-            }
+        val vertices: IntArray
+        val indices: IntArray
 
-        val vertices = concatenateIntArray(filteredBlocks.map { getVertices(it.vertPosition, it.type.textures, it.faces) })
-        var iIndex = 0
-        val indices = concatenateIntArray(filteredBlocks.map { b ->
-            val inds = getIndices(iIndex, b.faces)
-            iIndex += (b.faces.count { it } * 4)
+        if (isMonoType) {
+            val faces = getVisibleFaces()
+            vertices = getVertices(Vector3i(0), BlockType.getByID(blocks[0]).textures, faces, 16)
+            indices = getIndices(0, faces)
+        } else {
+            val filteredBlocks = blocks
+                .mapIndexed { index, value ->
+                    ChunkBlock(
+                        BlockType.getByID(value),
+                        indexToXYZPosition(index),
+                        indexToXYZ(index),
+                        Array(6) { true })
+                }.filter { b ->
+                    b.type != BlockType.AIR && isVisibleBlock(b, this)
+                }.map {
+                    it.faces = if (it.type.transparent) Array(6) { true } else getVisibleFaces(it, this)
+                    it
+                }
 
-            inds
-        })
+            vertices = concatenateIntArray(filteredBlocks.map { getVertices(it.vertPosition, it.type.textures, it.faces) })
+            var iIndex = 0
+            indices = concatenateIntArray(filteredBlocks.map { b ->
+                val inds = getIndices(iIndex, b.faces)
+                iIndex += (b.faces.count { it } * 4)
 
-        vertexCount = vertices.size
+                inds
+            })
+        }
 
-        glDeleteVertexArrays(vaoID)
-
-        vaoID = glGenVertexArrays()
-        vboID = glGenBuffers()
-        eboID = glGenBuffers()
-
-        glBindVertexArray(vaoID)
-
-        // VBO
+        indexCount = indices.size
         val vertexBuffer = BufferUtils.createIntBuffer(vertices.size)
         (vertexBuffer.put(vertices) as Buffer).flip()
+
+        val indexBuffer = BufferUtils.createIntBuffer(indices.size)
+        (indexBuffer.put(indices) as Buffer).flip()
+
+        main {
+            computeVAO(vertexBuffer, indexBuffer)
+        }
+    }
+
+    fun computeVAO(vertexBuffer: IntBuffer, indexBuffer: IntBuffer) {
+        if (vaoID == 0) {
+            vaoID = glGenVertexArrays()
+            vboID = glGenBuffers()
+            eboID = glGenBuffers()
+        }
+
+        glBindVertexArray(vaoID)
 
         glBindBuffer(GL_ARRAY_BUFFER, vboID)
         glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW)
 
-        // EBO
-        val indexBuffer = BufferUtils.createIntBuffer(indices.size)
-        (indexBuffer.put(indices) as Buffer).flip()
-
-        indexCount = indices.size
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW)
 
         glEnableVertexAttribArray(0)
         glVertexAttribIPointer(0, 1, GL_INT, 4, 0)
 
-        /*
-        NORMAL
-        // Pos
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 52, 0)
-        glEnableVertexAttribArray(0)
-
-        // UV
-        glVertexAttribPointer(1, 2, GL_FLOAT, false, 52, 12)
-        glEnableVertexAttribArray(1)
-
-        // Norm
-        glVertexAttribPointer(2, 1, GL_FLOAT, false, 52, 20)
-        glEnableVertexAttribArray(2)
-
-        // Tex
-        glVertexAttribPointer(3, 1, GL_FLOAT, false, 52, 24)
-        glEnableVertexAttribArray(3)
-
-        // Tangent
-        glVertexAttribPointer(4, 3, GL_FLOAT, false, 52, 28)
-        glEnableVertexAttribArray(4)
-
-        // Bi Tangent
-        glVertexAttribPointer(5, 3, GL_FLOAT, false, 52, 40)
-        glEnableVertexAttribArray(5)
-
-         */
-
+        glBindVertexArray(0)
     }
-
 
     fun render() {
         glBindVertexArray(vaoID)
         glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0)
+        glBindVertexArray(0)
     }
 }

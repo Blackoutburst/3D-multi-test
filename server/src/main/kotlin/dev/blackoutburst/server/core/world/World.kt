@@ -34,8 +34,8 @@ object World {
     }
 
     private fun addTree(x: Int, z: Int) {
-        if (Random.nextInt(200) != 0) return
-        val y = ((OpenSimplex2.noise2(seed, x / 100.0, z / 100.0) * 7).toInt() + 10) + 1
+        if (Random.nextInt(300) != 0) return
+        val y = (OpenSimplex2.noise2(seed, x / 200.0, z / 200.0) * 20).toInt() + 10
 
         for (yo in 0..1) {
             for (xo in -2..2) {

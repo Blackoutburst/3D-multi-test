@@ -5,6 +5,8 @@ import dev.blackoutburst.game.core.entity.EntityOtherPlayer
 import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.network.packets.PacketPlayIn
+import dev.blackoutburst.game.utils.main
+import dev.blackoutburst.game.utils.unconfined
 import java.nio.ByteBuffer
 
 class S01AddEntity(override val size: Int) : PacketPlayIn() {
@@ -17,7 +19,7 @@ class S01AddEntity(override val size: Int) : PacketPlayIn() {
         val yaw = buffer.getFloat()
         val pitch = buffer.getFloat()
 
-        Main.glTaskQueue.add {
+        main {
             Main.entityManager.addEntity(
                 EntityOtherPlayer(
                     entityId,
