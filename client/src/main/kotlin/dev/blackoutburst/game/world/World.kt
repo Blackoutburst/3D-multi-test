@@ -64,10 +64,15 @@ class World {
     }
 
     fun addChunk(position: Vector3i, blockData: Array<Byte>) {
-        val chunk = Chunk(position, blockData)
-        chunk.update()
+        chunks[position.toString()]?.let {
+            it.blocks = blockData
+            it.update()
+        } ?: run {
+            val chunk = Chunk(position, blockData)
+            chunk.update()
 
-        chunks[position.toString()] = chunk
+            chunks[position.toString()] = chunk
+        }
         updateAdjacentChunk(position)
     }
 
