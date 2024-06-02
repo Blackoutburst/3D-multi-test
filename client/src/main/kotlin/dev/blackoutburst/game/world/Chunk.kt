@@ -107,7 +107,7 @@ private fun getFace(
 
  */
 
-private fun getVertices(position: Vector3i, textures: Array<Int>, faces: Array<Boolean>, scale: Int = 1): IntArray {
+private fun getVertices(position: Vector3i, textures: Array<Int>, faces: Array<Boolean>, scale: Int = 1): List<Int> {
     val topPos1 = Vector3i((scale * 0 + position.x), (scale * 1 + position.y), (scale * 0 + position.z))
     val topPos2 = Vector3i((scale * 1 + position.x), (scale * 1 + position.y), (scale * 0 + position.z))
     val topPos3 = Vector3i((scale * 1 + position.x), (scale * 1 + position.y), (scale * 1 + position.z))
@@ -194,10 +194,10 @@ private fun getVertices(position: Vector3i, textures: Array<Int>, faces: Array<B
     if (faces[4]) result.addAll(right.asIterable())
     if (faces[5]) result.addAll(bottom.asIterable())
 
-    return result.toIntArray()
+    return result
 }
 
-private fun getIndices(offset: Int, faces: Array<Boolean>): IntArray {
+private fun getIndices(offset: Int, faces: Array<Boolean>): List<Int> {
     val indices = mutableListOf<Int>()
     var internalOffset = 0
 
@@ -226,7 +226,7 @@ private fun getIndices(offset: Int, faces: Array<Boolean>): IntArray {
         internalOffset += 4
     }
 
-    return indices.toIntArray()
+    return indices
 }
 
 data class ChunkBlock(
@@ -354,8 +354,8 @@ class Chunk(
 
         if (isMonoType) {
             val faces = getVisibleFaces()
-            vertices = getVertices(Vector3i(0), BlockType.getByID(blocks[0]).textures, faces, 16)
-            indices = getIndices(0, faces)
+            vertices = getVertices(Vector3i(0), BlockType.getByID(blocks[0]).textures, faces, 16).toIntArray()
+            indices = getIndices(0, faces).toIntArray()
         } else {
             val filteredBlocks = blocks
                 .mapIndexed { index, value ->
@@ -371,14 +371,14 @@ class Chunk(
                     it
                 }
 
-            vertices = concatenateIntArray(filteredBlocks.map { getVertices(it.vertPosition, it.type.textures, it.faces) })
+            vertices = filteredBlocks.flatMap { getVertices(it.vertPosition, it.type.textures, it.faces) }.toIntArray()
             var iIndex = 0
-            indices = concatenateIntArray(filteredBlocks.map { b ->
+            indices = filteredBlocks.flatMap { b ->
                 val inds = getIndices(iIndex, b.faces)
                 iIndex += (b.faces.count { it } * 4)
 
                 inds
-            })
+            }.toIntArray()
         }
 
         indexCount = indices.size

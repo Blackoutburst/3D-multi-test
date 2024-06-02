@@ -99,7 +99,7 @@ class World {
         glBindTexture(GL_TEXTURE_2D_ARRAY, diffuseMap)
 
         glUseProgram(chunkProgram.id)
-        chunks.filter { it.value.vboID != 0 }.forEach {
+        chunks.forEach {
             chunkProgram.setUniform3f("chunkPos", it.value.position.toFloat())
             it.value.render()
         }
