@@ -1,7 +1,14 @@
 import org.gradle.internal.os.OperatingSystem
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.9.23'
+    id 'com.github.johnrengelman.shadow' version '7.1.0'
+    id 'application'
+}
+
+application {
+    mainClass = 'dev.blackoutburst.game.MainKt'
 }
 
 project.ext.lwjglVersion = "3.3.3"
@@ -30,7 +37,7 @@ switch (OperatingSystem.current()) {
 }
 
 group = 'dev.blackoutburst'
-version = '1.0-SNAPSHOT'
+version = '1.0'
 
 repositories {
     mavenCentral()
@@ -125,4 +132,30 @@ test {
 }
 kotlin {
     jvmToolchain(11)
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', 'src/main/kotlin']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+}
+
+tasks.withType(ShadowJar).configureEach {
+    archiveBaseName.set("client-shadow")
+    mergeServiceFiles()
+    from(sourceSets.main.output)
+    configurations = [project.configurations.runtimeClasspath]
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': application.mainClass
+        )
+    }
 }
