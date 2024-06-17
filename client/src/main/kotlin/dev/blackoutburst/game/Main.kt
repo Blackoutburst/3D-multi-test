@@ -106,7 +106,7 @@ class Main {
 
             entityManager.render()
 
-            UI.playerPosition(window.nk.ctx, camera.position, getFps())
+            UI.playerPosition(window.nk.ctx, camera.position)
 
             window.update()
         }

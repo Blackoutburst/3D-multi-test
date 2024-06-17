@@ -10,7 +10,7 @@ import static org.lwjgl.nuklear.Nuklear.nk_end;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class UI {
-    public static void playerPosition(NkContext ctx, Vector3f position, int fps) {
+    public static void playerPosition(NkContext ctx, Vector3f position) {
         try (MemoryStack stack = stackPush()) {
             NkRect rect = NkRect.malloc(stack);
 
