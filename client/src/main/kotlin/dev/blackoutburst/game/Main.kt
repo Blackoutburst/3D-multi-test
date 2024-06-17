@@ -2,10 +2,12 @@ package dev.blackoutburst.game
 
 import dev.blackoutburst.game.core.Camera
 import dev.blackoutburst.game.core.Display
+import dev.blackoutburst.game.core.UI
 import dev.blackoutburst.game.core.entity.EntityManager
 import dev.blackoutburst.game.graphics.Color
 import dev.blackoutburst.game.graphics.TextureArray
 import dev.blackoutburst.game.maths.Matrix
+import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.network.Connection
 import dev.blackoutburst.game.utils.Keyboard
 import dev.blackoutburst.game.utils.Keyboard.isKeyDown
@@ -84,6 +86,8 @@ class Main {
             pollGlTasks()
 
             window.clear()
+            glEnable(GL_CULL_FACE)
+            glEnable(GL_DEPTH_TEST)
 
             entityManager.update()
 
@@ -101,6 +105,8 @@ class Main {
             world.render()
 
             entityManager.render()
+
+            UI.playerPosition(window.nk.ctx, camera.position, getFps())
 
             window.update()
         }

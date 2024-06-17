@@ -2,7 +2,7 @@ import { world } from "./main.js"
 import { Vector3 } from "./vector3.js"
 
 export function connectWebSocket() {
-    const ws = new WebSocket("ws://localhost:16000/game")
+    const ws = new WebSocket("ws://51.77.194.124:16000/game")
 
     ws.onopen = () => {}
 
@@ -25,8 +25,8 @@ function parsePacket(dataView) {
         case 0x01: addEntity(dataView); break;
         case 0x02: removeEntity(dataView); break;
         case 0x03: identification(dataView); break;
-        case 0x04: entityRotation(dataView); break;
-        case 0x05: sendChunk(dataView); break;
+        //case 0x04: entityRotation(dataView); break;
+        case 0x04: sendChunk(dataView); break;
     }
 
 }

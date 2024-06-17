@@ -130,3 +130,6 @@ server/.vscode/
 
 ### Mac OS ###
 server/.DS_Store
+
+### JVM ###
+*.log

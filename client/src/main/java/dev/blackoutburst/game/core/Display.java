@@ -2,11 +2,13 @@ package dev.blackoutburst.game.core;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.nuklear.Nuklear.*;
+import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.system.MemoryUtil.*;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
 
 import dev.blackoutburst.game.Main;
@@ -17,11 +19,11 @@ import dev.blackoutburst.game.maths.Vector2i;
 import dev.blackoutburst.game.utils.*;
 
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWImage;
-import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.glfw.*;
+import org.lwjgl.nuklear.NkVec2;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.stb.STBImage;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.stb.*;
 import org.lwjgl.system.MemoryStack;
 
 /**
@@ -54,6 +56,7 @@ public class Display {
 	
 	protected static long window;
 
+	public NK nk;
 
 	private static boolean toggleMousePressed = false;
 	private static boolean toggleFullscreenPressed = false;
@@ -141,18 +144,147 @@ public class Display {
 		setIcons("icon.png");
 		
 		glfwMakeContextCurrent(window);
-		glfwShowWindow(window);
-		
 		GL.createCapabilities();
-		
+
+		nk = new NK();
+
+		nk.init(window);
+
+		manageCallBacks();
+
+		glfwShowWindow(window);
+
+
 		setFullScreen();
-		
-		glfwSetWindowSizeCallback(window, new WindowCallBack());
-		glfwSetCursorPosCallback(window, new MousePositionCallBack());
-		glfwSetMouseButtonCallback(window, new MouseButtonCallBack());
-		glfwSetScrollCallback(window, new MouseScrollCallBack());
-		
 		return (this);
+	}
+
+	private void manageCallBacks() {
+		GLFWScrollCallbackI nkScroll = (window, xoffset, yoffset) -> {
+			try (MemoryStack stack = stackPush()) {
+				NkVec2 scroll = NkVec2.malloc(stack)
+						.x((float)xoffset)
+						.y((float)yoffset);
+				nk_input_scroll(nk.ctx, scroll);
+			}
+		};
+		GLFWCharCallbackI nkChar = (window, codepoint) -> nk_input_unicode(nk.ctx, codepoint);
+		GLFWKeyCallbackI nkKey = (window, key, scancode, action, mods) -> {
+			boolean press = action == GLFW_PRESS;
+			switch (key) {
+				case GLFW_KEY_ESCAPE:
+					glfwSetWindowShouldClose(window, true);
+					break;
+				case GLFW_KEY_DELETE:
+					nk_input_key(nk.ctx, NK_KEY_DEL, press);
+					break;
+				case GLFW_KEY_ENTER:
+					nk_input_key(nk.ctx, NK_KEY_ENTER, press);
+					break;
+				case GLFW_KEY_TAB:
+					nk_input_key(nk.ctx, NK_KEY_TAB, press);
+					break;
+				case GLFW_KEY_BACKSPACE:
+					nk_input_key(nk.ctx, NK_KEY_BACKSPACE, press);
+					break;
+				case GLFW_KEY_UP:
+					nk_input_key(nk.ctx, NK_KEY_UP, press);
+					break;
+				case GLFW_KEY_DOWN:
+					nk_input_key(nk.ctx, NK_KEY_DOWN, press);
+					break;
+				case GLFW_KEY_HOME:
+					nk_input_key(nk.ctx, NK_KEY_TEXT_START, press);
+					nk_input_key(nk.ctx, NK_KEY_SCROLL_START, press);
+					break;
+				case GLFW_KEY_END:
+					nk_input_key(nk.ctx, NK_KEY_TEXT_END, press);
+					nk_input_key(nk.ctx, NK_KEY_SCROLL_END, press);
+					break;
+				case GLFW_KEY_PAGE_DOWN:
+					nk_input_key(nk.ctx, NK_KEY_SCROLL_DOWN, press);
+					break;
+				case GLFW_KEY_PAGE_UP:
+					nk_input_key(nk.ctx, NK_KEY_SCROLL_UP, press);
+					break;
+				case GLFW_KEY_LEFT_SHIFT:
+				case GLFW_KEY_RIGHT_SHIFT:
+					nk_input_key(nk.ctx, NK_KEY_SHIFT, press);
+					break;
+				case GLFW_KEY_LEFT_CONTROL:
+				case GLFW_KEY_RIGHT_CONTROL:
+					if (press) {
+						nk_input_key(nk.ctx, NK_KEY_COPY, glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS);
+						nk_input_key(nk.ctx, NK_KEY_PASTE, glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS);
+						nk_input_key(nk.ctx, NK_KEY_CUT, glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS);
+						nk_input_key(nk.ctx, NK_KEY_TEXT_UNDO, glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS);
+						nk_input_key(nk.ctx, NK_KEY_TEXT_REDO, glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS);
+						nk_input_key(nk.ctx, NK_KEY_TEXT_WORD_LEFT, glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS);
+						nk_input_key(nk.ctx, NK_KEY_TEXT_WORD_RIGHT, glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS);
+						nk_input_key(nk.ctx, NK_KEY_TEXT_LINE_START, glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS);
+						nk_input_key(nk.ctx, NK_KEY_TEXT_LINE_END, glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS);
+					} else {
+						nk_input_key(nk.ctx, NK_KEY_LEFT, glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS);
+						nk_input_key(nk.ctx, NK_KEY_RIGHT, glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS);
+						nk_input_key(nk.ctx, NK_KEY_COPY, false);
+						nk_input_key(nk.ctx, NK_KEY_PASTE, false);
+						nk_input_key(nk.ctx, NK_KEY_CUT, false);
+						nk_input_key(nk.ctx, NK_KEY_SHIFT, false);
+					}
+					break;
+			}
+		};
+		GLFWCursorPosCallbackI nkCursor = (window, xpos, ypos) -> nk_input_motion(nk.ctx, (int)xpos, (int)ypos);
+		GLFWMouseButtonCallbackI nkMouseButton = (window, button, action, mods) -> {
+			try (MemoryStack stack = stackPush()) {
+				DoubleBuffer cx = stack.mallocDouble(1);
+				DoubleBuffer cy = stack.mallocDouble(1);
+
+				glfwGetCursorPos(window, cx, cy);
+
+				int x = (int)cx.get(0);
+				int y = (int)cy.get(0);
+
+				int nkButton;
+				switch (button) {
+					case GLFW_MOUSE_BUTTON_RIGHT:
+						nkButton = NK_BUTTON_RIGHT;
+						break;
+					case GLFW_MOUSE_BUTTON_MIDDLE:
+						nkButton = NK_BUTTON_MIDDLE;
+						break;
+					default:
+						nkButton = NK_BUTTON_LEFT;
+				}
+				nk_input_button(nk.ctx, nkButton, x, y, action == GLFW_PRESS);
+			}
+		};
+
+		GLFWWindowSizeCallbackI mcWindowSize = new WindowCallBack();
+		GLFWScrollCallbackI mckScroll = new MouseScrollCallBack();
+		GLFWCursorPosCallbackI mcCursor = (window, xpos, ypos) -> new MousePositionCallBack();
+		GLFWMouseButtonCallbackI mcMouseButton = (window, button, action, mods) -> new MouseButtonCallBack();
+
+		glfwSetWindowSizeCallback(window, mcWindowSize);
+
+		glfwSetScrollCallback(window, (window, xoffset, yoffset) -> {
+			nkScroll.invoke(window, xoffset, yoffset);
+			mckScroll.invoke(window, xoffset, yoffset);
+		});
+
+		glfwSetCharCallback(window, nkChar);
+		glfwSetKeyCallback(window, nkKey);
+
+		glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
+			nkCursor.invoke(window, xpos, ypos);
+			mcCursor.invoke(window, xpos, ypos);
+		});
+
+		glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
+			nkMouseButton.invoke(window, button, action, mods);
+			mcMouseButton.invoke(window, button, action, mods);
+		});
+
 	}
 	
 	/**
@@ -164,8 +296,8 @@ public class Display {
 	 * @author Blackoutburst
 	 */
 	public void clear() {
-		glClearColor(clearColor.getR(), clearColor.getG(), clearColor.getB(), clearColor.getA());
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		GL11.glClearColor(clearColor.getR(), clearColor.getG(), clearColor.getB(), clearColor.getA());
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
 	
 	/**
@@ -202,7 +334,8 @@ public class Display {
 		}
 		toggleFullscreenPressed = Keyboard.INSTANCE.isKeyDown(Keyboard.F11);
 
-		glfwPollEvents();
+		nk.newFrame(window);
+		nk.render(NK_ANTI_ALIASING_ON);
 		glfwSwapBuffers(window);
 	}
 	
@@ -278,6 +411,7 @@ public class Display {
 	 * @author Blackoutburst
 	 */
 	public void destroy() {
+		nk.shutdown();
 		glfwFreeCallbacks(window);
 		glfwDestroyWindow(window);
 		glfwTerminate();
@@ -374,7 +508,7 @@ public class Display {
 		height = size.getY();
 		
 		if (window != NULL) {
-			glViewport(0, 0, width, height);
+			GL11.glViewport(0, 0, width, height);
 			glfwSetWindowSize(window, width, height);
 			Main.Companion.setProjection(new Matrix().projectionMatrix(90f, 1000f, 0.1f));
 		}
@@ -397,7 +531,7 @@ public class Display {
 		height = h;
 		
 		if (window != NULL) {
-			glViewport(0, 0, width, height);
+			GL11.glViewport(0, 0, width, height);
 			glfwSetWindowSize(window, width, height);
 			Main.Companion.setProjection(new Matrix().projectionMatrix(90f, 1000f, 0.1f));
 		}
