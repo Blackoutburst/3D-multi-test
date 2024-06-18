@@ -14,6 +14,7 @@ import dev.blackoutburst.game.world.BlockType
 import dev.blackoutburst.game.world.World
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11.*
+import org.lwjgl.system.Configuration
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class Main {
@@ -42,6 +43,7 @@ class Main {
         private var fps = 0
         private var previousTime = Time.runtime
     }
+
 
     private fun getFps(): Int {
         val currentTime: Double = Time.runtime

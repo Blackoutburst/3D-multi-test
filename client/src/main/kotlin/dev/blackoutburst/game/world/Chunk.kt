@@ -2,15 +2,9 @@ package dev.blackoutburst.game.world
 
 import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.maths.*
-import dev.blackoutburst.game.utils.default
 import dev.blackoutburst.game.utils.main
-import dev.blackoutburst.game.utils.stack
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.runBlocking
-import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL30.*
+import org.lwjgl.system.MemoryUtil
 import java.nio.Buffer
 import java.nio.IntBuffer
 
@@ -379,13 +373,13 @@ class Chunk(
         )
     }
 
-    fun update() = runBlocking {
+    fun update() {
         Main.world.chunkUpdate.incrementAndGet()
 
         val isMonoType = isMonoType()
         if (isMonoType && BlockType.getByID(blocks[0]) == BlockType.AIR) {
-            Main.world.removeChunk(this@Chunk)
-            return@runBlocking
+            Main.world.removeChunk(this)
+            return
         }
 
         var vertices = mutableListOf<Int>()
@@ -398,44 +392,37 @@ class Chunk(
             indices = getIndices(0, faces).toMutableList()
         } else {
             blockCount = blocks.mapIndexed { index, value ->
-                    ChunkBlock(
-                        BlockType.getByID(value),
-                        indexToXYZPosition(index),
-                        indexToXYZ(index),
-                        Array(6) { true }
-                    )
-                }.filter { b ->
-                    b.type != BlockType.AIR && isVisibleBlock(b, this@Chunk)
-                }.map {
-                    it.faces = if (it.type.transparent) Array(6) { true } else getVisibleFaces(it, this@Chunk)
-                    vertices.addAll(getVertices(it.vertPosition, it.type.textures, it.faces))
-                    indices.addAll(getIndices(iIndex, it.faces))
-                    iIndex += (it.faces.count { it } * 4)
+                val pos = indexToXYZ(index)
+                ChunkBlock(
+                    BlockType.getByID(value),
+                    pos + this.position,
+                    pos,
+                    Array(6) { true }
+                )
+            }.filter { b ->
+                b.type != BlockType.AIR && isVisibleBlock(b, this)
+            }.map {
+                it.faces = if (it.type.transparent) Array(6) { true } else getVisibleFaces(it, this)
+                vertices.addAll(getVertices(it.vertPosition, it.type.textures, it.faces))
+                indices.addAll(getIndices(iIndex, it.faces))
+                iIndex += (it.faces.count { it } * 4)
 
-                    it
-                }.size
+                it
+            }.size
         }
 
         indexCount = indices.size
-        val vertArray = vertices.toIntArray()
-        val indArray = indices.toIntArray()
+        val vertexArray = vertices.toIntArray()
+        val indexArray = indices.toIntArray()
 
         main {
-            var vertexBuffer: IntBuffer? = null
-            var indexBuffer: IntBuffer? = null
-            stack {
-                vertexBuffer = BufferUtils.createIntBuffer(vertices.size)
-                (vertexBuffer!!.put(vertArray) as Buffer).flip()
 
-                indexBuffer = BufferUtils.createIntBuffer(indices.size)
-                (indexBuffer!!.put(indArray) as Buffer).flip()
-            }
 
-            computeVAO(vertexBuffer!!, indexBuffer!!)
+            computeVAO(vertexArray, indexArray)
         }
     }
 
-    fun computeVAO(vertexBuffer: IntBuffer, indexBuffer: IntBuffer) {
+    fun computeVAO(vertexArray: IntArray, indexArray: IntArray) {
         if (vaoID == 0) {
             vaoID = glGenVertexArrays()
             vboID = glGenBuffers()
@@ -445,10 +432,20 @@ class Chunk(
         glBindVertexArray(vaoID)
 
         glBindBuffer(GL_ARRAY_BUFFER, vboID)
+
+        val vertexBuffer = MemoryUtil.memAllocInt(vertexArray.size)
+        vertexBuffer.put(vertexArray).flip()
+
         glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW)
+        MemoryUtil.memFree(vertexBuffer)
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID)
+
+        val indexBuffer = MemoryUtil.memAllocInt(indexArray.size)
+        indexBuffer.put(indexArray).flip()
+
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW)
+        MemoryUtil.memFree(indexBuffer)
 
         glEnableVertexAttribArray(0)
         glVertexAttribIPointer(0, 1, GL_INT, 4, 0)
