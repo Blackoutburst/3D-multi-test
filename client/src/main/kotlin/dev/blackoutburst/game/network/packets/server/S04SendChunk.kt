@@ -3,8 +3,6 @@ package dev.blackoutburst.game.network.packets.server
 import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.network.packets.PacketPlayIn
-import dev.blackoutburst.game.utils.main
-import dev.blackoutburst.game.world.BlockType
 import java.nio.ByteBuffer
 
 class S04SendChunk(override val size: Int) : PacketPlayIn() {

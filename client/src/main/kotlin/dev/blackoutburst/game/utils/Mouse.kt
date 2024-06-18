@@ -8,28 +8,50 @@ import java.nio.Buffer
 
 
 object Mouse {
+	const val LEFT_BUTTON = 0
+	const val RIGHT_BUTTON = 1
+	const val MIDDLE_BUTTON = 2
+
+	const val RELEASE = 0
+	const val PRESS = 1
+	const val DOWN = 2
+
     var x: Float = 0f
     var y: Float = 0f
 	var scroll: Float = 0f
     var position = Vector2f()
-	val leftButton: MouseButton = MouseButton(0)
-	val rightButton: MouseButton = MouseButton(1)
-	val middleButton: MouseButton = MouseButton(2)
+	val buttons = mutableMapOf<Int, Int>()
+
+	fun update() {
+		buttons.forEach { (key, value) ->
+			if (value == PRESS) {
+				buttons[key] = DOWN
+			}
+		}
+	}
+
+	fun isButtonPressed(button: Int): Boolean {
+		return buttons[button] == PRESS
+	}
+
+	fun isButtonReleased(button: Int): Boolean {
+		return buttons[button] == RELEASE
+	}
+
+	fun isButtonDown(button: Int): Boolean {
+		return buttons[button] == DOWN
+	}
 
 	fun getRawPosition(): Vector2f {
 		val size = Vector2f()
 
-		try {
-			MemoryStack.stackPush().use { stack ->
-				val width = stack.mallocDouble(1)
-				val height = stack.mallocDouble(1)
-				glfwGetCursorPos(Display.getWindow(), width, height)
-				size.set(width.get().toFloat(), height.get().toFloat())
-				(width as Buffer).clear()
-				(height as Buffer).clear()
-			}
-		} catch (e: Exception) {
-			System.err.println("Error while getting cursor position: $e")
+		stack {
+			val width = it.mallocDouble(1)
+			val height = it.mallocDouble(1)
+			glfwGetCursorPos(Display.getWindow(), width, height)
+			size.set(width.get().toFloat(), height.get().toFloat())
+			(width as Buffer).clear()
+			(height as Buffer).clear()
 		}
 		return (size)
 	}

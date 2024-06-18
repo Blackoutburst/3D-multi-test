@@ -4,6 +4,7 @@ import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.maths.*
 import dev.blackoutburst.game.utils.concatenateIntArray
 import dev.blackoutburst.game.utils.main
+import dev.blackoutburst.game.utils.stack
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL30.*
 import java.nio.Buffer
@@ -244,6 +245,7 @@ class Chunk(
     var vboID = 0
     var eboID = 0
     var indexCount = 0
+    var blockCount = 0
 
     companion object {
         fun getIndex(position: Vector3i, chunkSize: Int): Vector3i {
@@ -343,6 +345,8 @@ class Chunk(
     }
 
     fun update() {
+        Main.world.chunkUpdate.incrementAndGet()
+
         val isMonoType = isMonoType()
         if (isMonoType && BlockType.getByID(blocks[0]) == BlockType.AIR) {
             Main.world.removeChunk(this)
@@ -370,7 +374,7 @@ class Chunk(
                     it.faces = if (it.type.transparent) Array(6) { true } else getVisibleFaces(it, this)
                     it
                 }
-
+            blockCount = filteredBlocks.size
             vertices = filteredBlocks.flatMap { getVertices(it.vertPosition, it.type.textures, it.faces) }.toIntArray()
             var iIndex = 0
             indices = filteredBlocks.flatMap { b ->
@@ -382,14 +386,19 @@ class Chunk(
         }
 
         indexCount = indices.size
-        val vertexBuffer = BufferUtils.createIntBuffer(vertices.size)
-        (vertexBuffer.put(vertices) as Buffer).flip()
-
-        val indexBuffer = BufferUtils.createIntBuffer(indices.size)
-        (indexBuffer.put(indices) as Buffer).flip()
 
         main {
-            computeVAO(vertexBuffer, indexBuffer)
+            var vertexBuffer: IntBuffer? = null
+            var indexBuffer: IntBuffer? = null
+            stack {
+                vertexBuffer = BufferUtils.createIntBuffer(vertices.size)
+                (vertexBuffer!!.put(vertices) as Buffer).flip()
+
+                indexBuffer = BufferUtils.createIntBuffer(indices.size)
+                (indexBuffer!!.put(indices) as Buffer).flip()
+            }
+
+            computeVAO(vertexBuffer!!, indexBuffer!!)
         }
     }
 
@@ -412,6 +421,7 @@ class Chunk(
         glVertexAttribIPointer(0, 1, GL_INT, 4, 0)
 
         glBindVertexArray(0)
+        Main.world.chunkUpdate.decrementAndGet()
     }
 
     fun render() {

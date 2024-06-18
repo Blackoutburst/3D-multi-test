@@ -26,28 +26,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.stb.*;
 import org.lwjgl.system.MemoryStack;
 
-/**
- * <h1>Display</h1>
- * 
- * <p>
- * Create and manager window
- * </p>
- * 
- * @since 0.1
- * @author Blackoutburst
- */
 public class Display {
-	
-	/**
-	 * <h1>FullScreenMode</h1>
-	 * 
-	 * <p>
-	 * Define the window fullscreen mode available
-	 * </p>
-	 * 
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public enum FullScreenMode{
 		NONE,
 		FULL,
@@ -58,30 +38,18 @@ public class Display {
 
 	public NK nk;
 
-	private static boolean toggleMousePressed = false;
-	private static boolean toggleFullscreenPressed = false;
-
 	public static boolean shouldClose = false;
 	public static boolean showCursor = true;
 	
 	protected static int width = 1280;
 	protected static int height = 720;
 	
-	protected String title = "Bogel2D Window";
+	protected String title = "Window";
 	
 	public static Color clearColor = new Color(0.1f);
 	
 	protected FullScreenMode fullScreen = FullScreenMode.NONE;
-	
-	/**
-	 * <p>
-	 * Initialize GLFW<br>
-	 * <b>Must be called before anything</b>
-	 * </p>
-	 * 
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public Display() {
 		GLFWErrorCallback.createPrint(System.err).set();
 		
@@ -92,19 +60,13 @@ public class Display {
 	public void close() {
 		shouldClose = true;
 	}
-	
-	/**
-	 * <p>
-	 * Set the window fullscreen mode
-	 * </p>
-	 * 
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	private void setFullScreen() {
 		long monitor = glfwGetPrimaryMonitor();
 		GLFWVidMode videoMode = glfwGetVideoMode(monitor);
-		Vector2i center = new Vector2i(videoMode.width() / 2 - width / 2, videoMode.height() / 2 - height / 2);
+        assert videoMode != null;
+
+        Vector2i center = new Vector2i(videoMode.width() / 2 - width / 2, videoMode.height() / 2 - height / 2);
 
 		switch(fullScreen) {
 			case BORDERLESS:
@@ -118,17 +80,7 @@ public class Display {
 			break;
 		}
 	}
-	
-	/**
-	 * <p>
-	 * Create the window and setup GLFW<br>
-	 * <b>Must be called before attempting any render</b>
-	 * </p>
-	 * 
-	 * @return Display
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public Display create() {
 		glfwWindowHint(GLFW_SAMPLES, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -168,6 +120,7 @@ public class Display {
 				nk_input_scroll(nk.ctx, scroll);
 			}
 		};
+
 		GLFWCharCallbackI nkChar = (window, codepoint) -> nk_input_unicode(nk.ctx, codepoint);
 		GLFWKeyCallbackI nkKey = (window, key, scancode, action, mods) -> {
 			boolean press = action == GLFW_PRESS;
@@ -234,6 +187,7 @@ public class Display {
 					break;
 			}
 		};
+
 		GLFWCursorPosCallbackI nkCursor = (window, xpos, ypos) -> nk_input_motion(nk.ctx, (int)xpos, (int)ypos);
 		GLFWMouseButtonCallbackI nkMouseButton = (window, button, action, mods) -> {
 			try (MemoryStack stack = stackPush()) {
@@ -262,8 +216,10 @@ public class Display {
 
 		GLFWWindowSizeCallbackI mcWindowSize = new WindowCallBack();
 		GLFWScrollCallbackI mckScroll = new MouseScrollCallBack();
-		GLFWCursorPosCallbackI mcCursor = (window, xpos, ypos) -> new MousePositionCallBack();
-		GLFWMouseButtonCallbackI mcMouseButton = (window, button, action, mods) -> new MouseButtonCallBack();
+		GLFWCursorPosCallbackI mcCursor = new MousePositionCallBack();
+		GLFWMouseButtonCallbackI mcMouseButton = new MouseButtonCallBack();
+		GLFWKeyCallbackI mckey = new KeyboardCallBack();
+
 
 		glfwSetWindowSizeCallback(window, mcWindowSize);
 
@@ -273,7 +229,10 @@ public class Display {
 		});
 
 		glfwSetCharCallback(window, nkChar);
-		glfwSetKeyCallback(window, nkKey);
+		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+			nkKey.invoke(window, key, scancode, action, mods);
+			mckey.invoke(window, key, scancode, action, mods);
+		});
 
 		glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
 			nkCursor.invoke(window, xpos, ypos);
@@ -286,69 +245,41 @@ public class Display {
 		});
 
 	}
-	
-	/**
-	 * <p>
-	 * Clear the Color and Depth buffer
-	 * </p>
-	 * 
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public void clear() {
 		GL11.glClearColor(clearColor.getR(), clearColor.getG(), clearColor.getB(), clearColor.getA());
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 	}
-	
-	/**
-	 * <p>
-	 * Do the render and poll the events
-	 * </p>
-	 * 
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public void update() {
 		Time.INSTANCE.updateDelta();
-		Mouse.INSTANCE.getLeftButton().reset();
-		Mouse.INSTANCE.getRightButton().reset();
-		Mouse.INSTANCE.getMiddleButton().reset();
-		Mouse.INSTANCE.setScroll(0f);
+		Mouse.INSTANCE.update();
 
-		if (Keyboard.INSTANCE.isKeyDown(Keyboard.ESCAPE)) {
+		if (Keyboard.INSTANCE.isKeyPressed(GLFW_KEY_ESCAPE)) {
 			close();
 		}
 
-		if (Keyboard.INSTANCE.isKeyDown(Keyboard.LEFT_ALT) && !toggleMousePressed) {
+		if (Keyboard.INSTANCE.isKeyPressed(GLFW_KEY_LEFT_ALT)) {
 			showCursor = !showCursor;
 			glfwSetInputMode(window, GLFW_CURSOR, showCursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
 		}
-		toggleMousePressed = Keyboard.INSTANCE.isKeyDown(Keyboard.LEFT_ALT);
 
-		if (Keyboard.INSTANCE.isKeyDown(Keyboard.F11) && !toggleFullscreenPressed) {
+		if (Keyboard.INSTANCE.isKeyPressed(GLFW_KEY_F11)) {
 			FullScreenMode mode = fullScreen == FullScreenMode.NONE ? fullScreen = FullScreenMode.BORDERLESS : FullScreenMode.NONE;
 			if (mode == FullScreenMode.NONE) {
 				setSize(1280, 720);
 			}
 			setFullscreenMode(mode);
 		}
-		toggleFullscreenPressed = Keyboard.INSTANCE.isKeyDown(Keyboard.F11);
+
+		Keyboard.INSTANCE.update();
 
 		nk.newFrame(window);
 		nk.render(NK_ANTI_ALIASING_ON);
 		glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
-	
-	/**
-	 * <p>
-	 * Define which fullscreen mode the window should use<br>
-	 * </p>
-	 * 
-	 * @return Display
-	 * @param mode fullscreen mode
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public Display setFullscreenMode(FullScreenMode mode) {
 		if (mode != FullScreenMode.NONE)
 			this.setDecoration(false);
@@ -360,56 +291,20 @@ public class Display {
 		
 		return (this);
 	}
-	
-	/**
-	 * <p>
-	 * Tell if the window is still open<br>
-	 * </p>
-	 * 
-	 * @return boolean window is open
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public boolean isOpen() {
 		return (!shouldClose && !glfwWindowShouldClose(window));
 	}
-	
-	/**
-	 * <p>
-	 * Set the clear color<br>
-	 * </p>
-	 * 
-	 * @return Display
-	 * @param c the new background color
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public Display setClearColor(Color c) {
 		clearColor = c;
 		return (this);
 	}
-	
-	/**
-	 * <p>
-	 * Get the clear color<br>
-	 * </p>
-	 * 
-	 * @return clearColor
-	 * @since 0.4
-	 * @author Blackoutburst
-	 */
+
 	public static Color getClearColor() {
 		return (clearColor);
 	}
-	
-	/**
-	 * <p>
-	 * Destroy the window and end the program<br>
-	 * </p>
-	 * 
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public void destroy() {
 		nk.shutdown();
 		glfwFreeCallbacks(window);
@@ -418,31 +313,11 @@ public class Display {
 		glfwSetErrorCallback(null).free();
 		System.exit(0);
 	}
-	
-	/**
-	 * <p>
-	 * Return the window parameter<br>
-	 * </p>
-	 * 
-	 * @return long window
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public static long getWindow() {
 		return (window);
 	}
-	
-	/**
-	 * <p>
-	 * Set the window title<br>
-	 * <b>Must be called before creating the window</b>
-	 * </p>
-	 * 
-	 * @return Display
-	 * @param title the new window title
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public Display setTitle(String title) {
 		if (window != NULL) {
 			System.err.println("Warning [Title] must be set BEFORE creating the window!");
@@ -451,18 +326,7 @@ public class Display {
 		}
 		return (this);
 	}
-	
-	/**
-	 * <p>
-	 * Set the Vsync<br>
-	 * <b>Must be called after creating the window</b>
-	 * </p>
-	 * 
-	 * @return Display
-	 * @param enabled if the vsync should be used or not
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public Display setVSync(boolean enabled) {
 		if (window != NULL) {
 			glfwSwapInterval(enabled ? GLFW_TRUE : GLFW_FALSE);
@@ -472,60 +336,30 @@ public class Display {
 		return (this);
 	}
 
-	/**
-	 * <p>
-	 * Set the window size
-	 * </p>
-	 * 
-	 * @return Display
-	 * @param w the window width
-	 * @param h the window height
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
 	public Display setSize(int w, int h) {
 		width = w;
 		height = h;
-		
+
 		if (window != NULL)
 			glfwSetWindowSize(window, width, height);
-		
+
 		return (this);
 	}
-	
-	/**
-	 * <p>
-	 * Set the window size
-	 * </p>
-	 * 
-	 * @return Display
-	 * @param size the window size
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
+
 	public Display setSize(@NotNull Vector2i size) {
 		width = size.getX();
 		height = size.getY();
-		
+
 		if (window != NULL) {
 			GL11.glViewport(0, 0, width, height);
 			glfwSetWindowSize(window, width, height);
 			Main.Companion.setProjection(new Matrix().projectionMatrix(90f, 1000f, 0.1f));
 		}
-		
+
 		return (this);
 	}
-	
-	/**
-	 * <p>
-	 * Set the window size
-	 * </p>
-	 * 
-	 * @param w the window width
-	 * @param h the window height
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public static void callBackSetSize(int w, int h) {
 		width = w;
 		height = h;
@@ -536,18 +370,7 @@ public class Display {
 			Main.Companion.setProjection(new Matrix().projectionMatrix(90f, 1000f, 0.1f));
 		}
 	}
-	
-	/**
-	 * <p>
-	 * Set the window resizable<br>
-	 * <b>Must be called before creating the window</b>
-	 * </p>
-	 * 
-	 * @return Display
-	 * @param resizable allow the window to be resized
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public Display setResizable(boolean resizable) {
 		if (window != NULL) {
 			System.err.println("Warning [Resizable] must be set BEFORE creating the window!");
@@ -556,18 +379,7 @@ public class Display {
 		}
 		return (this);
 	}
-	
-	/**
-	 * <p>
-	 * Allow the framebuffer to be transparent<br>
-	 * <b>Must be called before creating the window</b>
-	 * </p>
-	 * 
-	 * @return Display
-	 * @param transparent allow the framebuffer to be transparent (this doesn't work on some graphic devices)
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public Display setTransparent(boolean transparent) {
 		if (window != NULL) {
 			System.err.println("Warning [Transparent] must be set BEFORE creating the window!");
@@ -576,63 +388,22 @@ public class Display {
 		}
 		return (this);
 	}
-	
-	/**
-	 * <p>
-	 * Set the window decoration<br>
-	 * <b>Must be called before creating the window</b>
-	 * </p>
-	 * 
-	 * @return Display
-	 * @param decorated allow the window decoration (default system buttons)
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public Display setDecoration(boolean decorated) {
 		glfwWindowHint(GLFW_DECORATED , decorated ? GLFW_TRUE : GLFW_FALSE);
 		return (this);
 	}
-	
-	/**
-	 * <p>
-	 * Set the window position<br>
-	 * </p>
-	 * 
-	 * @return Display
-	 * @param position the new window position
-	 * @since 0.2
-	 * @author Blackoutburst
-	 */
+
 	public Display setPosition(@NotNull Vector2i position) {
 		glfwSetWindowPos(window, position.getX(), position.getY());
 		return (this);
 	}
-	
-	/**
-	 * <p>
-	 * Set the window position<br>
-	 * </p>
-	 * 
-	 * @return Display
-	 * @param x the x position
-	 * @param y the y position
-	 * @since 0.2
-	 * @author Blackoutburst
-	 */
+
 	public Display setPosition(int x, int y) {
 		glfwSetWindowPos(window, x, y);
 		return (this);
 	}
-	
-	/**
-	 * <p>
-	 * Get the window width
-	 * </p>
-	 * 
-	 * @return int
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public static int getWidth() {
 		int w = 0;
 		
@@ -649,16 +420,7 @@ public class Display {
 		}
 		return (w);
 	}
-	
-	/**
-	 * <p>
-	 * Get the window height
-	 * </p>
-	 * 
-	 * @return int
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public static int getHeight() {
 		int h = 0;
 		
@@ -674,17 +436,7 @@ public class Display {
 		}
 		return (h);
 	}
-	
-	
-	/**
-	 * <p>
-	 * Get the window size
-	 * </p>
-	 * 
-	 * @return Vector2i
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public static @NotNull Vector2i getSize() {
 		Vector2i size = new Vector2i();
 		
@@ -700,32 +452,13 @@ public class Display {
 		}
 		return (size);
 	}
-	
-	/**
-	 * <p>
-	 * Get the window size to float
-	 * </p>
-	 * 
-	 * @return Vector2f
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public static @NotNull Vector2f getSizeF() {
 		Vector2i tmp = getSize();
 
 		return (new Vector2f(tmp.getX(), tmp.getY()));
 	}
-	
-	/**
-	 * <p>
-	 * Set the window icon<br>
-	 * </p>
-	 * 
-	 * @return Display
-	 * @param filePath the icon path
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	public Display setIcons(String filePath) {
 		if (Main.Companion.getOsName().contains("mac")) return (this);
 
@@ -743,19 +476,7 @@ public class Display {
 		glfwSetWindowIcon(window, imageBuffer);
 		return (this);
 	}
-	
-	/**
-	 * <p>
-	 * Load the window icon<br>
-	 * </p>
-	 * 
-	 * @throws Exception Do you really want the program to crash because the icon is missing ?
-	 * @return ByteBuffer
-	 * @param path the icon path
-	 * @param imageSize the icon size
-	 * @since 0.1
-	 * @author Blackoutburst
-	 */
+
 	private ByteBuffer loadIcons(String path, @NotNull Vector2i imageSize) throws Exception {
 		ByteBuffer image;
 		try (MemoryStack stack = MemoryStack.stackPush()) {

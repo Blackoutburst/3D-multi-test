@@ -5,18 +5,15 @@ import dev.blackoutburst.game.core.Display
 import dev.blackoutburst.game.core.UI
 import dev.blackoutburst.game.core.entity.EntityManager
 import dev.blackoutburst.game.graphics.Color
-import dev.blackoutburst.game.graphics.TextureArray
 import dev.blackoutburst.game.maths.Matrix
-import dev.blackoutburst.game.maths.Vector3f
+import dev.blackoutburst.game.maths.Vector2i
+import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.network.Connection
-import dev.blackoutburst.game.utils.Keyboard
-import dev.blackoutburst.game.utils.Keyboard.isKeyDown
-import dev.blackoutburst.game.utils.Textures
-import dev.blackoutburst.game.utils.Time
+import dev.blackoutburst.game.utils.*
 import dev.blackoutburst.game.world.BlockType
 import dev.blackoutburst.game.world.World
+import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11.*
-import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class Main {
@@ -65,7 +62,6 @@ class Main {
         glCullFace(GL_BACK)
         glEnable(GL_DEPTH_TEST)
 
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
         connection.start()
@@ -88,29 +84,49 @@ class Main {
             window.clear()
             glEnable(GL_CULL_FACE)
             glEnable(GL_DEPTH_TEST)
+            glPolygonMode(GL_FRONT_AND_BACK, UI.renderOption)
 
             entityManager.update()
 
-            if (isKeyDown(Keyboard.NUM1))
+            if (Keyboard.isKeyPressed(GLFW.GLFW_KEY_1))
                 blockType = BlockType.GRASS
-            if (isKeyDown(Keyboard.NUM2))
+            if (Keyboard.isKeyPressed(GLFW.GLFW_KEY_2))
                 blockType = BlockType.DIRT
-            if (isKeyDown(Keyboard.NUM3))
+            if (Keyboard.isKeyPressed(GLFW.GLFW_KEY_3))
                 blockType = BlockType.STONE
-            if (isKeyDown(Keyboard.NUM4))
+            if (Keyboard.isKeyPressed(GLFW.GLFW_KEY_4))
                 blockType = BlockType.OAK_LOG
-            if (isKeyDown(Keyboard.NUM5))
+            if (Keyboard.isKeyPressed(GLFW.GLFW_KEY_5))
                 blockType = BlockType.OAK_LEAVES
 
             world.render()
 
             entityManager.render()
 
-            UI.playerPosition(window.nk.ctx, camera.position)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+
+            val result = world.dda(camera.position, camera.getDirection(), 100)
+            UI.gameInformation(window.nk.ctx, Vector2i(0), Vector2i(200, 180),
+                camera.position,
+                result.block?.type ?: BlockType.AIR,
+                result.block?.position ?: Vector3i(0)
+            )
+            UI.renderInformation(window.nk.ctx, Vector2i(Display.getWidth() - 200,0), Vector2i(200, 210),
+                getFps(),
+                world.chunkUpdate.get(),
+                world.blockCount,
+                world.chunks.size,
+                world.vertexCount,
+            )
+            UI.renderCoroutines(window.nk.ctx, Vector2i(Display.getWidth() - 330,0), Vector2i(130, 140),
+                activeCoroutines.get(),
+                activeCoroutinesIO.get(),
+                activeCoroutinesDefault.get(),
+                activeCoroutinesUnconfined.get()
+            )
 
             window.update()
         }
-
 
         window.destroy()
         connection.close()

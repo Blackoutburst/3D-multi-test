@@ -15,6 +15,7 @@ import org.lwjgl.system.MemoryUtil.NULL
 import java.text.NumberFormat
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.sign
@@ -26,6 +27,11 @@ class World {
     private val chunkProgram = ShaderProgram(vertexShader, fragmentShader)
 
     var diffuseMap = 0
+
+    var chunkUpdate = AtomicInteger(0)
+
+    var blockCount = 0
+    var vertexCount = 0
 
     companion object {
         val CHUNK_SIZE = 16
@@ -104,7 +110,11 @@ class World {
         glBindTexture(GL_TEXTURE_2D_ARRAY, diffuseMap)
 
         glUseProgram(chunkProgram.id)
+        blockCount = 0
+        vertexCount = 0
         chunks.forEach {
+            vertexCount += it.value.indexCount
+            blockCount += it.value.blockCount
             chunkProgram.setUniform3f("chunkPos", it.value.position.toFloat())
             it.value.render()
         }
