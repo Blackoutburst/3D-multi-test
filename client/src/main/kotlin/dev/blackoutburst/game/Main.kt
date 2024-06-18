@@ -7,6 +7,7 @@ import dev.blackoutburst.game.core.entity.EntityManager
 import dev.blackoutburst.game.graphics.Color
 import dev.blackoutburst.game.graphics.TextureArray
 import dev.blackoutburst.game.maths.Matrix
+import dev.blackoutburst.game.maths.Vector2i
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.game.network.Connection
 import dev.blackoutburst.game.utils.Keyboard
@@ -65,7 +66,6 @@ class Main {
         glCullFace(GL_BACK)
         glEnable(GL_DEPTH_TEST)
 
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
         connection.start()
@@ -88,6 +88,7 @@ class Main {
             window.clear()
             glEnable(GL_CULL_FACE)
             glEnable(GL_DEPTH_TEST)
+            glPolygonMode(GL_FRONT_AND_BACK, UI.renderOption)
 
             entityManager.update()
 
@@ -106,11 +107,17 @@ class Main {
 
             entityManager.render()
 
-            UI.playerPosition(window.nk.ctx, camera.position)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+            UI.playerPosition(window.nk.ctx, Vector2i(0), Vector2i(120, 140), camera.position)
+            UI.renderInformation(window.nk.ctx, Vector2i(Display.getWidth() - 200,0), Vector2i(200, 240),
+                getFps(),
+                world.blockCount,
+                world.chunks.size,
+                world.vertexCount
+            )
 
             window.update()
         }
-
 
         window.destroy()
         connection.close()

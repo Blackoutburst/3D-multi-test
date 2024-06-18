@@ -27,6 +27,9 @@ class World {
 
     var diffuseMap = 0
 
+    var blockCount = 0
+    var vertexCount = 0
+
     companion object {
         val CHUNK_SIZE = 16
     }
@@ -107,6 +110,11 @@ class World {
         chunks.forEach {
             chunkProgram.setUniform3f("chunkPos", it.value.position.toFloat())
             it.value.render()
+        }
+
+        default {
+            blockCount = chunks.map { it.value.blocks.filter { v -> v != 0.toByte() }.size }.sum()
+            vertexCount = chunks.map { it.value.indexCount }.sum()
         }
     }
 

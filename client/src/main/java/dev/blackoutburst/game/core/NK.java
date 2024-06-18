@@ -95,10 +95,10 @@ public class NK {
     }
 
     public NkContext ctx          = NkContext.create();
-    private NkUserFont default_font = NkUserFont.create();
+    private final NkUserFont default_font = NkUserFont.create();
 
-    private NkBuffer cmds         = NkBuffer.create();
-    private NkDrawNullTexture null_texture = NkDrawNullTexture.create();
+    private final NkBuffer cmds         = NkBuffer.create();
+    private final NkDrawNullTexture null_texture = NkDrawNullTexture.create();
 
 
     private int
@@ -156,7 +156,6 @@ public class NK {
             stbtt_PackFontRange(pc, ttf, 0, FONT_HEIGHT, 32, cdata);
             stbtt_PackEnd(pc);
 
-            // Convert R8 to RGBA8
             ByteBuffer texture = memAlloc(BITMAP_W * BITMAP_H * 4);
             for (int i = 0; i < bitmap.capacity(); i++) {
                 texture.putInt((bitmap.get(i) << 24) | 0x00FFFFFF);
@@ -462,7 +461,7 @@ public class NK {
                         (int)(cmd.clip_rect().h() * fb_scale_y)
                 );
                 glDrawElements(GL_TRIANGLES, cmd.elem_count(), GL_UNSIGNED_SHORT, offset);
-                offset += cmd.elem_count() * 2;
+                offset += cmd.elem_count() * 2L;
             }
             nk_clear(ctx);
             nk_buffer_clear(cmds);
