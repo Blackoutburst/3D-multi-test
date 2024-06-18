@@ -2,9 +2,13 @@ package dev.blackoutburst.game.world
 
 import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.maths.*
-import dev.blackoutburst.game.utils.concatenateIntArray
+import dev.blackoutburst.game.utils.default
 import dev.blackoutburst.game.utils.main
 import dev.blackoutburst.game.utils.stack
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL30.*
 import java.nio.Buffer
@@ -296,30 +300,61 @@ class Chunk(
 
     fun getVisibleFaces(): Array<Boolean> {
         val faces = Array(6) { false }
+        val chunkX = this@Chunk.position.x
+        val chunkY = this@Chunk.position.y
+        val chunkZ = this@Chunk.position.z
 
-        for (x in 0 until 16) {
-            for (z in 0 until 16) {
-                val t = Main.world.getBlockAt(Vector3i(this.position.x + x, this.position.y - 1, this.position.z + z))
-                if (t == null || t.type == BlockType.AIR) faces[5] = true
-                val b = Main.world.getBlockAt(Vector3i(this.position.x + x, this.position.y + 16, this.position.z + z))
-                if (b == null || b.type == BlockType.AIR) faces[0] = true
-            }
-        }
-        for (x in 0 until 16) {
-            for (y in 0 until 16) {
-                val b = Main.world.getBlockAt(Vector3i(this.position.x + x, this.position.y + y, this.position.z + 16))
-                if (b == null || b.type == BlockType.AIR) faces[2] = true
-                val f = Main.world.getBlockAt(Vector3i(this.position.x + x, this.position.y + y, this.position.z - 1))
-                if (f == null || f.type == BlockType.AIR) faces[1] = true
+        // Bottom
+        for (i in 0 until 256) {
+            val b = Main.world.getBlockAt(Vector3i(chunkX + i % 16, chunkY + 16, chunkZ + i / 16))
+            if (b == null || b.type == BlockType.AIR) {
+                faces[0] = true
+                break
             }
         }
 
-        for (y in 0 until 16) {
-            for (z in 0 until 16) {
-                val l = Main.world.getBlockAt(Vector3i(this.position.x + 16, this.position.y + y, this.position.z + z))
-                if (l == null || l.type == BlockType.AIR) faces[4] = true
-                val r = Main.world.getBlockAt(Vector3i(this.position.x - 1, this.position.y + y, this.position.z + z))
-                if (r == null || r.type == BlockType.AIR) faces[3] = true
+        // Front
+        for (i in 0 until 256) {
+            val b = Main.world.getBlockAt(Vector3i(chunkX + i % 16, chunkY + i / 16, chunkZ - 1))
+            if (b == null || b.type == BlockType.AIR) {
+                faces[1] = true
+                break
+            }
+        }
+
+        // Back
+        for (i in 0 until 256) {
+            val b = Main.world.getBlockAt(Vector3i(chunkX + i % 16, chunkY + i / 16, chunkZ + 16))
+            if (b == null || b.type == BlockType.AIR) {
+                faces[2] = true
+                break
+            }
+        }
+
+        // Right
+        for (i in 0 until 256) {
+            val b = Main.world.getBlockAt(Vector3i(chunkX - 1, chunkY + i % 16, chunkZ + i / 16))
+            if (b == null || b.type == BlockType.AIR) {
+                faces[3] = true
+                break
+            }
+        }
+
+        // Left
+        for (i in 0 until 256) {
+            val b = Main.world.getBlockAt(Vector3i(chunkX + 16, chunkY + i % 16, chunkZ + i / 16))
+            if (b == null || b.type == BlockType.AIR) {
+                faces[4] = true
+                break
+            }
+        }
+
+        // Top
+        for (i in 0 until 256) {
+            val b = Main.world.getBlockAt(Vector3i(chunkX + i % 16, chunkY - 1, chunkZ + i / 16))
+            if (b == null || b.type == BlockType.AIR) {
+                faces[5] = true
+                break
             }
         }
 
@@ -344,58 +379,56 @@ class Chunk(
         )
     }
 
-    fun update() {
+    fun update() = runBlocking {
         Main.world.chunkUpdate.incrementAndGet()
 
         val isMonoType = isMonoType()
         if (isMonoType && BlockType.getByID(blocks[0]) == BlockType.AIR) {
-            Main.world.removeChunk(this)
-            return
+            Main.world.removeChunk(this@Chunk)
+            return@runBlocking
         }
 
-        val vertices: IntArray
-        val indices: IntArray
+        var vertices = mutableListOf<Int>()
+        var indices = mutableListOf<Int>()
+        var iIndex = 0
 
         if (isMonoType) {
             val faces = getVisibleFaces()
-            vertices = getVertices(Vector3i(0), BlockType.getByID(blocks[0]).textures, faces, 16).toIntArray()
-            indices = getIndices(0, faces).toIntArray()
+            vertices = getVertices(Vector3i(0), BlockType.getByID(blocks[0]).textures, faces, 16).toMutableList()
+            indices = getIndices(0, faces).toMutableList()
         } else {
-            val filteredBlocks = blocks
-                .mapIndexed { index, value ->
+            blockCount = blocks.mapIndexed { index, value ->
                     ChunkBlock(
                         BlockType.getByID(value),
                         indexToXYZPosition(index),
                         indexToXYZ(index),
-                        Array(6) { true })
+                        Array(6) { true }
+                    )
                 }.filter { b ->
-                    b.type != BlockType.AIR && isVisibleBlock(b, this)
+                    b.type != BlockType.AIR && isVisibleBlock(b, this@Chunk)
                 }.map {
-                    it.faces = if (it.type.transparent) Array(6) { true } else getVisibleFaces(it, this)
-                    it
-                }
-            blockCount = filteredBlocks.size
-            vertices = filteredBlocks.flatMap { getVertices(it.vertPosition, it.type.textures, it.faces) }.toIntArray()
-            var iIndex = 0
-            indices = filteredBlocks.flatMap { b ->
-                val inds = getIndices(iIndex, b.faces)
-                iIndex += (b.faces.count { it } * 4)
+                    it.faces = if (it.type.transparent) Array(6) { true } else getVisibleFaces(it, this@Chunk)
+                    vertices.addAll(getVertices(it.vertPosition, it.type.textures, it.faces))
+                    indices.addAll(getIndices(iIndex, it.faces))
+                    iIndex += (it.faces.count { it } * 4)
 
-                inds
-            }.toIntArray()
+                    it
+                }.size
         }
 
         indexCount = indices.size
+        val vertArray = vertices.toIntArray()
+        val indArray = indices.toIntArray()
 
         main {
             var vertexBuffer: IntBuffer? = null
             var indexBuffer: IntBuffer? = null
             stack {
                 vertexBuffer = BufferUtils.createIntBuffer(vertices.size)
-                (vertexBuffer!!.put(vertices) as Buffer).flip()
+                (vertexBuffer!!.put(vertArray) as Buffer).flip()
 
                 indexBuffer = BufferUtils.createIntBuffer(indices.size)
-                (indexBuffer!!.put(indices) as Buffer).flip()
+                (indexBuffer!!.put(indArray) as Buffer).flip()
             }
 
             computeVAO(vertexBuffer!!, indexBuffer!!)
