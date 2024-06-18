@@ -108,6 +108,7 @@ class Main {
             entityManager.render()
 
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+
             UI.playerPosition(window.nk.ctx, Vector2i(0), Vector2i(120, 140), camera.position)
             UI.renderInformation(window.nk.ctx, Vector2i(Display.getWidth() - 200,0), Vector2i(200, 240),
                 getFps(),
