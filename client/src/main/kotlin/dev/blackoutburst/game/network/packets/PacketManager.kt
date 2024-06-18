@@ -34,5 +34,4 @@ class PacketManager {
             packets[id]?.decode(buffer)
         }
     }
-
 }

@@ -9,13 +9,11 @@ import dev.blackoutburst.game.maths.Matrix
 import dev.blackoutburst.game.maths.Vector2i
 import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.network.Connection
-import dev.blackoutburst.game.utils.Keyboard
-import dev.blackoutburst.game.utils.Time
+import dev.blackoutburst.game.utils.*
 import dev.blackoutburst.game.world.BlockType
 import dev.blackoutburst.game.world.World
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11.*
-import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class Main {
@@ -118,7 +116,13 @@ class Main {
                 world.chunkUpdate.get(),
                 world.blockCount,
                 world.chunks.size,
-                world.vertexCount
+                world.vertexCount,
+            )
+            UI.renderCoroutines(window.nk.ctx, Vector2i(Display.getWidth() - 330,0), Vector2i(130, 140),
+                activeCoroutines.get(),
+                activeCoroutinesIO.get(),
+                activeCoroutinesDefault.get(),
+                activeCoroutinesUnconfined.get()
             )
 
             window.update()

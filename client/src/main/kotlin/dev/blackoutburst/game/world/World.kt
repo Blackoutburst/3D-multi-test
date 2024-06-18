@@ -114,7 +114,7 @@ class World {
         vertexCount = 0
         chunks.forEach {
             vertexCount += it.value.indexCount
-            blockCount += it.value.blocks.size
+            blockCount += it.value.blockCount
             chunkProgram.setUniform3f("chunkPos", it.value.position.toFloat())
             it.value.render()
         }

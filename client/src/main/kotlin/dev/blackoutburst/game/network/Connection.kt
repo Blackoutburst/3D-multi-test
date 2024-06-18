@@ -2,9 +2,7 @@ package dev.blackoutburst.game.network
 
 import dev.blackoutburst.game.network.packets.PacketManager
 import dev.blackoutburst.game.network.packets.PacketPlayOut
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import dev.blackoutburst.game.utils.io
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.Socket
@@ -26,7 +24,7 @@ class Connection {
                 output = it.getOutputStream()
                 it
             }.also {
-                CoroutineScope(Dispatchers.IO).launch {
+                io {
                     while (!it.isClosed) {
                         read()
                     }
@@ -60,7 +58,7 @@ class Connection {
     fun write(packet: PacketPlayOut) {
         try {
             output?.let { out ->
-                CoroutineScope(Dispatchers.IO).launch {
+                io {
                     packet.buffer?.let {
                         out.write(it.array())
                         out.flush()

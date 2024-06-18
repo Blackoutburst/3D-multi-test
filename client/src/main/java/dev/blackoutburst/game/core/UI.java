@@ -36,14 +36,34 @@ public class UI {
                 }
                 if (nk_option_label(ctx, "Line", renderOption == GL_LINE)) {
                     renderOption = GL_LINE;
-
                 }
+
                 nk_layout_row_dynamic(ctx, 20, 1);
                 nk_label(ctx, "FPS: " + FBN(fps), NK_TEXT_LEFT);
                 nk_label(ctx, "Chunk updates: " + chunkUpdates, NK_TEXT_LEFT);
                 nk_label(ctx, "Blocks: " + FBN(blocks), NK_TEXT_LEFT);
                 nk_label(ctx, "Chunks: " + FBN(chunks), NK_TEXT_LEFT);
                 nk_label(ctx, "Vertex: " + FBN(vertex), NK_TEXT_LEFT);
+            }
+            nk_end(ctx);
+        }
+    }
+
+    public static void renderCoroutines(NkContext ctx, Vector2i wp, Vector2i ws, int coroutines, int coroutinesIO, int coroutinesDefault, int coroutinesUnconfined) {
+        try (MemoryStack stack = stackPush()) {
+            NkRect rect = NkRect.malloc(stack);
+
+            if (nk_begin(
+                    ctx,
+                    "Coroutines",
+                    nk_rect(wp.getX(), wp.getY(), ws.getX(), ws.getY(), rect),
+                    NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE | NK_WINDOW_NO_SCROLLBAR
+            )) {
+                nk_layout_row_dynamic(ctx, 20, 1);
+                nk_label(ctx, "Total: " + FBN(coroutines), NK_TEXT_LEFT);
+                nk_label(ctx, "IO: " + FBN(coroutinesIO), NK_TEXT_LEFT);
+                nk_label(ctx, "Default: " + FBN(coroutinesDefault), NK_TEXT_LEFT);
+                nk_label(ctx, "Unconfined: " + FBN(coroutinesUnconfined), NK_TEXT_LEFT);
             }
             nk_end(ctx);
         }
