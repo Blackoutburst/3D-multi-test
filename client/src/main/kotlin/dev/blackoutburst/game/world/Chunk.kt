@@ -4,6 +4,7 @@ import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.maths.*
 import dev.blackoutburst.game.utils.concatenateIntArray
 import dev.blackoutburst.game.utils.main
+import dev.blackoutburst.game.utils.stack
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL30.*
 import java.nio.Buffer
@@ -382,14 +383,19 @@ class Chunk(
         }
 
         indexCount = indices.size
-        val vertexBuffer = BufferUtils.createIntBuffer(vertices.size)
-        (vertexBuffer.put(vertices) as Buffer).flip()
-
-        val indexBuffer = BufferUtils.createIntBuffer(indices.size)
-        (indexBuffer.put(indices) as Buffer).flip()
 
         main {
-            computeVAO(vertexBuffer, indexBuffer)
+            var vertexBuffer: IntBuffer? = null
+            var indexBuffer: IntBuffer? = null
+            stack {
+                vertexBuffer = BufferUtils.createIntBuffer(vertices.size)
+                (vertexBuffer!!.put(vertices) as Buffer).flip()
+
+                indexBuffer = BufferUtils.createIntBuffer(indices.size)
+                (indexBuffer!!.put(indices) as Buffer).flip()
+            }
+
+            computeVAO(vertexBuffer!!, indexBuffer!!)
         }
     }
 
