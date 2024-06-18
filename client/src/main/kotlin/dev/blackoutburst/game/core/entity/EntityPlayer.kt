@@ -10,14 +10,13 @@ import dev.blackoutburst.game.maths.Vector3i
 import dev.blackoutburst.game.network.Connection
 import dev.blackoutburst.game.network.packets.client.C00UpdateEntity
 import dev.blackoutburst.game.network.packets.client.C01UpdateBlock
-import dev.blackoutburst.game.network.packets.client.C02BlockBulkEdit
 import dev.blackoutburst.game.utils.Keyboard
-import dev.blackoutburst.game.utils.Keyboard.isKeyDown
 import dev.blackoutburst.game.utils.Mouse
 import dev.blackoutburst.game.utils.Time
 import dev.blackoutburst.game.world.Block
 import dev.blackoutburst.game.world.BlockType
 import dev.blackoutburst.game.world.World
+import org.lwjgl.glfw.GLFW
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -28,16 +27,14 @@ class EntityPlayer(
     private val world: World,
     private val connection: Connection,
 ): Entity(id, position, rotation) {
-    private var vHold = false
-
-    private var range = 2000
+    private var range = 100
     private var renderBoundingBox = false
     private val boundingBox = Cube(Vector3f(), Vector2f(), Color(1f,1f,1f,0.5f))
     private var flying = true
     private val hitbox = Vector3f(0.15f, 1.8f, 0.15f)
     private var velocity = Vector3f()
-    private val runSpeed = 100f //8f
-    private val walkSpeed = 5f
+    private val runSpeed = 50f //8f
+    private val walkSpeed = 10f //5f
     private var moving = false
     private val gravity = -40f
     private var isJumping = false
@@ -153,39 +150,42 @@ class EntityPlayer(
     private fun move() {
         moving = false
 
-        if (isKeyDown(Keyboard.V) && !vHold)
+        if ((Keyboard.isKeyPressed(GLFW.GLFW_KEY_V)))
             flying = !flying
-        vHold = isKeyDown(Keyboard.V)
 
         var potentialX = position.x
         var potentialZ = position.z
         var potentialY = position.y
 
-        if (isKeyDown(Keyboard.LEFT_CONTROL)) {
+        if ((Keyboard.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL))) {
             sprint = true
         }
 
-        if (isKeyDown(Keyboard.W)) {
+        if ((Keyboard.isKeyDown(GLFW.GLFW_KEY_W))) {
             velocity.x -= sin(-rotation.x * Math.PI / 180).toFloat()
             velocity.z -= cos(-rotation.x * Math.PI / 180).toFloat()
             moving = true
         }
 
-        if (isKeyDown(Keyboard.S)) {
+        if ((Keyboard.isKeyDown(GLFW.GLFW_KEY_S))) {
             velocity.x += sin(-rotation.x * Math.PI / 180).toFloat()
             velocity.z += cos(-rotation.x * Math.PI / 180).toFloat()
             moving = true
         }
 
-        if (isKeyDown(Keyboard.A)) {
+        if ((Keyboard.isKeyDown(GLFW.GLFW_KEY_A))) {
             velocity.x += sin((-rotation.x - 90) * Math.PI / 180).toFloat()
             velocity.z += cos((-rotation.x - 90) * Math.PI / 180).toFloat()
             moving = true
         }
 
-        if (isKeyDown(Keyboard.D)) {
+        if ((Keyboard.isKeyDown(GLFW.GLFW_KEY_D))) {
             velocity.x += sin((-rotation.x + 90) * Math.PI / 180).toFloat()
             velocity.z += cos((-rotation.x + 90) * Math.PI / 180).toFloat()
+            moving = true
+        }
+
+        if ((Keyboard.isKeyDown(GLFW.GLFW_KEY_SPACE)) || (Keyboard.isKeyDown(GLFW.GLFW_KEY_LEFT_SHIFT))) {
             moving = true
         }
 
@@ -211,7 +211,7 @@ class EntityPlayer(
         if (collide() && !flying) position.z = oldPosition.z
 
 
-        if (isKeyDown(Keyboard.SPACE) && grounded()) {
+        if (Keyboard.isKeyDown(GLFW.GLFW_KEY_SPACE) && grounded()) {
             isJumping = true
             velocity.y = jumpPower
         }
@@ -237,11 +237,11 @@ class EntityPlayer(
             velocity.y = 0f
         }
 
-        if (isKeyDown(Keyboard.SPACE) && flying) {
+        if (Keyboard.isKeyDown(GLFW.GLFW_KEY_SPACE) && flying) {
             position.y += 1 * speed * Time.delta.toFloat()
         }
 
-        if (isKeyDown(Keyboard.LEFT_SHIFT) && flying) {
+        if (Keyboard.isKeyDown(GLFW.GLFW_KEY_LEFT_SHIFT) && flying) {
             position.y -= 1 * speed * Time.delta.toFloat()
         }
 
@@ -251,7 +251,7 @@ class EntityPlayer(
     }
 
     private fun mouseAction() {
-        if (Mouse.rightButton.isPressed) {
+        if (Mouse.isButtonPressed(Mouse.RIGHT_BUTTON)) {
             val result = world.dda(Main.camera.position, Main.camera.getDirection(), range)
             result.block?.let { b ->
                 result.face?.let { f ->
@@ -261,7 +261,7 @@ class EntityPlayer(
             }
         }
 
-        if (Mouse.leftButton.isPressed) {
+        if (Mouse.isButtonPressed(Mouse.LEFT_BUTTON)) {
             world.dda(Main.camera.position, Main.camera.getDirection(), range)
                 .block?.let {
                     connection.write(C01UpdateBlock(BlockType.AIR.id, it.position))
@@ -269,7 +269,7 @@ class EntityPlayer(
                 }
         }
 
-        if (Mouse.middleButton.isPressed) {
+        if (Mouse.isButtonPressed(Mouse.MIDDLE_BUTTON)) {
             world.dda(Main.camera.position, Main.camera.getDirection(), range).block?.let {
                 Main.blockType = it.type
             }

@@ -364,7 +364,6 @@ public class NK {
         }
 
         nk_input_begin(ctx);
-        glfwPollEvents();
 
         NkMouse mouse = ctx.input().mouse();
         if (mouse.grab()) {

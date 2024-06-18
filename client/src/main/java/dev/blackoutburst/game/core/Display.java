@@ -38,9 +38,6 @@ public class Display {
 
 	public NK nk;
 
-	private static boolean toggleMousePressed = false;
-	private static boolean toggleFullscreenPressed = false;
-
 	public static boolean shouldClose = false;
 	public static boolean showCursor = true;
 	
@@ -219,8 +216,10 @@ public class Display {
 
 		GLFWWindowSizeCallbackI mcWindowSize = new WindowCallBack();
 		GLFWScrollCallbackI mckScroll = new MouseScrollCallBack();
-		GLFWCursorPosCallbackI mcCursor = (window, xpos, ypos) -> new MousePositionCallBack();
-		GLFWMouseButtonCallbackI mcMouseButton = (window, button, action, mods) -> new MouseButtonCallBack();
+		GLFWCursorPosCallbackI mcCursor = new MousePositionCallBack();
+		GLFWMouseButtonCallbackI mcMouseButton = new MouseButtonCallBack();
+		GLFWKeyCallbackI mckey = new KeyboardCallBack();
+
 
 		glfwSetWindowSizeCallback(window, mcWindowSize);
 
@@ -230,7 +229,10 @@ public class Display {
 		});
 
 		glfwSetCharCallback(window, nkChar);
-		glfwSetKeyCallback(window, nkKey);
+		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+			nkKey.invoke(window, key, scancode, action, mods);
+			mckey.invoke(window, key, scancode, action, mods);
+		});
 
 		glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
 			nkCursor.invoke(window, xpos, ypos);
@@ -251,33 +253,31 @@ public class Display {
 
 	public void update() {
 		Time.INSTANCE.updateDelta();
-		Mouse.INSTANCE.getLeftButton().reset();
-		Mouse.INSTANCE.getRightButton().reset();
-		Mouse.INSTANCE.getMiddleButton().reset();
-		Mouse.INSTANCE.setScroll(0f);
+		Mouse.INSTANCE.update();
 
-		if (Keyboard.INSTANCE.isKeyDown(Keyboard.ESCAPE)) {
+		if (Keyboard.INSTANCE.isKeyPressed(GLFW_KEY_ESCAPE)) {
 			close();
 		}
 
-		if (Keyboard.INSTANCE.isKeyDown(Keyboard.LEFT_ALT) && !toggleMousePressed) {
+		if (Keyboard.INSTANCE.isKeyPressed(GLFW_KEY_LEFT_ALT)) {
 			showCursor = !showCursor;
 			glfwSetInputMode(window, GLFW_CURSOR, showCursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
 		}
-		toggleMousePressed = Keyboard.INSTANCE.isKeyDown(Keyboard.LEFT_ALT);
 
-		if (Keyboard.INSTANCE.isKeyDown(Keyboard.F11) && !toggleFullscreenPressed) {
+		if (Keyboard.INSTANCE.isKeyPressed(GLFW_KEY_F11)) {
 			FullScreenMode mode = fullScreen == FullScreenMode.NONE ? fullScreen = FullScreenMode.BORDERLESS : FullScreenMode.NONE;
 			if (mode == FullScreenMode.NONE) {
 				setSize(1280, 720);
 			}
 			setFullscreenMode(mode);
 		}
-		toggleFullscreenPressed = Keyboard.INSTANCE.isKeyDown(Keyboard.F11);
+
+		Keyboard.INSTANCE.update();
 
 		nk.newFrame(window);
 		nk.render(NK_ANTI_ALIASING_ON);
 		glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
 
 	public Display setFullscreenMode(FullScreenMode mode) {
