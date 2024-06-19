@@ -4,12 +4,10 @@ import dev.blackoutburst.game.Main
 import dev.blackoutburst.game.maths.Matrix
 import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
-import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.*
-import org.lwjgl.opengl.ARBInstancedArrays.glVertexAttribDivisorARB
 import org.lwjgl.opengl.GL20.*
 import org.lwjgl.opengl.GL30.glBindVertexArray
-import java.nio.Buffer
+import org.lwjgl.system.MemoryUtil
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -66,30 +64,31 @@ class Cube(var position: Vector3f, var rotation: Vector2f, var color: Color) {
     private val model = Matrix()
 
     init {
+        val vboId = glGenBuffers()
 
-        val vbo = GL15C.glGenBuffers()
+        glBindVertexArray(vaoID)
+        glBindBuffer(GL_ARRAY_BUFFER, vboId)
 
-        GL30C.glBindVertexArray(vaoID)
 
-        val verticesBuffer = BufferUtils.createFloatBuffer(vertices.size)
-        (verticesBuffer.put(vertices) as Buffer).flip()
+        val vertexBuffer = MemoryUtil.memAllocFloat(vertices.size)
+        vertexBuffer.put(vertices).flip()
 
-        GL15C.glBindBuffer(GL15C.GL_ARRAY_BUFFER, vbo)
-        GL15C.glBufferData(GL15C.GL_ARRAY_BUFFER, verticesBuffer, GL15C.GL_STATIC_DRAW)
+        glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW)
+        MemoryUtil.memFree(vertexBuffer)
 
         // Pos
-        GL20C.glVertexAttribPointer(0, 3, GL11C.GL_FLOAT, false, 32, 0)
-        GL20C.glEnableVertexAttribArray(0)
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 32, 0)
+        glEnableVertexAttribArray(0)
 
         // UV
-        GL20C.glVertexAttribPointer(1, 2, GL11C.GL_FLOAT, false, 32, 12)
-        GL20C.glEnableVertexAttribArray(1)
+        glVertexAttribPointer(1, 2, GL_FLOAT, false, 32, 12)
+        glEnableVertexAttribArray(1)
 
         // Norm
-        GL20C.glVertexAttribPointer(2, 3, GL11C.GL_FLOAT, false, 32, 20)
-        GL20C.glEnableVertexAttribArray(2)
+        glVertexAttribPointer(2, 3, GL_FLOAT, false, 32, 20)
+        glEnableVertexAttribArray(2)
 
-        GL15C.glBindBuffer(GL15C.GL_ARRAY_BUFFER, 0)
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
     }
 
     private fun setUniforms() {

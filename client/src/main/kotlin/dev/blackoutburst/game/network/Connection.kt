@@ -58,8 +58,8 @@ class Connection {
     fun write(packet: PacketPlayOut) {
         try {
             output?.let { out ->
-                io {
-                    packet.buffer?.let {
+                packet.buffer?.let {
+                    io {
                         out.write(it.array())
                         out.flush()
                     }

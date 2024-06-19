@@ -5,8 +5,6 @@ import dev.blackoutburst.game.maths.*
 import dev.blackoutburst.game.utils.main
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil
-import java.nio.Buffer
-import java.nio.IntBuffer
 
 private fun packData(
     x: Int,

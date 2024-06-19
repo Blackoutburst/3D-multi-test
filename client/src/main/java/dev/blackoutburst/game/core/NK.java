@@ -2,7 +2,6 @@ package dev.blackoutburst.game.core;
 
 import dev.blackoutburst.game.utils.IOUtils;
 import org.lwjgl.nuklear.*;
-import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.stb.STBTTAlignedQuad;
 import org.lwjgl.stb.STBTTFontinfo;
@@ -13,7 +12,6 @@ import org.lwjgl.system.Platform;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Objects;

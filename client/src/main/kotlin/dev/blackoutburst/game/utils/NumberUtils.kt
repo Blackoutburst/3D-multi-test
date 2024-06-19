@@ -4,11 +4,8 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-fun FBN(number: Number): String {
-    val customSymbols = DecimalFormatSymbols(Locale.getDefault()).apply {
-        groupingSeparator = ' '
-    }
+val formatter = DecimalFormat("#,###", DecimalFormatSymbols(Locale.getDefault()).apply { groupingSeparator = ' ' })
 
-    val formatter = DecimalFormat("#,###", customSymbols)
+fun FBN(number: Number): String {
     return formatter.format(number)
 }

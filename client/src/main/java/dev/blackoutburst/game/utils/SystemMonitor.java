@@ -6,31 +6,29 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 
 public class SystemMonitor {
+    private static final OperatingSystemMXBean OS_BEAN = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+    private static final Runtime RUNTIME = Runtime.getRuntime();
+    private static final ThreadMXBean THREAD_BEAN = ManagementFactory.getThreadMXBean();
+    
     public static int getCPUProcessUsage() {
-        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-        return (int) (osBean.getProcessCpuLoad() * 100);
+        return (int) (OS_BEAN.getProcessCpuLoad() * 100);
     }
 
     public static int getMemoryUsage() {
-        Runtime runtime = Runtime.getRuntime();
-
-        long totalMemory = runtime.totalMemory();
-        long freeMemory = runtime.freeMemory();
+        long totalMemory = RUNTIME.totalMemory();
+        long freeMemory = RUNTIME.freeMemory();
         return (int) ((totalMemory - freeMemory)  / (1024 * 1024));
     }
 
     public static int getMemoryTotal() {
-        Runtime runtime = Runtime.getRuntime();
-        return (int) (runtime.totalMemory() / (1024 * 1024));
+        return (int) (RUNTIME.totalMemory() / (1024 * 1024));
     }
 
     public static int getMemoryFree() {
-        Runtime runtime = Runtime.getRuntime();
-        return (int) (runtime.freeMemory() / (1024 * 1024));
+        return (int) (RUNTIME.freeMemory() / (1024 * 1024));
     }
 
     public static int getThreadCount() {
-        ThreadMXBean threadBean = ManagementFactory.getThreadMXBean();
-        return threadBean.getThreadCount();
+        return THREAD_BEAN.getThreadCount();
     }
 }
