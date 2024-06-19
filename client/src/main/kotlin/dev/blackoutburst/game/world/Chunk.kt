@@ -291,7 +291,6 @@ class Chunk(
 
     fun isMonoType(): Boolean = this.blocks.all { it == this.blocks.first() }
 
-
     fun getVisibleFaces(): Array<Boolean> {
         val faces = Array(6) { false }
         val chunkX = this@Chunk.position.x
@@ -386,29 +385,33 @@ class Chunk(
         var indices = mutableListOf<Int>()
         var iIndex = 0
 
+        blockCount = 0
+
         if (isMonoType) {
             val faces = getVisibleFaces()
             vertices = getVertices(Vector3i(0), BlockType.getByID(blocks[0]).textures, faces, 16).toMutableList()
             indices = getIndices(0, faces).toMutableList()
+            blockCount = 4096
         } else {
-            blockCount = blocks.mapIndexed { index, value ->
+            for ((index, value) in blocks.withIndex()) {
                 val pos = indexToXYZ(index)
-                ChunkBlock(
+                val block = ChunkBlock(
                     BlockType.getByID(value),
                     pos + this.position,
                     pos,
                     Array(6) { true }
                 )
-            }.filter { b ->
-                b.type != BlockType.AIR && isVisibleBlock(b, this)
-            }.map {
-                it.faces = if (it.type.transparent) Array(6) { true } else getVisibleFaces(it, this)
-                vertices.addAll(getVertices(it.vertPosition, it.type.textures, it.faces))
-                indices.addAll(getIndices(iIndex, it.faces))
-                iIndex += (it.faces.count { it } * 4)
 
-                it
-            }.size
+                if (block.type == BlockType.AIR || !isVisibleBlock(block, this))
+                    continue
+
+                blockCount++
+
+                block.faces = if (block.type.transparent) Array(6) { true } else getVisibleFaces(block, this)
+                vertices.addAll(getVertices(block.vertPosition, block.type.textures, block.faces))
+                indices.addAll(getIndices(iIndex, block.faces))
+                iIndex += (block.faces.count { it } * 4)
+            }
         }
 
         indexCount = indices.size
