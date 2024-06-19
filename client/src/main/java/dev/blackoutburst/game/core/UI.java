@@ -69,7 +69,7 @@ public class UI {
         }
     }
 
-    public static void gameInformation(NkContext ctx, Vector2i wp, Vector2i ws, Vector3f position, BlockType blockType, Vector3i blockPosition) {
+    public static void renderGameInformation(NkContext ctx, Vector2i wp, Vector2i ws, Vector3f position, BlockType blockType, Vector3i blockPosition) {
         try (MemoryStack stack = stackPush()) {
             NkRect rect = NkRect.malloc(stack);
 
@@ -94,6 +94,35 @@ public class UI {
                 nk_label(ctx, "X: " + FBN(blockPosition.getX()), NK_TEXT_LEFT);
                 nk_label(ctx, "Y: " + FBN(blockPosition.getY()), NK_TEXT_LEFT);
                 nk_label(ctx, "Z: " + FBN(blockPosition.getZ()), NK_TEXT_LEFT);
+            }
+            nk_end(ctx);
+        }
+    }
+
+    public static void renderSystemUsage(NkContext ctx, Vector2i wp, Vector2i ws, int cpuProcess, int thread, int memUsed, int memFree, int memTotal) {
+        try (MemoryStack stack = stackPush()) {
+            NkRect rect = NkRect.malloc(stack);
+
+            if (nk_begin(
+                    ctx,
+                    "System",
+                    nk_rect(wp.getX(), wp.getY(), ws.getX(), ws.getY(), rect),
+                    NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE | NK_WINDOW_NO_SCROLLBAR
+            )) {
+                nk_layout_row_dynamic(ctx, 20, 1);
+                nk_label(ctx, "CPU: " + cpuProcess + "%", NK_TEXT_LEFT);
+
+                nk_layout_row_dynamic(ctx, 20, 1);
+                nk_label(ctx, "Threads: " + FBN(thread), NK_TEXT_LEFT);
+
+                nk_layout_row_dynamic(ctx, 20, 1);
+                nk_label(ctx, "MEMORY", NK_TEXT_LEFT);
+                nk_layout_row_dynamic(ctx, 20, 1);
+                nk_label(ctx, "Used: " + FBN(memUsed) + "Mo", NK_TEXT_LEFT);
+                nk_layout_row_dynamic(ctx, 20, 1);
+                nk_label(ctx, "Free: " + FBN(memFree) + "Mo", NK_TEXT_LEFT);
+                nk_layout_row_dynamic(ctx, 20, 1);
+                nk_label(ctx, "Total: " + FBN(memTotal) + "Mo", NK_TEXT_LEFT);
             }
             nk_end(ctx);
         }

@@ -108,7 +108,7 @@ class Main {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
             val result = world.dda(camera.position, camera.getDirection(), 100)
-            UI.gameInformation(window.nk.ctx, Vector2i(0), Vector2i(200, 180),
+            UI.renderGameInformation(window.nk.ctx, Vector2i(0), Vector2i(200, 170),
                 camera.position,
                 result.block?.type ?: BlockType.AIR,
                 result.block?.position ?: Vector3i(0)
@@ -125,6 +125,14 @@ class Main {
                 activeCoroutinesIO.get(),
                 activeCoroutinesDefault.get(),
                 activeCoroutinesUnconfined.get()
+            )
+
+            UI.renderSystemUsage(window.nk.ctx, Vector2i(0, 170), Vector2i(180, 190),
+                SystemMonitor.getCPUProcessUsage(),
+                SystemMonitor.getThreadCount(),
+                SystemMonitor.getMemoryUsage(),
+                SystemMonitor.getMemoryFree(),
+                SystemMonitor.getMemoryTotal()
             )
 
             window.update()

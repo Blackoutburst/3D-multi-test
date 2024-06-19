@@ -232,11 +232,6 @@ class EntityPlayer(
             isJumping = false
         }
 
-        if (position.y < -100f) {
-            position.y = 50f
-            velocity.y = 0f
-        }
-
         if (Keyboard.isKeyDown(GLFW.GLFW_KEY_SPACE) && flying) {
             position.y += 1 * speed * Time.delta.toFloat()
         }
