@@ -3,19 +3,20 @@ package dev.blackoutburst.server
 import dev.blackoutburst.server.core.world.World
 import dev.blackoutburst.server.network.Server
 import dev.blackoutburst.server.network.WebServer
-import dev.blackoutburst.server.utils.Time
 import dev.blackoutburst.server.utils.io
+import java.util.*
+import kotlin.concurrent.schedule
 
 fun main(args: Array<String>) {
+    val timer = Timer()
+    
     World.generate(args[0].toInt(), args[1].toInt())
 
     io { WebServer }
 
     io {
-        while(true) {
-            if (Time.doUpdate()) {
-                Server.entityManger.sendData()
-            }
+        timer.schedule(0, 50) {
+            Server.entityManger.sendData()
         }
     }
 

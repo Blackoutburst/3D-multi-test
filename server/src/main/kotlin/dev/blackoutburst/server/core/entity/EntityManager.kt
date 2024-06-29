@@ -16,7 +16,9 @@ class EntityManager {
     val entities: MutableSet<Entity> = Collections.synchronizedSet(LinkedHashSet())
 
     fun addEntity(entity: Entity) {
-        entities.add(entity)
+        synchronized(entities) {
+            entities.add(entity)
+        }
 
         Server.write(S01AddEntity(
             entity.id,
@@ -26,23 +28,29 @@ class EntityManager {
     }
 
     fun update(id: Int, position: Vector3f, rotation: Vector2f) {
-        entities.find { it.id == id }?.let {
-            it.position = position
-            it.rotation = rotation
+        synchronized(entities) {
+            entities.find { it.id == id }?.let {
+                it.position = position
+                it.rotation = rotation
 
-            Server.write(S03UpdateEntity(it.id, position, rotation))
+                Server.write(S03UpdateEntity(it.id, position, rotation))
+            }
         }
     }
 
     fun sendData() {
-        entities.forEach {
-            Server.write(S03UpdateEntity(it.id, it.position, it.rotation))
+        synchronized(entities) {
+            entities.forEach {
+                Server.write(S03UpdateEntity(it.id, it.position, it.rotation))
+            }
         }
     }
 
     fun removeEntity(id: Int) {
-        entities.find { it.id == id }?.let {
-            entities.remove(it)
+        synchronized(entities) {
+            entities.find { it.id == id }?.let {
+                entities.remove(it)
+            }
         }
 
         Server.write(S02RemoveEntity(

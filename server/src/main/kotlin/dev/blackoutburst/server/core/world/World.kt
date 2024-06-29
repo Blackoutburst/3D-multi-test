@@ -6,6 +6,8 @@ import dev.blackoutburst.server.network.packets.server.S04SendChunk
 import dev.blackoutburst.server.network.packets.server.S05SendMonoTypeChunk
 import dev.blackoutburst.server.utils.OpenSimplex2
 import dev.blackoutburst.server.utils.chunkFloor
+import java.util.*
+import kotlin.collections.LinkedHashSet
 import kotlin.random.Random
 
 object World {
@@ -13,7 +15,7 @@ object World {
     val CHUNK_SIZE = 16
 
     val seed = Random.nextLong()
-    val chunks = mutableMapOf<String, Chunk>()
+    val chunks: MutableMap<String, Chunk> = Collections.synchronizedMap(LinkedHashMap())
 
     fun generate(size: Int, height: Int) {
         println("Generating world")
@@ -59,7 +61,7 @@ object World {
     fun updateChunk(position: Vector3i, blockType: Byte, write: Boolean = true): Chunk? {
         val index = (Vector3i(chunkFloor(position.x.toFloat()), chunkFloor(position.y.toFloat()), chunkFloor(position.z.toFloat())))
 
-        val chunk = chunks[index.toString()] ?: return null
+        val chunk = synchronized(chunks) { chunks[index.toString()] } ?: return null
 
         val positionAsInt = Vector3i(
             if (position.x % 16 < 0) position.x % 16 + CHUNK_SIZE else position.x % 16,
@@ -82,12 +84,12 @@ object World {
     private fun addChunk(x: Int, y: Int, z: Int) {
         val position = Vector3i(x, y, z)
 
-        chunks[position.toString()] = Chunk(position)
+        synchronized(chunks) { chunks[position.toString()] = Chunk(position) }
     }
 
     fun getBlockAt(position: Vector3i): Block? {
         val chunkPosition = Chunk.getIndex(position, CHUNK_SIZE)
-        val chunk = chunks[chunkPosition.toString()] ?: return null
+        val chunk = synchronized(chunks) { chunks[chunkPosition.toString()] } ?: return null
         val positionAsInt = Vector3i(
             ((position.x - chunk.position.x) % CHUNK_SIZE + CHUNK_SIZE) % CHUNK_SIZE,
             ((position.y - chunk.position.y) % CHUNK_SIZE + CHUNK_SIZE) % CHUNK_SIZE,
