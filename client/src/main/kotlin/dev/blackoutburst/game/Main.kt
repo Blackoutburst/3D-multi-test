@@ -44,7 +44,6 @@ class Main {
         private var previousTime = Time.runtime
     }
 
-
     private fun getFps(): Int {
         val currentTime: Double = Time.runtime
         renderPasses++
@@ -101,9 +100,8 @@ class Main {
             if (Keyboard.isKeyPressed(GLFW.GLFW_KEY_5))
                 blockType = BlockType.OAK_LEAVES
 
-            world.render()
-
             entityManager.render()
+            world.render()
 
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
 
@@ -117,7 +115,7 @@ class Main {
                 getFps(),
                 world.chunkUpdate.get(),
                 world.blockCount,
-                world.chunks.size,
+                world.chunkCount,
                 world.vertexCount,
             )
             UI.renderCoroutines(window.nk.ctx, Vector2i(Display.getWidth() - 330,0), Vector2i(130, 140),

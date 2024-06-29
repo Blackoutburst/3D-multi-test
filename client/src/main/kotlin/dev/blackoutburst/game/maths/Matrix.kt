@@ -25,8 +25,27 @@ class Matrix {
     var m32: Float = 0f
     var m33: Float = 0f
 
-    init {
-        setIdentity()
+    constructor() {
+        this.setIdentity()
+    }
+
+    constructor(matrix: Matrix) {
+        this.m00 = matrix.m00
+        this.m01 = matrix.m01
+        this.m02 = matrix.m02
+        this.m03 = matrix.m03
+        this.m10 = matrix.m10
+        this.m11 = matrix.m11
+        this.m12 = matrix.m12
+        this.m13 = matrix.m13
+        this.m20 = matrix.m20
+        this.m21 = matrix.m21
+        this.m22 = matrix.m22
+        this.m23 = matrix.m23
+        this.m30 = matrix.m30
+        this.m31 = matrix.m31
+        this.m32 = matrix.m32
+        this.m33 = matrix.m33
     }
 
     fun lookAt(eye: Vector3f, center: Vector3f, up: Vector3f): Matrix {
@@ -239,25 +258,36 @@ class Matrix {
         return this
     }
 
-    fun setZero(m: Matrix): Matrix {
-        m.m00 = 0.0f
-        m.m01 = 0.0f
-        m.m02 = 0.0f
-        m.m03 = 0.0f
-        m.m10 = 0.0f
-        m.m11 = 0.0f
-        m.m12 = 0.0f
-        m.m13 = 0.0f
-        m.m20 = 0.0f
-        m.m21 = 0.0f
-        m.m22 = 0.0f
-        m.m23 = 0.0f
-        m.m30 = 0.0f
-        m.m31 = 0.0f
-        m.m32 = 0.0f
-        m.m33 = 0.0f
+    fun zero(): Matrix {
+        this.m00 = 0.0f
+        this.m01 = 0.0f
+        this.m02 = 0.0f
+        this.m03 = 0.0f
+        this.m10 = 0.0f
+        this.m11 = 0.0f
+        this.m12 = 0.0f
+        this.m13 = 0.0f
+        this.m20 = 0.0f
+        this.m21 = 0.0f
+        this.m22 = 0.0f
+        this.m23 = 0.0f
+        this.m30 = 0.0f
+        this.m31 = 0.0f
+        this.m32 = 0.0f
+        this.m33 = 0.0f
 
-        return m
+        return this
+    }
+
+    fun get(index: Int): Float {
+        val elements = floatArrayOf(
+            this.m00, this.m01, this.m02, this.m03,
+            this.m10, this.m11, this.m12, this.m13,
+            this.m20, this.m21, this.m22, this.m23,
+            this.m30, this.m31, this.m32, this.m33
+        )
+
+        return elements[index]
     }
 
     @JvmOverloads
@@ -332,45 +362,45 @@ class Matrix {
         return dest
     }
 
-    fun mul(left: Matrix, right: Matrix, dest: Matrix?): Matrix {
-        var dest = dest
-        if (dest == null) dest = Matrix()
+    fun mul(right: Matrix): Matrix {
+        val src = Matrix()
+        load(this, src)
 
-        val m00 = left.m00 * right.m00 + left.m10 * right.m01 + left.m20 * right.m02 + left.m30 * right.m03
-        val m01 = left.m01 * right.m00 + left.m11 * right.m01 + left.m21 * right.m02 + left.m31 * right.m03
-        val m02 = left.m02 * right.m00 + left.m12 * right.m01 + left.m22 * right.m02 + left.m32 * right.m03
-        val m03 = left.m03 * right.m00 + left.m13 * right.m01 + left.m23 * right.m02 + left.m33 * right.m03
-        val m10 = left.m00 * right.m10 + left.m10 * right.m11 + left.m20 * right.m12 + left.m30 * right.m13
-        val m11 = left.m01 * right.m10 + left.m11 * right.m11 + left.m21 * right.m12 + left.m31 * right.m13
-        val m12 = left.m02 * right.m10 + left.m12 * right.m11 + left.m22 * right.m12 + left.m32 * right.m13
-        val m13 = left.m03 * right.m10 + left.m13 * right.m11 + left.m23 * right.m12 + left.m33 * right.m13
-        val m20 = left.m00 * right.m20 + left.m10 * right.m21 + left.m20 * right.m22 + left.m30 * right.m23
-        val m21 = left.m01 * right.m20 + left.m11 * right.m21 + left.m21 * right.m22 + left.m31 * right.m23
-        val m22 = left.m02 * right.m20 + left.m12 * right.m21 + left.m22 * right.m22 + left.m32 * right.m23
-        val m23 = left.m03 * right.m20 + left.m13 * right.m21 + left.m23 * right.m22 + left.m33 * right.m23
-        val m30 = left.m00 * right.m30 + left.m10 * right.m31 + left.m20 * right.m32 + left.m30 * right.m33
-        val m31 = left.m01 * right.m30 + left.m11 * right.m31 + left.m21 * right.m32 + left.m31 * right.m33
-        val m32 = left.m02 * right.m30 + left.m12 * right.m31 + left.m22 * right.m32 + left.m32 * right.m33
-        val m33 = left.m03 * right.m30 + left.m13 * right.m31 + left.m23 * right.m32 + left.m33 * right.m33
+        val m00 = this.m00 * right.m00 + this.m10 * right.m01 + this.m20 * right.m02 + this.m30 * right.m03
+        val m01 = this.m01 * right.m00 + this.m11 * right.m01 + this.m21 * right.m02 + this.m31 * right.m03
+        val m02 = this.m02 * right.m00 + this.m12 * right.m01 + this.m22 * right.m02 + this.m32 * right.m03
+        val m03 = this.m03 * right.m00 + this.m13 * right.m01 + this.m23 * right.m02 + this.m33 * right.m03
+        val m10 = this.m00 * right.m10 + this.m10 * right.m11 + this.m20 * right.m12 + this.m30 * right.m13
+        val m11 = this.m01 * right.m10 + this.m11 * right.m11 + this.m21 * right.m12 + this.m31 * right.m13
+        val m12 = this.m02 * right.m10 + this.m12 * right.m11 + this.m22 * right.m12 + this.m32 * right.m13
+        val m13 = this.m03 * right.m10 + this.m13 * right.m11 + this.m23 * right.m12 + this.m33 * right.m13
+        val m20 = this.m00 * right.m20 + this.m10 * right.m21 + this.m20 * right.m22 + this.m30 * right.m23
+        val m21 = this.m01 * right.m20 + this.m11 * right.m21 + this.m21 * right.m22 + this.m31 * right.m23
+        val m22 = this.m02 * right.m20 + this.m12 * right.m21 + this.m22 * right.m22 + this.m32 * right.m23
+        val m23 = this.m03 * right.m20 + this.m13 * right.m21 + this.m23 * right.m22 + this.m33 * right.m23
+        val m30 = this.m00 * right.m30 + this.m10 * right.m31 + this.m20 * right.m32 + this.m30 * right.m33
+        val m31 = this.m01 * right.m30 + this.m11 * right.m31 + this.m21 * right.m32 + this.m31 * right.m33
+        val m32 = this.m02 * right.m30 + this.m12 * right.m31 + this.m22 * right.m32 + this.m32 * right.m33
+        val m33 = this.m03 * right.m30 + this.m13 * right.m31 + this.m23 * right.m32 + this.m33 * right.m33
 
-        dest.m00 = m00
-        dest.m01 = m01
-        dest.m02 = m02
-        dest.m03 = m03
-        dest.m10 = m10
-        dest.m11 = m11
-        dest.m12 = m12
-        dest.m13 = m13
-        dest.m20 = m20
-        dest.m21 = m21
-        dest.m22 = m22
-        dest.m23 = m23
-        dest.m30 = m30
-        dest.m31 = m31
-        dest.m32 = m32
-        dest.m33 = m33
+        this.m00 = m00
+        this.m01 = m01
+        this.m02 = m02
+        this.m03 = m03
+        this.m10 = m10
+        this.m11 = m11
+        this.m12 = m12
+        this.m13 = m13
+        this.m20 = m20
+        this.m21 = m21
+        this.m22 = m22
+        this.m23 = m23
+        this.m30 = m30
+        this.m31 = m31
+        this.m32 = m32
+        this.m33 = m33
 
-        return dest
+        return this
     }
 
     fun scale(vec: Vector2f): Matrix {

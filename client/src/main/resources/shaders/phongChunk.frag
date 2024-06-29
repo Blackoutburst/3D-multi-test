@@ -9,6 +9,7 @@ in vec3 norm;
 flat in float layer;
 
 uniform sampler2DArray text;
+//uniform sampler2D text2D;
 uniform vec3 lightColor;
 uniform vec3 viewPos;
 uniform vec3 lightPos;
@@ -40,4 +41,5 @@ void main() {
     vec3 result = (ambient + diffuse + specular) * color.xyz;
 
     FragColor = vec4(result, color.w) * texture(text, vec3(uv, layer));
+    //FragColor = vec4(result, color.w) * texture(text2D, vec2(uv));
 }

@@ -417,8 +417,6 @@ class Chunk(
         val indexArray = indices.toIntArray()
 
         main {
-
-
             computeVAO(vertexArray, indexArray)
         }
     }
@@ -458,6 +456,5 @@ class Chunk(
     fun render() {
         glBindVertexArray(vaoID)
         glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0)
-        glBindVertexArray(0)
     }
 }

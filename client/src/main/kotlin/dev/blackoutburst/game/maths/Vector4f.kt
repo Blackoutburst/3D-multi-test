@@ -29,11 +29,13 @@ class Vector4f {
         this.w = w
     }
 
-    fun set(x: Float, y: Float, z: Float, w: Float) {
+    fun set(x: Float, y: Float, z: Float, w: Float): Vector4f {
         this.x = x
         this.y = y
         this.z = z
         this.w = w
+
+        return this
     }
 
     fun normalize(): Vector4f {
