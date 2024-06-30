@@ -22,8 +22,7 @@ object Server {
 
     private val server = ServerSocket(15000)
 
-    val clients: MutableSet<Client> = Collections.synchronizedSet(LinkedHashSet())
-
+    val clients: MutableList<Client> = Collections.synchronizedList(LinkedList())
     val packetManager = PacketManager()
     val entityManger = EntityManager()
 
@@ -36,40 +35,12 @@ object Server {
 
         client.write(S00Identification(client.entityId))
 
-        synchronized(chunks) {
-            chunks
-                .map { it.value }
-                .filter { it.blocks.any { b -> b != BlockType.AIR.id } }
-                .sortedBy { it.position.distance(Vector3i(0, 100, 0)) + if (it.isMonoType()) 100000 else 0 }
-                .forEach {
-                    if (it.isMonoType()) {
-                        client.write(
-                            S05SendMonoTypeChunk(
-                                position = it.position,
-                                type = it.blocks.first()
-                            )
-                        )
-                    } else {
-                        client.write(
-                            S04SendChunk(
-                                position = it.position,
-                                blockData = it.blocks
-                            )
-                        )
-                    }
-                }
-        }
-
-        synchronized(entityManger.entities) {
-            entityManger.entities.forEach {
-                client.write(S01AddEntity(it.id, it.position, it.rotation))
-            }
+        entityManger.entities.forEach {
+            client.write(S01AddEntity(it.id, it.position, it.rotation))
         }
         entityManger.addEntity(entity)
 
-        synchronized(clients) {
-            clients.add(client)
-        }
+        clients.add(client)
 
         io {
             client.socket?.let {
@@ -81,10 +52,8 @@ object Server {
     }
 
     fun write(packet: PacketPlayOut) {
-        synchronized(clients) {
-            clients.forEach {
-                it.write(packet)
-            }
+        clients.forEach {
+            it.write(packet)
         }
     }
 
@@ -94,7 +63,7 @@ object Server {
             client.input?.close()
             client.output?.close()
             io { client.webSocket?.close() }
-            synchronized(clients) { clients.remove(client) }
+            clients.remove(client)
             entityManger.removeEntity(client.entityId)
         } catch (ignored: Exception) {}
     }

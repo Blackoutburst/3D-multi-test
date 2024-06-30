@@ -3,10 +3,9 @@ package dev.blackoutburst.server.core.world
 import dev.blackoutburst.server.maths.Vector3i
 import dev.blackoutburst.server.utils.OpenSimplex2
 
-class Chunk(
-    val position: Vector3i,
-    val blocks: Array<Byte> = Array(4096) { BlockType.AIR.id }
-) {
+class Chunk {
+    var position: Vector3i
+    var blocks: Array<Byte>
 
     companion object {
         fun getIndex(position: Vector3i, chunkSize: Int): Vector3i {
@@ -18,9 +17,23 @@ class Chunk(
         }
     }
 
-    init {
+    constructor() {
+        this.position = Vector3i()
+        this.blocks = Array(4096) { BlockType.AIR.id }
+    }
+
+    constructor(position: Vector3i, blocks: Array<Byte>) {
+        this.position = position
+        this.blocks = blocks
+    }
+
+    constructor(position: Vector3i) {
+        this.position = position
+        this.blocks = Array(4096) { BlockType.AIR.id }
+
+
         for (i in 0 until 4096) {
-            blocks[i] = getType(position.x + i % 16, position.y + (i / 16) % 16, position.z + (i / (16 * 16)) % 16).id
+            this.blocks[i] = getType(position.x + i % 16, position.y + (i / 16) % 16, position.z + (i / (16 * 16)) % 16).id
         }
     }
 

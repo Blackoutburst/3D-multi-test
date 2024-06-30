@@ -13,12 +13,10 @@ import kotlin.collections.LinkedHashSet
 class EntityManager {
     var newId = AtomicInteger(0)
 
-    val entities: MutableSet<Entity> = Collections.synchronizedSet(LinkedHashSet())
+    val entities: MutableList<Entity> = Collections.synchronizedList(LinkedList())
 
     fun addEntity(entity: Entity) {
-        synchronized(entities) {
-            entities.add(entity)
-        }
+        entities.add(entity)
 
         Server.write(S01AddEntity(
             entity.id,
@@ -28,29 +26,23 @@ class EntityManager {
     }
 
     fun update(id: Int, position: Vector3f, rotation: Vector2f) {
-        synchronized(entities) {
-            entities.find { it.id == id }?.let {
-                it.position = position
-                it.rotation = rotation
+        entities.find { it.id == id }?.let {
+            it.position = position
+            it.rotation = rotation
 
-                Server.write(S03UpdateEntity(it.id, position, rotation))
-            }
+            Server.write(S03UpdateEntity(it.id, position, rotation))
         }
     }
 
     fun sendData() {
-        synchronized(entities) {
-            entities.forEach {
-                Server.write(S03UpdateEntity(it.id, it.position, it.rotation))
-            }
+        entities.forEach {
+            Server.write(S03UpdateEntity(it.id, it.position, it.rotation))
         }
     }
 
     fun removeEntity(id: Int) {
-        synchronized(entities) {
-            entities.find { it.id == id }?.let {
-                entities.remove(it)
-            }
+        entities.find { it.id == id }?.let {
+            entities.remove(it)
         }
 
         Server.write(S02RemoveEntity(

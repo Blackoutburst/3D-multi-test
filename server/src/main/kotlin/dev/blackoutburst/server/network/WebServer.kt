@@ -26,45 +26,17 @@ object WebServer {
 
             routing {
                 webSocket("/game") {
-                    val entity = EntityPlayer(Server.entityManger.newId.getAndIncrement())
+                    val entity = EntityPlayer(entityManger.newId.getAndIncrement())
                     val client = Client(null, this, null, null, entity.id)
 
                     client.write(S00Identification(client.entityId))
 
-                    synchronized(chunks) {
-                        chunks
-                            .map { it.value }
-                            .filter { it.blocks.any { b -> b != BlockType.AIR.id } }
-                            .sortedBy { it.position.distance(Vector3i(0, 100, 0)) + if (it.isMonoType()) 100000 else 0 }
-                            .forEach {
-                                if (it.isMonoType()) {
-                                    client.write(
-                                        S05SendMonoTypeChunk(
-                                            position = it.position,
-                                            type = it.blocks.first()
-                                        )
-                                    )
-                                } else {
-                                    client.write(
-                                        S04SendChunk(
-                                            position = it.position,
-                                            blockData = it.blocks
-                                        )
-                                    )
-                                }
-                            }
-                    }
-
-                    synchronized(entityManger.entities) {
-                        entityManger.entities.forEach {
-                            client.write(S01AddEntity(it.id, it.position, it.rotation))
-                        }
+                    entityManger.entities.forEach {
+                        client.write(S01AddEntity(it.id, it.position, it.rotation))
                     }
 
                     entityManger.addEntity(entity)
-                    synchronized(clients) {
-                        clients.add(client)
-                    }
+                    clients.add(client)
 
                     try {
                         for (frame in incoming) {

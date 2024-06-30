@@ -1,11 +1,18 @@
 package dev.blackoutburst.server.core.world
 
+import dev.blackoutburst.server.core.entity.EntityPlayer
 import dev.blackoutburst.server.maths.Vector3i
 import dev.blackoutburst.server.network.Server
 import dev.blackoutburst.server.network.packets.server.S04SendChunk
 import dev.blackoutburst.server.network.packets.server.S05SendMonoTypeChunk
 import dev.blackoutburst.server.utils.OpenSimplex2
 import dev.blackoutburst.server.utils.chunkFloor
+import dev.blackoutburst.server.utils.io
+import java.io.File
+import java.io.FileReader
+import java.io.FileWriter
+import java.nio.ByteBuffer
+import java.nio.CharBuffer
 import java.util.*
 import kotlin.collections.LinkedHashSet
 import kotlin.random.Random
@@ -16,6 +23,75 @@ object World {
 
     val seed = Random.nextLong()
     val chunks: MutableMap<String, Chunk> = Collections.synchronizedMap(LinkedHashMap())
+
+    private fun loadChunk(distance: Int) {
+        val size = Server.clients.size
+        for (clientId in 0 until size) {
+            val client = try { Server.clients[clientId] } catch (ignored: Exception) { null } ?: break
+            val player = Server.entityManger.entities.find { it.id == client.entityId }
+            if (player == null) continue
+
+            val pX = chunkFloor(player.position.x)
+            val pY = chunkFloor(player.position.y)
+            val pZ = chunkFloor(player.position.z)
+
+            for (x in pX - distance until pX + distance) {
+                for (y in pY - distance until pY + distance) {
+                    for (z in pZ - distance until pZ + distance) {
+                        val index = (Vector3i(chunkFloor(x.toFloat()), chunkFloor(y.toFloat()), chunkFloor(z.toFloat())))
+                        if (chunks[index.toString()] == null) {
+                            val chunk = addChunk(
+                                chunkFloor(x.toFloat()),
+                                chunkFloor(y.toFloat()),
+                                chunkFloor(z.toFloat())
+                            )
+                            client.write(S04SendChunk(chunk.position, chunk.blocks))
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun unloadChunk(distance: Int) {
+        val indices = mutableListOf<String>()
+
+        val size = chunks.size
+        chunk@for (chunkId in 0 until size) {
+            val chunk = try { chunks.values.toList()[chunkId] } catch (ignored: Exception) { null } ?: break
+            val entitySize = Server.entityManger.entities.size
+            for (entityId in 0 until entitySize) {
+                val player = try { Server.entityManger.entities[entityId] } catch (ignored: Exception) { null } ?: break
+                if (player !is EntityPlayer) continue@chunk
+
+                val pX = chunkFloor(player.position.x)
+                val pY = chunkFloor(player.position.y)
+                val pZ = chunkFloor(player.position.z)
+
+                if (chunk.position.x in pX - distance until pX + distance &&
+                    chunk.position.y in pY - distance until pY + distance &&
+                    chunk.position.z in pZ - distance until pZ + distance) {
+                    indices.add(chunk.position.toString())
+                }
+            }
+        }
+
+        val keys = chunks.keys.filter { !indices.contains(it) }
+        val keySize = keys.size
+        chunk@for (keyId in 0 until keySize) {
+            val key = keys[keyId]
+            val chunk = chunks[key]
+            chunk?.let { saveChunk(it) }
+            chunks.remove(key)
+        }
+    }
+
+    fun update() {
+        val distance = 16 * 5
+
+        loadChunk(distance)
+        unloadChunk(distance)
+    }
 
     fun generate(size: Int, height: Int) {
         println("Generating world")
@@ -49,19 +125,19 @@ object World {
 
         for (xo in -1..1) {
             for (zo in -1..1) {
-                updateChunk(Vector3i(x + xo, y + 5, z + zo), BlockType.OAK_LEAVES.id, false)
+                updateChunk(Vector3i(x + xo, y + 5, z + zo), BlockType.OAK_LEAVES.id, true)
             }
         }
 
         for (i in 0..4) {
-            updateChunk(Vector3i(x, y + i, z), BlockType.OAK_LOG.id, false)
+            updateChunk(Vector3i(x, y + i, z), BlockType.OAK_LOG.id, true)
         }
     }
 
     fun updateChunk(position: Vector3i, blockType: Byte, write: Boolean = true): Chunk? {
         val index = (Vector3i(chunkFloor(position.x.toFloat()), chunkFloor(position.y.toFloat()), chunkFloor(position.z.toFloat())))
 
-        val chunk = synchronized(chunks) { chunks[index.toString()] } ?: return null
+        val chunk = chunks[index.toString()] ?: return null
 
         val positionAsInt = Vector3i(
             if (position.x % 16 < 0) position.x % 16 + CHUNK_SIZE else position.x % 16,
@@ -81,15 +157,35 @@ object World {
         return chunk
     }
 
-    private fun addChunk(x: Int, y: Int, z: Int) {
-        val position = Vector3i(x, y, z)
+    fun saveChunk(chunk: Chunk) {
+        File("./world/c_${chunk.position.x}_${chunk.position.y}_${chunk.position.z}.dat").writeBytes(chunk.blocks.toByteArray())
+    }
 
-        synchronized(chunks) { chunks[position.toString()] = Chunk(position) }
+    fun save() {
+        chunks.values.forEach {
+            File("./world/c_${it.position.x}_${it.position.y}_${it.position.z}.dat").writeBytes(it.blocks.toByteArray())
+        }
+    }
+
+    private fun addChunk(x: Int, y: Int, z: Int): Chunk {
+        val position = Vector3i(x, y, z)
+        val chunkFile = File("./world/c_${x}_${y}_${z}.dat")
+        if (chunkFile.exists()) {
+            val chunk = Chunk(position, chunkFile.readBytes().toTypedArray())
+
+            chunks[position.toString()] = chunk
+            return chunk
+        }
+
+        val chunk = Chunk(position)
+
+        chunks[position.toString()] = chunk
+        return chunk
     }
 
     fun getBlockAt(position: Vector3i): Block? {
         val chunkPosition = Chunk.getIndex(position, CHUNK_SIZE)
-        val chunk = synchronized(chunks) { chunks[chunkPosition.toString()] } ?: return null
+        val chunk = chunks[chunkPosition.toString()] ?: return null
         val positionAsInt = Vector3i(
             ((position.x - chunk.position.x) % CHUNK_SIZE + CHUNK_SIZE) % CHUNK_SIZE,
             ((position.y - chunk.position.y) % CHUNK_SIZE + CHUNK_SIZE) % CHUNK_SIZE,
