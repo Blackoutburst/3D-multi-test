@@ -38,6 +38,7 @@ object World {
             for (x in pX - distance until pX + distance) {
                 for (y in pY - distance until pY + distance) {
                     for (z in pZ - distance until pZ + distance) {
+                        if (y < -32 || y > 16) continue;
                         val index = (Vector3i(chunkFloor(x.toFloat()), chunkFloor(y.toFloat()), chunkFloor(z.toFloat())))
                         if (chunks[index.toString()] == null) {
                             val chunk = addChunk(
@@ -45,7 +46,13 @@ object World {
                                 chunkFloor(y.toFloat()),
                                 chunkFloor(z.toFloat())
                             )
-                            client.write(S04SendChunk(chunk.position, chunk.blocks))
+                            
+                            if (chunk.isMonoType()) {
+                                if (chunk.blocks.first().toInt() == 0) continue;
+                                client.write(S05SendMonoTypeChunk(chunk.position, chunk.blocks.first()))
+                            } else {
+                                client.write(S04SendChunk(chunk.position, chunk.blocks))
+                            }
                         }
                     }
                 }

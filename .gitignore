@@ -90,6 +90,7 @@ client/.DS_Store
 
 server/.gradle
 server/build/
+server/world/
 !server/gradle/wrapper/gradle-wrapper.jar
 !server/**/src/main/**/build/
 !server/**/src/test/**/build/
