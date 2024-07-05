@@ -92,12 +92,8 @@ object World {
     fun update() {
         val distance = 16 * 5
 
-        default {
-            loadChunk(distance)
-        }
-        default {
-            unloadChunk(distance)
-        }
+        loadChunk(distance)
+        unloadChunk(distance)
     }
 
     fun generate(size: Int, height: Int) {

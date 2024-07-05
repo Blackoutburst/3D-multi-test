@@ -23,10 +23,6 @@ fun main(args: Array<String>) {
         }
     }
 
-    timer.schedule(0, 1000) {
-        println("Chunk count = ${World.chunks.size}")
-    }
-
     io {
         while(true) {
             Server.addClient()
