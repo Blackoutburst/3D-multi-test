@@ -7,14 +7,9 @@ import dev.blackoutburst.server.network.packets.server.S04SendChunk
 import dev.blackoutburst.server.network.packets.server.S05SendMonoTypeChunk
 import dev.blackoutburst.server.utils.OpenSimplex2
 import dev.blackoutburst.server.utils.chunkFloor
-import dev.blackoutburst.server.utils.io
+import dev.blackoutburst.server.utils.default
 import java.io.File
-import java.io.FileReader
-import java.io.FileWriter
-import java.nio.ByteBuffer
-import java.nio.CharBuffer
 import java.util.*
-import kotlin.collections.LinkedHashSet
 import kotlin.random.Random
 
 object World {
@@ -38,7 +33,8 @@ object World {
             for (x in pX - distance until pX + distance) {
                 for (y in pY - distance until pY + distance) {
                     for (z in pZ - distance until pZ + distance) {
-                        if (y < -32 || y > 16) continue;
+                        if (y < -32 || y > 256) continue
+
                         val index = (Vector3i(chunkFloor(x.toFloat()), chunkFloor(y.toFloat()), chunkFloor(z.toFloat())))
                         if (chunks[index.toString()] == null) {
                             val chunk = addChunk(
@@ -48,10 +44,10 @@ object World {
                             )
                             
                             if (chunk.isMonoType()) {
-                                if (chunk.blocks.first().toInt() == 0) continue;
-                                client.write(S05SendMonoTypeChunk(chunk.position, chunk.blocks.first()))
+                                if (chunk.blocks.first().toInt() == 0) continue
+                                Server.write(S05SendMonoTypeChunk(chunk.position, chunk.blocks.first()))
                             } else {
-                                client.write(S04SendChunk(chunk.position, chunk.blocks))
+                                Server.write(S04SendChunk(chunk.position, chunk.blocks))
                             }
                         }
                     }
@@ -96,8 +92,12 @@ object World {
     fun update() {
         val distance = 16 * 5
 
-        loadChunk(distance)
-        unloadChunk(distance)
+        default {
+            loadChunk(distance)
+        }
+        default {
+            unloadChunk(distance)
+        }
     }
 
     fun generate(size: Int, height: Int) {
