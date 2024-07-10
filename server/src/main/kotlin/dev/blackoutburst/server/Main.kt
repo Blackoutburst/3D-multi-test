@@ -30,6 +30,6 @@ fun main(args: Array<String>) {
     }
 
     while(true) {
-        World.update()
+        World.update(args[0].toInt())
     }
 }

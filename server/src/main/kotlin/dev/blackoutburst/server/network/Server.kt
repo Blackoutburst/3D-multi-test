@@ -35,11 +35,23 @@ object Server {
 
         client.write(S00Identification(client.entityId))
 
-        entityManger.entities.forEach {
-            client.write(S01AddEntity(it.id, it.position, it.rotation))
+        val entitySize = entityManger.entities.size
+        for (i in 0 until entitySize) {
+            val e = try {entityManger.entities[i] } catch (ignored: Exception) { null } ?: continue
+            client.write(S01AddEntity(e.id, e.position, e.rotation))
+        }
+
+        val chunkSize = chunks.size
+        for (i in 0 until chunkSize) {
+            val chunk = try { chunks.values.toList()[i] } catch (ignored: Exception) { null } ?: continue
+            if (chunk.isMonoType()) {
+                if (chunk.blocks.first() == BlockType.AIR.id) continue
+                write(S05SendMonoTypeChunk(chunk.position, chunk.blocks.first()))
+            } else {
+                write(S04SendChunk(chunk.position, chunk.blocks))
+            }
         }
         entityManger.addEntity(entity)
-
         clients.add(client)
 
         io {

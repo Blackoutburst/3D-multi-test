@@ -40,23 +40,29 @@ class Client(
     }
 
     fun write(packet: PacketPlayOut) {
-        try {
             output?.let { out ->
-                packet.buffer?.let {
-                    out.write(it.array())
-                    out.flush()
+                io {
+                    try {
+                        packet.buffer?.let {
+                            out.write(it.array())
+                            out.flush()
+                        }
+                    } catch (ignored: Exception) {
+                        Server.removeClient(this@Client)
+                    }
                 }
             }
 
             webSocket?.let { ws ->
                 io {
-                    packet.buffer?.let {
-                        ws.send(it.array())
+                    try {
+                        packet.buffer?.let {
+                            ws.send(it.array())
+                        }
+                    } catch (ignored: Exception) {
+                        Server.removeClient(this@Client)
                     }
                 }
             }
-        } catch (ignored: Exception) {
-            Server.removeClient(this)
-        }
     }
 }

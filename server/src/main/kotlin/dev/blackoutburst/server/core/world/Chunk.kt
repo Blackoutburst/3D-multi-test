@@ -37,7 +37,25 @@ class Chunk {
         }
     }
 
-    fun isMonoType(): Boolean = this.blocks.all { it == this.blocks.first() }
+    fun isEmpty(): Boolean {
+        if (this.blocks.isEmpty()) return true
+
+        for (i in 1 until 4096) {
+            if (this.blocks[i] != BlockType.AIR.id) return false
+        }
+
+        return true
+    }
+
+    fun isMonoType(): Boolean {
+        var previous = this.blocks[0]
+        for (i in 1 until 4096) {
+            val current = this.blocks[i]
+            if (previous != current) return false
+            previous = current
+        }
+        return true
+    }
 
     fun isVisible(): Boolean {
         val top = World.chunks[Vector3i(this.position.x, this.position.y + 16, this.position.z).toString()]

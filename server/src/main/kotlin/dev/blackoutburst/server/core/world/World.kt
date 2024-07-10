@@ -21,34 +21,27 @@ object World {
 
     private fun loadChunk(distance: Int) {
         val size = Server.clients.size
-        for (clientId in 0 until size) {
-            val client = try { Server.clients[clientId] } catch (ignored: Exception) { null } ?: break
-            val player = Server.entityManger.entities.find { it.id == client.entityId }
-            if (player == null) continue
+        if (size == 0) return
 
+        for (clientId in 0 until size) {
+            val client = try { Server.clients[clientId] } catch (ignored: Exception) { null } ?: continue
+            val player = Server.entityManger.getEntity(client.entityId) ?: continue
             val pX = chunkFloor(player.position.x)
             val pY = chunkFloor(player.position.y)
             val pZ = chunkFloor(player.position.z)
 
-            for (x in pX - distance until pX + distance) {
-                for (y in pY - distance until pY + distance) {
-                    for (z in pZ - distance until pZ + distance) {
+            for (x in pX - (distance * CHUNK_SIZE) until (pX + distance * CHUNK_SIZE) step CHUNK_SIZE) {
+                for (y in pY - (distance * CHUNK_SIZE) until (pY + distance * CHUNK_SIZE) step CHUNK_SIZE) {
+                    for (z in pZ - (distance * CHUNK_SIZE) until (pZ + distance * CHUNK_SIZE) step CHUNK_SIZE) {
                         if (y < -32 || y > 256) continue
+                        if (chunks[Vector3i(x, y, z).toString()] != null) continue
+                        val chunk = addChunk(x, y, z)
+                        if (chunk.isEmpty()) continue
 
-                        val index = (Vector3i(chunkFloor(x.toFloat()), chunkFloor(y.toFloat()), chunkFloor(z.toFloat())))
-                        if (chunks[index.toString()] == null) {
-                            val chunk = addChunk(
-                                chunkFloor(x.toFloat()),
-                                chunkFloor(y.toFloat()),
-                                chunkFloor(z.toFloat())
-                            )
-                            
-                            if (chunk.isMonoType()) {
-                                if (chunk.blocks.first().toInt() == 0) continue
-                                Server.write(S05SendMonoTypeChunk(chunk.position, chunk.blocks.first()))
-                            } else {
-                                Server.write(S04SendChunk(chunk.position, chunk.blocks))
-                            }
+                        if (chunk.isMonoType()) {
+                            client.write(S05SendMonoTypeChunk(chunk.position, chunk.blocks.first()))
+                        } else {
+                            client.write(S04SendChunk(chunk.position, chunk.blocks))
                         }
                     }
                 }
@@ -57,43 +50,43 @@ object World {
     }
 
     private fun unloadChunk(distance: Int) {
+        val size = chunks.size
+        if (size == 0) return
         val indices = mutableListOf<String>()
 
-        val size = chunks.size
         chunk@for (chunkId in 0 until size) {
-            val chunk = try { chunks.values.toList()[chunkId] } catch (ignored: Exception) { null } ?: break
+            val chunk = try { chunks.values.toList()[chunkId] } catch (ignored: Exception) { null } ?: continue
             val entitySize = Server.entityManger.entities.size
             for (entityId in 0 until entitySize) {
-                val player = try { Server.entityManger.entities[entityId] } catch (ignored: Exception) { null } ?: break
+                val player = try { Server.entityManger.entities[entityId] } catch (ignored: Exception) { null } ?: continue
                 if (player !is EntityPlayer) continue@chunk
 
                 val pX = chunkFloor(player.position.x)
                 val pY = chunkFloor(player.position.y)
                 val pZ = chunkFloor(player.position.z)
 
-                if (chunk.position.x in pX - distance until pX + distance &&
-                    chunk.position.y in pY - distance until pY + distance &&
-                    chunk.position.z in pZ - distance until pZ + distance) {
+                if (chunk.position.x in pX - (distance * CHUNK_SIZE) until pX + (distance * CHUNK_SIZE) step CHUNK_SIZE &&
+                    chunk.position.y in pY - (distance * CHUNK_SIZE) until pY + (distance * CHUNK_SIZE) step CHUNK_SIZE &&
+                    chunk.position.z in pZ - (distance * CHUNK_SIZE) until pZ + (distance * CHUNK_SIZE) step CHUNK_SIZE) {
                     indices.add(chunk.position.toString())
                 }
             }
         }
 
-        val keys = chunks.keys.filter { !indices.contains(it) }
-        val keySize = keys.size
-        chunk@for (keyId in 0 until keySize) {
-            val key = keys[keyId]
+        val keySize = chunks.keys.size
+        for (keyId in 0 until keySize) {
+            val key = try { chunks.keys.toList()[keyId] } catch (ignored: Exception) { null } ?: continue
+            if (indices.contains(key)) continue
+
             val chunk = chunks[key]
             chunk?.let { saveChunk(it) }
             chunks.remove(key)
         }
     }
 
-    fun update() {
-        val distance = 16 * 5
-
+    fun update(distance: Int) {
         loadChunk(distance)
-        unloadChunk(distance)
+        unloadChunk(distance + 2)
     }
 
     fun generate(size: Int, height: Int) {
@@ -182,7 +175,9 @@ object World {
 
         val chunk = Chunk(position)
 
-        chunks[position.toString()] = chunk
+        if (!chunk.isEmpty())
+            chunks[position.toString()] = chunk
+
         return chunk
     }
 

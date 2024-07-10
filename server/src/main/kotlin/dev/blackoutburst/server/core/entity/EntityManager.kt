@@ -15,6 +15,15 @@ class EntityManager {
 
     val entities: MutableList<Entity> = Collections.synchronizedList(LinkedList())
 
+    fun getEntity(id: Int): Entity? {
+        val size = entities.size
+        for (i in 0 until size) {
+            val entity = try { entities[i] } catch (ignored: Exception) { null } ?: continue
+            if (entity.id == id) return entity
+        }
+        return null
+    }
+
     fun addEntity(entity: Entity) {
         entities.add(entity)
 
@@ -26,7 +35,7 @@ class EntityManager {
     }
 
     fun update(id: Int, position: Vector3f, rotation: Vector2f) {
-        entities.find { it.id == id }?.let {
+        getEntity(id)?.let {
             it.position = position
             it.rotation = rotation
 
@@ -35,16 +44,17 @@ class EntityManager {
     }
 
     fun sendData() {
-        entities.forEach {
-            Server.write(S03UpdateEntity(it.id, it.position, it.rotation))
+        val size = entities.size
+        for (i in 0 until size) {
+            val entity = try { entities[i] } catch (ignored: Exception) { null } ?: continue
+            Server.write(S03UpdateEntity(entity.id, entity.position, entity.rotation))
         }
     }
 
     fun removeEntity(id: Int) {
-        entities.find { it.id == id }?.let {
+        getEntity(id)?.let {
             entities.remove(it)
         }
-
         Server.write(S02RemoveEntity(
             entityId = id,
         ))
