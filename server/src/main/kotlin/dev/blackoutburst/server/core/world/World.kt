@@ -39,9 +39,9 @@ object World {
                         if (chunk.isEmpty()) continue
 
                         if (chunk.isMonoType()) {
-                            client.write(S05SendMonoTypeChunk(chunk.position, chunk.blocks.first()))
+                            Server.write(S05SendMonoTypeChunk(chunk.position, chunk.blocks.first()))
                         } else {
-                            client.write(S04SendChunk(chunk.position, chunk.blocks))
+                            Server.write(S04SendChunk(chunk.position, chunk.blocks))
                         }
                     }
                 }
@@ -108,7 +108,7 @@ object World {
     }
 
     private fun addTree(x: Int, z: Int) {
-        if (Random.nextInt(300) != 0) return
+        if (Random.nextInt(50) != 0) return
         val y = (OpenSimplex2.noise2(seed, x / 200.0, z / 200.0) * 20).toInt() + 10
 
         for (yo in 0..1) {
@@ -121,12 +121,12 @@ object World {
 
         for (xo in -1..1) {
             for (zo in -1..1) {
-                updateChunk(Vector3i(x + xo, y + 5, z + zo), BlockType.OAK_LEAVES.id, true)
+                updateChunk(Vector3i(x + xo, y + 5, z + zo), BlockType.OAK_LEAVES.id, false)
             }
         }
 
         for (i in 0..4) {
-            updateChunk(Vector3i(x, y + i, z), BlockType.OAK_LOG.id, true)
+            updateChunk(Vector3i(x, y + i, z), BlockType.OAK_LOG.id, false)
         }
     }
 

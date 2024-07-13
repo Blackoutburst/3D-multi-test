@@ -46,9 +46,9 @@ object Server {
             val chunk = try { chunks.values.toList()[i] } catch (ignored: Exception) { null } ?: continue
             if (chunk.isMonoType()) {
                 if (chunk.blocks.first() == BlockType.AIR.id) continue
-                write(S05SendMonoTypeChunk(chunk.position, chunk.blocks.first()))
+                client.write(S05SendMonoTypeChunk(chunk.position, chunk.blocks.first()))
             } else {
-                write(S04SendChunk(chunk.position, chunk.blocks))
+                client.write(S04SendChunk(chunk.position, chunk.blocks))
             }
         }
         entityManger.addEntity(entity)
