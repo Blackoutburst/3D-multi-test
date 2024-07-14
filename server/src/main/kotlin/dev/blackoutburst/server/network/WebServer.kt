@@ -2,9 +2,7 @@ package dev.blackoutburst.server.network
 
 import dev.blackoutburst.server.core.entity.EntityPlayer
 import dev.blackoutburst.server.core.world.BlockType
-import dev.blackoutburst.server.core.world.World
 import dev.blackoutburst.server.core.world.World.chunks
-import dev.blackoutburst.server.maths.Vector3i
 import dev.blackoutburst.server.network.Server.clients
 import dev.blackoutburst.server.network.Server.entityManger
 import dev.blackoutburst.server.network.packets.server.S01AddEntity
@@ -31,10 +29,22 @@ object WebServer {
 
                     client.write(S00Identification(client.entityId))
 
-                    entityManger.entities.forEach {
-                        client.write(S01AddEntity(it.id, it.position, it.rotation))
+                    val entitySize = entityManger.entities.size
+                    for (i in 0 until entitySize) {
+                        val e = try {entityManger.entities[i] } catch (ignored: Exception) { null } ?: continue
+                        client.write(S01AddEntity(e.id, e.position, e.rotation))
                     }
 
+                    val chunkSize = chunks.size
+                    for (i in 0 until chunkSize) {
+                        val chunk = try { chunks.values.toList()[i] } catch (ignored: Exception) { null } ?: continue
+                        if (chunk.isMonoType()) {
+                            if (chunk.blocks.first() == BlockType.AIR.id) continue
+                            client.write(S05SendMonoTypeChunk(chunk.position, chunk.blocks.first()))
+                        } else {
+                            client.write(S04SendChunk(chunk.position, chunk.blocks))
+                        }
+                    }
                     entityManger.addEntity(entity)
                     clients.add(client)
 

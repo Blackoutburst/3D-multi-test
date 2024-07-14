@@ -64,8 +64,10 @@ object Server {
     }
 
     fun write(packet: PacketPlayOut) {
-        clients.forEach {
-            it.write(packet)
+        val size = clients.size
+        for (i in 0 until size) {
+            val client = try { clients[i] } catch (ignored: Exception) { null } ?: continue
+            client.write(packet)
         }
     }
 
