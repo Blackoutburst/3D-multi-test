@@ -196,7 +196,7 @@ class World {
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0)
 
-        glViewport(0, 0, Display.getWidth() * 2, Display.getHeight() * 2)
+        glViewport(0, 0, Display.getWidth(), Display.getHeight())
 
         glUseProgram(chunkProgram.id)
         chunkProgram.setUniform4f("color", Color.WHITE)
