@@ -4,6 +4,7 @@ import dev.blackoutburst.server.network.Client
 import dev.blackoutburst.server.network.packets.client.C00UpdateEntity
 import dev.blackoutburst.server.network.packets.client.C01UpdateBlock
 import dev.blackoutburst.server.network.packets.client.C02BlockBulkEdit
+import dev.blackoutburst.server.network.packets.client.C03Chat
 import java.nio.ByteBuffer
 
 class PacketManager {
@@ -11,9 +12,10 @@ class PacketManager {
     private val packets = mutableMapOf<Int, PacketPlayIn>()
 
     init {
-        packets[0x00] = C00UpdateEntity(24)
+        packets[0x00] = C00UpdateEntity(20)
         packets[0x01] = C01UpdateBlock(13)
         packets[0x02] = C02BlockBulkEdit(0)
+        packets[0x03] = C03Chat(4096)
     }
 
     fun getId(data: ByteArray): Int {

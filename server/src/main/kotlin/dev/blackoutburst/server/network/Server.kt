@@ -26,6 +26,8 @@ object Server {
     val packetManager = PacketManager()
     val entityManger = EntityManager()
 
+    val chat = mutableListOf<String>()
+
     fun getClientByEntityId(id: Int): Client? {
         val size = clients.size
         for (i in 0 until size) {

@@ -45,11 +45,16 @@ Send Mono Type Chunk: `0x05`
 |------|-----|-----|-----|-----------|
 | byte | int | int | int | byte      |
 
+Chat: `0x06`
+| id   | Message    |
+|------|------------|
+| byte | byte[4096] |
+
 ### Server bound
 Update Entity: `0x00`
-| id   | entityId | x     | y     | z     | yaw   | pitch |
-|------|----------|-------|-------|-------|-------|-------|
-| byte | int      | float | float | float | float | float |
+| id   | x     | y     | z     | yaw   | pitch |
+|------|-------|-------|-------|-------|-------|
+| byte | float | float | float | float | float |
 
 Update Block: `0x01`
 | id   | BlockType | x   | y   | z   |
@@ -60,6 +65,12 @@ Block Bulk Edit: `0x02`
 | id   | blockCount | BlockType | x   | y   | z   | BlockType | x   | y   | z   | ... |
 |------|------------|-----------|-----|-----|-----|-----------|-----|-----|-----|-----|
 | byte | Int        | byte      | int | int | int | byte      | int | int | int | ... |
+
+Chat: `0x03`
+| id   | Message    |
+|------|------------|
+| byte | byte[4096] |
+
 
 ### BlockType
 | id | Name       |
