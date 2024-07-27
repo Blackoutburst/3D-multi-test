@@ -4,12 +4,11 @@ import dev.blackoutburst.server.maths.Vector3i
 import dev.blackoutburst.server.network.Server
 import dev.blackoutburst.server.network.packets.server.S04SendChunk
 import dev.blackoutburst.server.network.packets.server.S05SendMonoTypeChunk
+import dev.blackoutburst.server.utils.io
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.File
-import java.time.Duration
-import java.time.Instant
 import java.util.*
 import kotlin.random.Random
 
@@ -20,8 +19,20 @@ object World {
     var seed = Random.nextLong()
     val chunks: MutableMap<String, Chunk> = Collections.synchronizedMap(LinkedHashMap())
 
+    val chunkFiles = mutableMapOf<String, File>()
+
+    var validIndex = setOf<String>()
+
     init {
         File("./world").mkdir()
+
+        val worldFolder = File("./world")
+        if (worldFolder.exists()) {
+            worldFolder.listFiles()?.forEach {
+                if (it.nameWithoutExtension.startsWith("c_"))
+                    chunkFiles[it.nameWithoutExtension.replace("c_", "")] = it
+            }
+        }
 
         val seedFile = File("./world/seed.dat")
         if (seedFile.exists()) {
@@ -31,56 +42,53 @@ object World {
         }
     }
 
-    private fun loadChunk(distance: Int) = runBlocking {
-        val validIndexes = mutableListOf<String>()
+    fun loadChunk(distance: Int) = runBlocking {
+        val indexes = mutableSetOf<String>()
 
         val size = Server.clients.size
         coroutineScope {
             for (i in 0 until size) {
-                launch {
-                    val client = try { Server.clients[i] } catch (ignored: Exception) { null } ?: return@launch
-                    val player = try { Server.entityManger.getEntity(client.entityId) } catch (ignored: Exception) { null } ?: return@launch
-                    val playerPosition = Chunk.getIndex(player.position.toInt())
+                val client = try { Server.clients[i] } catch (ignored: Exception) { null } ?: continue
+                val player = try { Server.entityManger.getEntity(client.entityId) } catch (ignored: Exception) { null } ?: continue
+                val playerPosition = Chunk.getIndex(player.position.toInt())
 
-                    for (x in playerPosition.x - distance until playerPosition.x + distance step CHUNK_SIZE) {
+                for (x in playerPosition.x - distance until playerPosition.x + distance step CHUNK_SIZE) {
                     for (y in playerPosition.y - distance until playerPosition.y + distance step CHUNK_SIZE) {
-                    for (z in playerPosition.z - distance until playerPosition.z + distance step CHUNK_SIZE) {
-                        if (y < -32) continue
-                        val chunk = getChunkAt(x, y, z)
+                        for (z in playerPosition.z - distance until playerPosition.z + distance step CHUNK_SIZE) {
+                            launch {
+                                if (y < -32) return@launch
+                                val chunk = getChunkAt(x, y, z)
+                                indexes.add(chunk.position.toString())
 
-                        validIndexes.add(chunk.position.toString())
+                                if (chunk.players.contains(client.entityId)) return@launch
+                                chunk.players.add(client.entityId)
 
-                        if (chunk.isEmpty() || chunk.players.contains(client.entityId)) continue
-                        chunk.players.add(client.entityId)
+                                if (chunk.isEmpty()) return@launch
 
-                        if (chunk.isMonoType())
-                            client.write(S05SendMonoTypeChunk(Vector3i(x, y, z), chunk.blocks.first()))
-                        else
-                            client.write(S04SendChunk(Vector3i(x, y, z), chunk.blocks))
-                    }}}
+                                if (chunk.isMonoType())
+                                    client.write(S05SendMonoTypeChunk(Vector3i(x, y, z), chunk.blocks.first()))
+                                else
+                                    client.write(S04SendChunk(Vector3i(x, y, z), chunk.blocks))
+                            }
+                        }
+                    }
                 }
             }
         }
-
-        val chunkSize = chunks.size
-        for (i in 0 until chunkSize) {
-            val chunk = try { chunks.values.toList()[i] } catch (ignored: Exception) { null } ?: continue
-            if (validIndexes.contains(chunk.position.toString())) continue
-            if (chunk.players.isEmpty()) continue
-
-            chunk.deletionStart = Instant.now()
-            chunk.players.clear()
-        }
+        validIndex = indexes
     }
 
-    private fun unloadChunk() = runBlocking {
-        val deadIndexes = mutableListOf<String>()
+    fun unloadChunk() = runBlocking {
+        val deadIndexes = mutableSetOf<String>()
         val chunkSize = chunks.size
+        val chunkList = chunks.values.toList()
+
         for (i in 0 until chunkSize) {
-            val chunk = try { chunks.values.toList()[i] } catch (ignored: Exception) { null } ?: continue
-            if (chunk.players.isEmpty() && Duration.between(chunk.deletionStart, Instant.now()).seconds >= 60) {
+            val chunk = try { chunkList[i] } catch (ignored: Exception) { null } ?: continue
+            if (!validIndex.contains(chunk.position.toString())) {
+                chunk.players.clear()
                 deadIndexes.add(chunk.position.toString())
-                saveChunk(chunk)
+                io { saveChunk(chunk) }
             }
         }
 
@@ -89,14 +97,9 @@ object World {
         }
     }
 
-    fun update(distance: Int) {
-        loadChunk(distance * 16)
-        unloadChunk()
-    }
-
     fun updateChunk(position: Vector3i, blockType: Byte, write: Boolean = true): Chunk {
         val index = Chunk.getIndex(position)
-        val chunk = chunks[index.toString()] ?: getChunkAt(index.x, index.y, index.z)
+        val chunk = chunks[index.toString()] ?: getChunkAt(index.x, index.y, index.z, true)
 
         val positionInChunk = Vector3i(
             if (position.x % 16 < 0) position.x % 16 + CHUNK_SIZE else position.x % 16,
@@ -123,7 +126,10 @@ object World {
     }
 
     fun saveChunk(chunk: Chunk) {
-        File("./world/c_${chunk.position.x}_${chunk.position.y}_${chunk.position.z}.dat").writeBytes(chunk.blocks.toByteArray())
+        val file = File("./world/c_${chunk.position.x}_${chunk.position.y}_${chunk.position.z}.dat")
+        file.writeBytes(chunk.blocks.toByteArray())
+
+        chunkFiles["${chunk.position.x}_${chunk.position.y}_${chunk.position.z}"] = file
     }
 
     fun save() {
@@ -132,22 +138,21 @@ object World {
         }
     }
 
-    private fun getChunkAt(x: Int, y: Int, z: Int): Chunk {
+    private fun getChunkAt(x: Int, y: Int, z: Int, force: Boolean = false): Chunk {
         val position = Vector3i(x, y, z)
 
         chunks[position.toString()]?.let { return it }
 
-        val chunkFile = File("./world/c_${x}_${y}_${z}.dat")
-        if (chunkFile.exists()) {
+        val chunkFile = chunkFiles["${x}_${y}_${z}"]
+        if (chunkFile != null) {
             val chunk = Chunk(position, chunkFile.readBytes().toTypedArray())
-
-            chunks[position.toString()] = chunk
+            if (force || !chunk.isEmpty())
+                chunks[position.toString()] = chunk
             return chunk
         }
 
         val chunk = Chunk(position)
-
-        if (!chunk.isEmpty())
+        if (force || !chunk.isEmpty())
             chunks[position.toString()] = chunk
 
         return chunk

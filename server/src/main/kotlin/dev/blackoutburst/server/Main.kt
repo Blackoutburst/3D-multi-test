@@ -19,12 +19,19 @@ fun main(args: Array<String>) {
     }
 
     io {
+        timer.schedule(0, 500) {
+            println(World.chunks.size)
+            World.unloadChunk()
+        }
+    }
+
+    io {
         while(true) {
             Server.addClient()
         }
     }
 
     while(true) {
-        World.update(args[0].toInt())
+        World.loadChunk(args[0].toInt() * 16)
     }
 }

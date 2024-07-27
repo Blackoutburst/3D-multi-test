@@ -2,13 +2,11 @@ package dev.blackoutburst.server.core.world
 
 import dev.blackoutburst.server.maths.Vector3i
 import dev.blackoutburst.server.utils.OpenSimplex2
-import java.time.Instant
 
 class Chunk {
     var position: Vector3i
     var blocks: Array<Byte>
     var players: MutableList<Int>
-    var deletionStart = Instant.now()
 
     companion object {
         fun getIndex(position: Vector3i): Vector3i {
