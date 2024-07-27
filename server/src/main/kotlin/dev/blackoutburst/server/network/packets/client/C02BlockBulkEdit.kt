@@ -23,7 +23,7 @@ class C02BlockBulkEdit(override val size: Int) : PacketPlayIn() {
                 val y = b.getInt()
                 val z = b.getInt()
                 val position = Vector3i(x, y, z)
-                val chunk = World.updateChunk(position, blockType)
+                val chunk = World.updateChunk(position, blockType, false)
                 updatedChunks[chunk.position.toString()] = chunk
             }
 

@@ -50,16 +50,6 @@ object Server {
             client.write(S01AddEntity(e.id, e.position, e.rotation))
         }
 
-        val chunkSize = chunks.size
-        for (i in 0 until chunkSize) {
-            val chunk = try { chunks.values.toList()[i] } catch (ignored: Exception) { null } ?: continue
-            if (chunk.isMonoType()) {
-                if (chunk.blocks.first() == BlockType.AIR.id) continue
-                client.write(S05SendMonoTypeChunk(chunk.position, chunk.blocks.first()))
-            } else {
-                client.write(S04SendChunk(chunk.position, chunk.blocks))
-            }
-        }
         entityManger.addEntity(entity)
         clients.add(client)
 
