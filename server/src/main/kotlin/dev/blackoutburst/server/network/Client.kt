@@ -34,7 +34,8 @@ class Client(
 
                 Server.packetManager.read(id, this, data)
             }
-        } catch (ignored: Exception) {
+        } catch (e: Throwable) {
+            e.printStackTrace()
             Server.removeClient(this)
         }
     }
@@ -47,7 +48,8 @@ class Client(
                             out.write(it.array())
                             out.flush()
                         }
-                    } catch (ignored: Exception) {
+                    } catch (e: Throwable) {
+                        e.printStackTrace()
                         Server.removeClient(this@Client)
                     }
                 }
@@ -59,7 +61,8 @@ class Client(
                         packet.buffer?.let {
                             ws.send(it.array())
                         }
-                    } catch (ignored: Exception) {
+                    } catch (e: Throwable) {
+                        e.printStackTrace()
                         Server.removeClient(this@Client)
                     }
                 }

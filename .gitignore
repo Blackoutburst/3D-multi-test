@@ -134,3 +134,6 @@ server/.DS_Store
 
 ### JVM ###
 *.log
+
+### World ###
+world

@@ -79,6 +79,8 @@ object Server {
             io { client.webSocket?.close() }
             clients.remove(client)
             entityManger.removeEntity(client.entityId)
-        } catch (ignored: Exception) {}
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
     }
 }

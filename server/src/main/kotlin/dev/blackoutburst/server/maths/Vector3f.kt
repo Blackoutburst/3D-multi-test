@@ -1,5 +1,6 @@
 package dev.blackoutburst.game.maths
 
+import dev.blackoutburst.server.maths.Vector3i
 import kotlin.math.sqrt
 
 class Vector3f {
@@ -58,6 +59,8 @@ class Vector3f {
     fun length(): Float {
         return (sqrt((x * x + y * y + z * z).toDouble()).toFloat())
     }
+
+    fun toInt(): Vector3i =Vector3i(x.toInt(), y.toInt(), z.toInt())
 
     fun copy(): Vector3f {
         val newVector = Vector3f()

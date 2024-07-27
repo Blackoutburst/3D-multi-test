@@ -54,7 +54,7 @@ object WebServer {
                                 client.read(frame)
                             }
                         }
-                    } catch (e: Exception) {
+                    } catch (e: Throwable) {
                         e.printStackTrace()
                     } finally {
                         Server.removeClient(client)

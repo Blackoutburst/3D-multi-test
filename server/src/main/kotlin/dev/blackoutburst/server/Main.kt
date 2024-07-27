@@ -4,16 +4,11 @@ import dev.blackoutburst.server.core.world.World
 import dev.blackoutburst.server.network.Server
 import dev.blackoutburst.server.network.WebServer
 import dev.blackoutburst.server.utils.io
-import java.io.File
 import java.util.*
 import kotlin.concurrent.schedule
 
 fun main(args: Array<String>) {
     val timer = Timer()
-
-    File("./world").mkdir()
-
-    //World.generate(args[0].toInt(), args[1].toInt())
 
     io { WebServer }
 

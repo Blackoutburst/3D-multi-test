@@ -30,7 +30,8 @@ class Connection {
                     }
                 }
             }
-        } catch (ignored: Exception) {
+        } catch (e: Throwable) {
+            e.printStackTrace()
             close()
         }
     }
@@ -50,7 +51,8 @@ class Connection {
 
                 manager.decode(id, data)
             }
-        } catch (ignored: Exception) {
+        } catch (e: Throwable) {
+            e.printStackTrace()
             close()
         }
     }
@@ -65,7 +67,8 @@ class Connection {
                     }
                 }
             }
-        } catch (ignored: Exception) {
+        } catch (e: Throwable) {
+            e.printStackTrace()
             close()
         }
     }

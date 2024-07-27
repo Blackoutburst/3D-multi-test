@@ -2,7 +2,7 @@ import { world } from "./main.js"
 import { Vector3 } from "./vector3.js"
 
 export function connectWebSocket() {
-    const ws = new WebSocket("ws://51.77.194.124:16000/game")
+    const ws = new WebSocket("ws://162.19.137.231:16000/game")
 
     ws.onopen = () => {}
 
