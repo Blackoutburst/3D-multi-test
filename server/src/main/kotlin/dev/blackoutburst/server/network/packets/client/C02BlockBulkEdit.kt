@@ -7,6 +7,7 @@ import dev.blackoutburst.server.network.Client
 import dev.blackoutburst.server.network.Server
 import dev.blackoutburst.server.network.packets.PacketPlayIn
 import dev.blackoutburst.server.network.packets.server.S04SendChunk
+import dev.blackoutburst.server.network.packets.server.S05SendMonoTypeChunk
 import java.nio.ByteBuffer
 
 class C02BlockBulkEdit(override val size: Int) : PacketPlayIn() {
@@ -27,7 +28,15 @@ class C02BlockBulkEdit(override val size: Int) : PacketPlayIn() {
             }
 
             updatedChunks.forEach { (_, v) ->
-                Server.write(S04SendChunk(v.position, v.blocks))
+                val playerSize = v.players.size
+                for (i in 0 until playerSize) {
+                    val player = Server.getClientByEntityId(v.players[i]) ?: continue
+
+                    if (v.isMonoType())
+                        player.write(S05SendMonoTypeChunk(v.position, v.blocks.first()))
+                    else
+                        player.write(S04SendChunk(v.position, v.blocks))
+                }
             }
         }
     }

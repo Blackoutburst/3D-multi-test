@@ -26,6 +26,15 @@ object Server {
     val packetManager = PacketManager()
     val entityManger = EntityManager()
 
+    fun getClientByEntityId(id: Int): Client? {
+        val size = clients.size
+        for (i in 0 until size) {
+            val client = try { clients[i] } catch (ignored: Exception) { null } ?: continue
+            if (client.entityId == id) return client
+        }
+        return null
+    }
+
     fun addClient() {
         val socket = server.accept()
         val input = socket.getInputStream()

@@ -107,10 +107,17 @@ object World {
         val blockId = chunk.xyzToIndex(positionInChunk.x, positionInChunk.y, positionInChunk.z)
         chunk.blocks[blockId] = blockType
 
-        if (write && chunk.isMonoType())
-            Server.write(S05SendMonoTypeChunk(index, chunk.blocks.first()))
-        else if (write)
-            Server.write(S04SendChunk(index, chunk.blocks))
+        if (write) {
+            val playerSize = chunk.players.size
+            for (i in 0 until playerSize) {
+                val client = Server.getClientByEntityId(chunk.players[i]) ?: continue
+
+                if (chunk.isMonoType())
+                    client.write(S05SendMonoTypeChunk(index, chunk.blocks.first()))
+                else
+                    client.write(S04SendChunk(index, chunk.blocks))
+            }
+        }
 
         return chunk
     }
