@@ -172,7 +172,8 @@ class Chunk {
 
 
         val normalizedHeight = y / 128f
-        val squashing = 0.21f * (1f - mapRange(erosion, -1f, 1f, 0f, 1f)) // using erosion to affect squashing
+        val squashingFactor = 0.2f// 0.08f
+        val squashing = squashingFactor * (1f - mapRange(erosion, -1f, 1f, 0f, 1f)) // using erosion to affect squashing
         val fill = density * squashing > normalizedHeight - continentalness * 0.4f
 
         if (fill) {
