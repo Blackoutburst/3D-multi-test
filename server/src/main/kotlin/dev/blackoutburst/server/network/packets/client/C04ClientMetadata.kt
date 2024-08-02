@@ -4,6 +4,7 @@ import dev.blackoutburst.server.network.Client
 import dev.blackoutburst.server.network.Server
 import dev.blackoutburst.server.network.packets.PacketPlayIn
 import dev.blackoutburst.server.network.packets.server.S06Chat
+import dev.blackoutburst.server.network.packets.server.S07UpdateEntityMetadata
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 
@@ -22,6 +23,9 @@ class C04ClientMetadata(override val size: Int) : PacketPlayIn() {
         client.renderDistance = renderDistance.toInt()
         client.name = name
 
-        Server.entityManger.getEntity(client.entityId)?.name = name
+        Server.entityManger.getEntity(client.entityId)?.let {
+            it.name = name
+            Server.write(S07UpdateEntityMetadata(it.id, it.name))
+        }
     }
 }
