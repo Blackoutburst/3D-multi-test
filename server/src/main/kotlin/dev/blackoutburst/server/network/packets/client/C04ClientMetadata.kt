@@ -7,17 +7,21 @@ import dev.blackoutburst.server.network.packets.server.S06Chat
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 
-class C03Chat(override val size: Int) : PacketPlayIn() {
+class C04ClientMetadata(override val size: Int) : PacketPlayIn() {
 
     override fun decode(client: Client, buffer: ByteBuffer) {
+        val renderDistance = buffer.get()
         val data = mutableListOf<Byte>()
-        for (i in 0 until 4096) {
+        for (i in 0 until 64) {
             data.add(buffer.get())
         }
 
         val buff = ByteBuffer.wrap(data.toByteArray())
-        val message = "${client.name}: ${StandardCharsets.UTF_8.decode(buff).toString().substring(0, 4096 - 64)}"
-        Server.chat.add(message)
-        Server.write(S06Chat(message))
+        val name = StandardCharsets.UTF_8.decode(buff).toString()
+
+        client.renderDistance = renderDistance.toInt()
+        client.name = name
+
+        Server.entityManger.getEntity(client.entityId)?.name = name
     }
 }

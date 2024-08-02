@@ -31,7 +31,8 @@ class EntityManager {
         Server.write(S01AddEntity(
             entity.id,
             entity.position,
-            entity.rotation
+            entity.rotation,
+            entity.name
         ))
     }
 

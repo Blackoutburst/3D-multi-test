@@ -20,9 +20,9 @@ Identification: `0x00`
 | byte | int      |
 
 Add Entity: `0x01`
-| id   | entityId | x     | y     | z     | yaw   | pitch |
-|------|----------|-------|-------|-------|-------|-------|
-| byte | int      | float | float | float | float | float |
+| id   | entityId | x     | y     | z     | yaw   | pitch | name     |
+|------|----------|-------|-------|-------|-------|-------|----------|
+| byte | int      | float | float | float | float | float | byte[64] |
 
 Remove Entity: `0x02`
 | id   | entityId |
@@ -46,7 +46,7 @@ Send Mono Type Chunk: `0x05`
 | byte | int | int | int | byte      |
 
 Chat: `0x06`
-| id   | Message    |
+| id   | message    |
 |------|------------|
 | byte | byte[4096] |
 
@@ -67,9 +67,14 @@ Block Bulk Edit: `0x02`
 | byte | Int        | byte      | int | int | int | byte      | int | int | int | ... |
 
 Chat: `0x03`
-| id   | Message    |
+| id   | message    |
 |------|------------|
 | byte | byte[4096] |
+
+Client metadata: `0x04`
+| id   | renderDistance | name       |
+|------|----------------|------------|
+| byte | byte           | byte[64]   |
 
 
 ### BlockType

@@ -1,10 +1,7 @@
 package dev.blackoutburst.server.network.packets
 
 import dev.blackoutburst.server.network.Client
-import dev.blackoutburst.server.network.packets.client.C00UpdateEntity
-import dev.blackoutburst.server.network.packets.client.C01UpdateBlock
-import dev.blackoutburst.server.network.packets.client.C02BlockBulkEdit
-import dev.blackoutburst.server.network.packets.client.C03Chat
+import dev.blackoutburst.server.network.packets.client.*
 import java.nio.ByteBuffer
 
 class PacketManager {
@@ -16,6 +13,7 @@ class PacketManager {
         packets[0x01] = C01UpdateBlock(13)
         packets[0x02] = C02BlockBulkEdit(0)
         packets[0x03] = C03Chat(4096)
+        packets[0x04] = C04ClientMetadata(65)
     }
 
     fun getId(data: ByteArray): Int {

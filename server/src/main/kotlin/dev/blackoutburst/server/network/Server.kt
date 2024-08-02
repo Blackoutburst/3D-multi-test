@@ -10,8 +10,6 @@ import dev.blackoutburst.server.network.packets.PacketManager
 import dev.blackoutburst.server.network.packets.PacketPlayOut
 import dev.blackoutburst.server.network.packets.server.S01AddEntity
 import dev.blackoutburst.server.network.packets.server.S00Identification
-import dev.blackoutburst.server.network.packets.server.S04SendChunk
-import dev.blackoutburst.server.network.packets.server.S05SendMonoTypeChunk
 import dev.blackoutburst.server.utils.io
 import io.ktor.websocket.*
 import java.net.ServerSocket
@@ -43,13 +41,14 @@ object Server {
         val output = socket.getOutputStream()
         val entity = EntityPlayer(entityManger.newId.getAndIncrement())
         val client = Client(socket, null, input, output, entity.id)
+        entity.name = client.name
 
         client.write(S00Identification(client.entityId))
 
         val entitySize = entityManger.entities.size
         for (i in 0 until entitySize) {
             val e = try {entityManger.entities[i] } catch (ignored: Exception) { null } ?: continue
-            client.write(S01AddEntity(e.id, e.position, e.rotation))
+            client.write(S01AddEntity(e.id, e.position, e.rotation, e.name))
         }
 
         entityManger.addEntity(entity)

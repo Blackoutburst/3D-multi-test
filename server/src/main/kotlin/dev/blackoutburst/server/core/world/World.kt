@@ -51,10 +51,11 @@ object World {
                 val client = try { Server.clients[i] } catch (ignored: Exception) { null } ?: continue
                 val player = try { Server.entityManger.getEntity(client.entityId) } catch (ignored: Exception) { null } ?: continue
                 val playerPosition = Chunk.getIndex(player.position.toInt())
+                val renderDistance = if (client.renderDistance < distance) client.renderDistance else distance
 
-                for (x in playerPosition.x - distance until playerPosition.x + distance step CHUNK_SIZE) {
-                    for (y in playerPosition.y - distance until playerPosition.y + distance step CHUNK_SIZE) {
-                        for (z in playerPosition.z - distance until playerPosition.z + distance step CHUNK_SIZE) {
+                for (x in playerPosition.x - renderDistance until playerPosition.x + renderDistance step CHUNK_SIZE) {
+                    for (y in playerPosition.y - renderDistance until playerPosition.y + renderDistance step CHUNK_SIZE) {
+                        for (z in playerPosition.z - renderDistance until playerPosition.z + renderDistance step CHUNK_SIZE) {
                             launch {
                                 if (y < -32) return@launch
                                 val chunk = getChunkAt(x, y, z)

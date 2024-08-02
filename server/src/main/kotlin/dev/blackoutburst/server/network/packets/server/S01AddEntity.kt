@@ -11,11 +11,12 @@ private const val ID: Byte = 0x01
 class S01AddEntity(
     private val entityId: Int,
     private val position: Vector3f,
-    private val rotation: Vector2f
+    private val rotation: Vector2f,
+    private val name: String
 ): PacketPlayOut() {
 
     init {
-        buffer = ByteBuffer.allocate(25).clear()
+        buffer = ByteBuffer.allocate(89).clear()
 
         buffer?.apply {
             order(ByteOrder.BIG_ENDIAN)
@@ -26,6 +27,7 @@ class S01AddEntity(
             putFloat(position.z)
             putFloat(rotation.x)
             putFloat(rotation.y)
+            name.encodeToByteArray().forEach { put(it) }
         }
     }
 }
