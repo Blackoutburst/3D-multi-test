@@ -24,6 +24,7 @@ dependencies {
     implementation("io.ktor:ktor-server-core-jvm:2.3.10")
     implementation("io.ktor:ktor-server-websockets:2.3.10")
     implementation("io.ktor:ktor-server-netty-jvm:2.3.10")
+    implementation("org.reflections:reflections:0.10.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     implementation("org.slf4j:slf4j-nop:2.0.13")
 }
