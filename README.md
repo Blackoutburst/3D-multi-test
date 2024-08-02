@@ -30,7 +30,7 @@ Remove Entity: `0x02`
 | byte | int      |
 
 
-Update Entity: `0x03`
+Update Entity Position: `0x03`
 | id   | entityId | x     | y     | z     | yaw   | pitch |
 |------|----------|-------|-------|-------|-------|-------|
 | byte | int      | float | float | float | float | float |
@@ -49,6 +49,11 @@ Chat: `0x06`
 | id   | message    |
 |------|------------|
 | byte | byte[4096] |
+
+Update Entity Metadata: `0x07`
+| id   | entityId | name     |
+|------|----------|----------|
+| byte | int      | byte[64] |
 
 ### Server bound
 Update Entity: `0x00`

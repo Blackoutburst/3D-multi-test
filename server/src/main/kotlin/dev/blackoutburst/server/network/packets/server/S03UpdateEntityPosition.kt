@@ -8,10 +8,10 @@ import java.nio.ByteOrder
 
 private const val ID: Byte = 0x03
 
-class S03UpdateEntity(
+class S03UpdateEntityPosition(
     private val entityId: Int,
     private val position: Vector3f,
-    private val rotation: Vector2f
+    private val rotation: Vector2f,
 ): PacketPlayOut() {
 
     init {

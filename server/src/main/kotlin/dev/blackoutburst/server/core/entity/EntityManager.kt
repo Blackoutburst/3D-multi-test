@@ -4,12 +4,11 @@ import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.server.network.Server
 import dev.blackoutburst.server.network.Server.clients
-import dev.blackoutburst.server.network.packets.server.S03UpdateEntity
+import dev.blackoutburst.server.network.packets.server.S03UpdateEntityPosition
 import dev.blackoutburst.server.network.packets.server.S01AddEntity
 import dev.blackoutburst.server.network.packets.server.S02RemoveEntity
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.collections.LinkedHashSet
 
 class EntityManager {
     var newId = AtomicInteger(0)
@@ -53,7 +52,7 @@ class EntityManager {
                 val client = try { clients[j] } catch (ignored: Exception) { null } ?: continue
                 if (client.entityId == entity.id) continue
 
-                client.write(S03UpdateEntity(entity.id, entity.position, entity.rotation))
+                client.write(S03UpdateEntityPosition(entity.id, entity.position, entity.rotation))
             }
         }
     }
