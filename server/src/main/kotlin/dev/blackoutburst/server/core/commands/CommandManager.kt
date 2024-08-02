@@ -30,7 +30,7 @@ object CommandManager {
         try {
             val cmd = command.split(" ")[0].removePrefix("/").trim().lowercase()
             commands[cmd]?.call(client, command.removePrefix("/$cmd".trim()).trim()) ?: run {
-                client.write(S06Chat("No such command: [$cmd]"))
+                client.write(S06Chat("""Unknown command: [$cmd], use "/help""""))
             }
         } catch (e: Exception) {
             e.printStackTrace()
