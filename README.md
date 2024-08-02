@@ -5,7 +5,7 @@ This project is a Minecraft clone in OpenGL/WebGL using a custom network protoco
 ## Clients
 
 ### Kotlin client (OpenGL)
-The kotlin client is up to date and ready to use
+The kotlin client is deprecated and not up to date, check [this client](https://github.com/Blackoutburst/opti-client) instead
 
 ### JavaScript client (WebGL)
 The JavaScript client is not up to date
