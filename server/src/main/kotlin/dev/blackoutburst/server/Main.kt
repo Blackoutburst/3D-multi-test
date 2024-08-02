@@ -6,8 +6,11 @@ import dev.blackoutburst.server.network.WebServer
 import dev.blackoutburst.server.utils.io
 import java.util.*
 import kotlin.concurrent.schedule
+import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
+    if (args.isEmpty()) error("You must specifie the server render distance")
+
     val timer = Timer()
 
     io { WebServer }
@@ -20,7 +23,6 @@ fun main(args: Array<String>) {
 
     io {
         timer.schedule(0, 500) {
-            println(World.chunks.size)
             World.unloadChunk()
         }
     }

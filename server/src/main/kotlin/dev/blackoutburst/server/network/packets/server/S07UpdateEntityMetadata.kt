@@ -1,6 +1,7 @@
 package dev.blackoutburst.server.network.packets.server
 
 import dev.blackoutburst.server.network.packets.PacketPlayOut
+import dev.blackoutburst.server.utils.fit
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -18,7 +19,7 @@ class S07UpdateEntityMetadata(
             order(ByteOrder.BIG_ENDIAN)
             put(ID)
             putInt(entityId)
-            name.encodeToByteArray().forEach { put(it) }
+            name.fit(64).encodeToByteArray().forEach { put(it) }
         }
     }
 }

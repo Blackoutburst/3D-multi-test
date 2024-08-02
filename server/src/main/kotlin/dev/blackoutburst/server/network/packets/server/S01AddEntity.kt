@@ -3,6 +3,7 @@ package dev.blackoutburst.server.network.packets.server
 import dev.blackoutburst.game.maths.Vector2f
 import dev.blackoutburst.game.maths.Vector3f
 import dev.blackoutburst.server.network.packets.PacketPlayOut
+import dev.blackoutburst.server.utils.fit
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -27,7 +28,7 @@ class S01AddEntity(
             putFloat(position.z)
             putFloat(rotation.x)
             putFloat(rotation.y)
-            name.encodeToByteArray().forEach { put(it) }
+            name.fit(64).encodeToByteArray().forEach { put(it) }
         }
     }
 }

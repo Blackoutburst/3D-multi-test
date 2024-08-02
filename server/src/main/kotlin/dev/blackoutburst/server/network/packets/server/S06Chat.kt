@@ -1,6 +1,7 @@
 package dev.blackoutburst.server.network.packets.server
 
 import dev.blackoutburst.server.network.packets.PacketPlayOut
+import dev.blackoutburst.server.utils.fit
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -16,7 +17,7 @@ class S06Chat(
         buffer?.apply {
             order(ByteOrder.BIG_ENDIAN)
             put(ID)
-            message.encodeToByteArray().forEach { put(it) }
+            message.fit(4096).encodeToByteArray().forEach { put(it) }
         }
     }
 }
