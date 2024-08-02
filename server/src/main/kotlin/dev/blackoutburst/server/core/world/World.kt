@@ -51,7 +51,7 @@ object World {
                 val client = try { Server.clients[i] } catch (ignored: Exception) { null } ?: continue
                 val player = try { Server.entityManger.getEntity(client.entityId) } catch (ignored: Exception) { null } ?: continue
                 val playerPosition = Chunk.getIndex(player.position.toInt())
-                val renderDistance = if (client.renderDistance < distance) client.renderDistance else distance
+                val renderDistance = (if (client.renderDistance < distance) client.renderDistance else distance) * 16
 
                 for (x in playerPosition.x - renderDistance until playerPosition.x + renderDistance step CHUNK_SIZE) {
                     for (y in playerPosition.y - renderDistance until playerPosition.y + renderDistance step CHUNK_SIZE) {

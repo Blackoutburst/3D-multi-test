@@ -18,7 +18,7 @@ class C04ClientMetadata(override val size: Int) : PacketPlayIn() {
         }
 
         val buff = ByteBuffer.wrap(data.toByteArray())
-        val name = StandardCharsets.UTF_8.decode(buff).toString()
+        val name = StandardCharsets.UTF_8.decode(buff).toString().replace("\u0000", "")
 
         client.renderDistance = renderDistance.toInt()
         client.name = name

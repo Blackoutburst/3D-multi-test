@@ -28,12 +28,13 @@ object CommandManager {
 
     fun execute(client: Client, command: String) {
         try {
-            val cmd = command.split(" ")[0].removePrefix("/").trim()
-            commands[cmd]?.call(client, command.removePrefix("/$cmd".trim())) ?: run {
-                client.write(S06Chat("No such command: $cmd"))
+            val cmd = command.split(" ")[0].removePrefix("/").trim().lowercase()
+            commands[cmd]?.call(client, command.removePrefix("/$cmd".trim()).trim()) ?: run {
+                client.write(S06Chat("No such command: [$cmd]"))
             }
         } catch (e: Exception) {
-            client.write(S06Chat("Internal error"))
+            e.printStackTrace()
+            client.write(S06Chat(e.message ?: e.cause?.message ?: "Internal error"))
         }
     }
 }

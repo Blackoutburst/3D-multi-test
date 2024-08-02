@@ -34,6 +34,6 @@ fun main(args: Array<String>) {
     }
 
     while(true) {
-        World.loadChunk(args[0].toInt() * 16)
+        World.loadChunk(args[0].toInt())
     }
 }

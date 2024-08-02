@@ -24,6 +24,15 @@ class EntityManager {
         return null
     }
 
+    fun getEntityByName(name: String): Entity? {
+        val size = entities.size
+        for (i in 0 until size) {
+            val entity = try { entities[i] } catch (ignored: Exception) { null } ?: continue
+            if (entity.name.lowercase() == name.lowercase()) return entity
+        }
+        return null
+    }
+
     fun addEntity(entity: Entity) {
         entities.add(entity)
 

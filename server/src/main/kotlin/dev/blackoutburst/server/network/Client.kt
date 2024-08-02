@@ -14,7 +14,7 @@ class Client(
     val input: InputStream? = null,
     val output: OutputStream? = null,
     val entityId: Int,
-    var renderDistance: Int = 4,
+    var renderDistance: Int = 2,
     var name: String = "Jeff$entityId"
 ) {
 

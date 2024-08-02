@@ -17,9 +17,13 @@ class C03Chat(override val size: Int) : PacketPlayIn() {
         }
 
         val buff = ByteBuffer.wrap(data.toByteArray())
-        val message = "${client.name}: ${StandardCharsets.UTF_8.decode(buff).toString().substring(0, 4096 - 64)}"
-        if (message.startsWith("/")) CommandManager.execute(client, message)
+        val rawString = StandardCharsets.UTF_8.decode(buff).toString().replace("\u0000", "")
+        val message = "${client.name}: $rawString"
         Server.chat.add(message)
-        Server.write(S06Chat(message))
+
+        if (rawString.startsWith("/"))
+            CommandManager.execute(client, rawString)
+        else
+            Server.write(S06Chat(message))
     }
 }
