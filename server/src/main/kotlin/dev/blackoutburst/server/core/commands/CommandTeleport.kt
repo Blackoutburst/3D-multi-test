@@ -1,7 +1,6 @@
 package dev.blackoutburst.server.core.commands
 
 import dev.blackoutburst.game.maths.Vector3f
-import dev.blackoutburst.server.core.world.World
 import dev.blackoutburst.server.network.Client
 import dev.blackoutburst.server.network.Server
 import dev.blackoutburst.server.network.packets.server.S03UpdateEntityPosition
