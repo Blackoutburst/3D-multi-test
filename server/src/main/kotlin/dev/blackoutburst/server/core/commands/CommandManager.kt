@@ -31,11 +31,11 @@ object CommandManager {
             val cmd = command.split(" ")[0].removePrefix("/").trim()
 
             commands[cmd.lowercase()]?.call(client, command.removePrefix("/$cmd".trim()).trim()) ?: run {
-                client.write(S06Chat("""Unknown command: [$cmd], use "/help""""))
+                client.write(S06Chat("""&cUnknown command: [$cmd], use &e/help"""))
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            client.write(S06Chat(e.message ?: e.cause?.message ?: "Internal error"))
+            client.write(S06Chat(e.message ?: e.cause?.message ?: "&cInternal error"))
         }
     }
 }

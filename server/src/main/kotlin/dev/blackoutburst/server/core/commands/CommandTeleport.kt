@@ -14,23 +14,23 @@ fun tp(client: Client, args: String) {
         1 -> toNamedEntity(client, split[0])
         2 -> entityToEntity(client, split[0], split[1])
         3 -> toCoords(client, split[0], split[1], split[2])
-        else -> client.write(S06Chat("Invalid syntax: [$args]"))
+        else -> client.write(S06Chat("&cInvalid syntax: &e[$args]"))
     }
 }
 
 private fun relativeCoords(client: Client, sX: String, sY: String, sZ: String) {
-    if (!sX.contains("~")) { client.write(S06Chat("Invalid syntax: [$sX]")); return }
-    if (!sY.contains("~")) { client.write(S06Chat("Invalid syntax: [$sY]")); return }
-    if (!sZ.contains("~")) { client.write(S06Chat("Invalid syntax: [$sZ]")); return }
+    if (!sX.contains("~")) { client.write(S06Chat("&cInvalid syntax: &e[$sX]")); return }
+    if (!sY.contains("~")) { client.write(S06Chat("&cInvalid syntax: &e[$sY]")); return }
+    if (!sZ.contains("~")) { client.write(S06Chat("&cInvalid syntax: &e[$sZ]")); return }
 
-    val x = try { sX.replace("~", "").toFloat() } catch (ignored: Exception) { client.write(S06Chat("Invalid syntax: [$sX]")); return }
-    val y = try { sY.replace("~", "").toFloat() } catch (ignored: Exception) { client.write(S06Chat("Invalid syntax: [$sY]")); return }
-    val z = try { sZ.replace("~", "").toFloat() } catch (ignored: Exception) { client.write(S06Chat("Invalid syntax: [$sZ]")); return }
+    val x = try { sX.replace("~", "").toFloat() } catch (ignored: Exception) { client.write(S06Chat("&cInvalid syntax: &e[$sX]")); return }
+    val y = try { sY.replace("~", "").toFloat() } catch (ignored: Exception) { client.write(S06Chat("&cInvalid syntax: &e[$sY]")); return }
+    val z = try { sZ.replace("~", "").toFloat() } catch (ignored: Exception) { client.write(S06Chat("&cInvalid syntax: &e[$sZ]")); return }
 
     Server.entityManger.getEntity(client.entityId)?.let {
         it.position += Vector3f(x, y, z)
         client.write(S03UpdateEntityPosition(client.entityId, it.position, it.rotation))
-        client.write(S06Chat("Teleporting to ${it.position.x}, ${it.position.y}, ${it.position.z}..."))
+        client.write(S06Chat("&aTeleporting to &b${it.position.x}&a, &b${it.position.y}&a, &b${it.position.z}&a..."))
     }
 }
 
@@ -40,27 +40,27 @@ private fun toCoords(client: Client, sX: String, sY: String, sZ: String) {
         return
     }
 
-    val x = try { sX.toFloat() } catch (ignored: Exception) { client.write(S06Chat("Invalid syntax: [$sX]")); return }
-    val y = try { sY.toFloat() } catch (ignored: Exception) { client.write(S06Chat("Invalid syntax: [$sY]")); return }
-    val z = try { sZ.toFloat() } catch (ignored: Exception) { client.write(S06Chat("Invalid syntax: [$sZ]")); return }
+    val x = try { sX.toFloat() } catch (ignored: Exception) { client.write(S06Chat("&cInvalid syntax: &e[$sX]")); return }
+    val y = try { sY.toFloat() } catch (ignored: Exception) { client.write(S06Chat("&cInvalid syntax: &e[$sY]")); return }
+    val z = try { sZ.toFloat() } catch (ignored: Exception) { client.write(S06Chat("&cInvalid syntax: &e[$sZ]")); return }
 
     Server.entityManger.getEntity(client.entityId)?.let {
         it.position = Vector3f(x, y, z)
         client.write(S03UpdateEntityPosition(client.entityId, it.position, it.rotation))
-        client.write(S06Chat("Teleporting to ${it.position.x}, ${it.position.y}, ${it.position.z}..."))
+        client.write(S06Chat("&aTeleporting to &b${it.position.x}&a, &b${it.position.y}&a, &b${it.position.z}&a..."))
     }
 }
 
 private fun entityToEntity(client: Client, firstEntityName: String, secondEntityName: String) {
     val firstEntity = Server.entityManger.getEntityByName(firstEntityName)
     if (firstEntity == null) {
-        client.write(S06Chat("No such entity $firstEntityName"))
+        client.write(S06Chat("&eNo such entity $firstEntityName"))
         return
     }
 
     val secondEntity = Server.entityManger.getEntityByName(secondEntityName)
     if (secondEntity == null) {
-        client.write(S06Chat("No such entity $secondEntityName"))
+        client.write(S06Chat("&eNo such entity $secondEntityName"))
         return
     }
 
@@ -72,18 +72,18 @@ private fun entityToEntity(client: Client, firstEntityName: String, secondEntity
         firstEntity.position = secondEntity.position
         firstEntity.rotation = secondEntity.rotation
         c.write(S03UpdateEntityPosition(c.entityId, secondEntity.position, secondEntity.rotation))
-        c.write(S06Chat("Teleporting to $secondEntityName..."))
+        c.write(S06Chat("&aTeleporting to &b$secondEntityName..."))
     }
 
     if (client.entityId != firstEntity.id) {
-        client.write(S06Chat("Teleporting $firstEntityName to $secondEntityName..."))
+        client.write(S06Chat("&aTeleporting &b$firstEntityName &ato &b$secondEntityName..."))
     }
 }
 
 private fun toNamedEntity(client: Client, entityName: String) {
     val entity = Server.entityManger.getEntityByName(entityName)
     if (entity == null) {
-        client.write(S06Chat("No such entity $entityName"))
+        client.write(S06Chat("&eNo such entity $entityName"))
         return
     }
 
@@ -91,6 +91,6 @@ private fun toNamedEntity(client: Client, entityName: String) {
         it.position = entity.position
         it.rotation = entity.rotation
         client.write(S03UpdateEntityPosition(client.entityId, entity.position, entity.rotation))
-        client.write(S06Chat("Teleporting to ${entity.name}..."))
+        client.write(S06Chat("&aTeleporting to &b${entity.name}..."))
     }
 }
