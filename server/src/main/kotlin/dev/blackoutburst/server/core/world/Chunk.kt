@@ -3,6 +3,7 @@ package dev.blackoutburst.server.core.world
 import dev.blackoutburst.server.maths.Vector3i
 import dev.blackoutburst.server.utils.FastNoiseLite
 import kotlin.math.round
+import kotlin.random.Random
 
 
 class Chunk {
@@ -37,10 +38,29 @@ class Chunk {
         this.position = position
         this.blocks = Array(4096) { BlockType.AIR.id }
 
+        val logs = mutableListOf<Vector3i>()
 
         for (i in 0 until 4096) {
-            this.blocks[i] = getType(position.x + i % 16, position.y + (i / 16) % 16, position.z + (i / (16 * 16)) % 16).id
+            val type = getType(position.x + i % 16, position.y + (i / 16) % 16, position.z + (i / (16 * 16)) % 16).id
+            if (type == BlockType.OAK_LOG.id)
+                logs.add(Vector3i(position.x + i % 16, position.y + (i / 16) % 16, position.z + (i / (16 * 16)) % 16))
+            this.blocks[i] = type
         }
+
+        /*for (log in logs) {
+            for (x in log.x - 2 .. log.x + 2)
+                for (z in log.z - 2 .. log.z + 2)
+                    for (y in log.y + 2 .. log.y + 4)
+                        World.updateChunk(Vector3i(x, y, z), BlockType.OAK_LEAVES.id)
+
+            for (x in log.x - 1 .. log.x + 1)
+                for (z in log.z - 1 .. log.z + 1)
+                    for (y in log.y + 4 .. log.y + 5)
+                        World.updateChunk(Vector3i(x, y, z), BlockType.OAK_LEAVES.id)
+
+            for (y in log.y .. log.y + 3)
+                World.updateChunk(Vector3i(log.x, y, log.z), BlockType.OAK_LOG.id)
+        }*/
     }
 
     fun isEmpty(): Boolean {
@@ -67,8 +87,10 @@ class Chunk {
 
     fun indexToXYZ(index: Int): Vector3i = Vector3i(index % 16, (index / 16) % 16, (index / (16 * 16)) % 16) + this.position
 
-    private fun getType(x:Int, y: Int, z: Int): BlockType {
+    private fun getType(x: Int, y: Int, z: Int): BlockType {
         val noise = FastNoiseLite()
+        noise.SetSeed(World.seed)
+
         noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin)
 
         noise.SetFrequency(0.01f)
@@ -84,6 +106,7 @@ class Chunk {
         val height = round(noise.GetNoise(x*0.25f, z*0.25f) * 100).toInt() + 10
 
         return if (y == height && height < 2) BlockType.SAND
+        //else if (y == height + 1 && Random.nextInt(500) == 0 && height >= 2) BlockType.OAK_LOG
         else if (y == height) BlockType.GRASS
         else if (y < height - 3) BlockType.STONE
         else if (y > height && y < 0) BlockType.WATER

@@ -139,7 +139,7 @@ object World {
         }
     }
 
-    private fun getChunkAt(x: Int, y: Int, z: Int, force: Boolean = false): Chunk {
+    fun getChunkAt(x: Int, y: Int, z: Int, force: Boolean = false): Chunk {
         val position = Vector3i(x, y, z)
 
         chunks[position.toString()]?.let { return it }
