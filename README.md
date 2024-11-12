@@ -91,6 +91,9 @@ Client metadata: `0x04`
 | 3  | Stone      |
 | 4  | Oak Log    |
 | 5  | Oak Leaves |
+| 6  | Glass      |
+| 7  | Water      |
+| 8  | Sand       |
 
 
 ### Information

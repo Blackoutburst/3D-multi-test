@@ -1,7 +1,9 @@
 package dev.blackoutburst.server.core.world
 
 import dev.blackoutburst.server.maths.Vector3i
-import dev.blackoutburst.server.utils.OpenSimplex2
+import dev.blackoutburst.server.utils.FastNoiseLite
+import kotlin.math.round
+
 
 class Chunk {
     var position: Vector3i
@@ -66,10 +68,25 @@ class Chunk {
     fun indexToXYZ(index: Int): Vector3i = Vector3i(index % 16, (index / 16) % 16, (index / (16 * 16)) % 16) + this.position
 
     private fun getType(x:Int, y: Int, z: Int): BlockType {
-        val height = (OpenSimplex2.noise2(World.seed, x / 200.0, z / 200.0) * 20).toInt() + 10
+        val noise = FastNoiseLite()
+        noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin)
 
-        return if (y == height) BlockType.GRASS
+        noise.SetFrequency(0.01f)
+
+        noise.SetFractalLacunarity(2f)
+        noise.SetFractalGain(0.5f)
+        noise.SetFractalOctaves(6)
+        noise.SetFractalType(FastNoiseLite.FractalType.FBm)
+
+        noise.SetDomainWarpType(FastNoiseLite.DomainWarpType.OpenSimplex2)
+        noise.SetDomainWarpAmp(50000f)
+
+        val height = round(noise.GetNoise(x*0.25f, z*0.25f) * 100).toInt() + 10
+
+        return if (y == height && height < 2) BlockType.SAND
+        else if (y == height) BlockType.GRASS
         else if (y < height - 3) BlockType.STONE
+        else if (y > height && y < 0) BlockType.WATER
         else if (y > height) BlockType.AIR
         else BlockType.DIRT
     }

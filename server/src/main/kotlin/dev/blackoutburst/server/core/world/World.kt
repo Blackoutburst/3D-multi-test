@@ -16,7 +16,7 @@ object World {
 
     val CHUNK_SIZE = 16
 
-    var seed = Random.nextLong()
+    var seed = Random.nextInt()
     val chunks: MutableMap<String, Chunk> = Collections.synchronizedMap(LinkedHashMap())
 
     val chunkFiles = mutableMapOf<String, File>()
@@ -36,7 +36,7 @@ object World {
 
         val seedFile = File("./world/seed.dat")
         if (seedFile.exists()) {
-            seed = seedFile.readText().toLong()
+            seed = seedFile.readText().toInt()
         } else {
             seedFile.writeBytes(seed.toString().toByteArray())
         }
