@@ -2,8 +2,9 @@ package dev.blackoutburst.server.core.world
 
 import dev.blackoutburst.server.maths.Vector3i
 import dev.blackoutburst.server.utils.FastNoiseLite
+import kotlin.math.abs
+import kotlin.math.pow
 import kotlin.math.round
-import kotlin.random.Random
 
 
 class Chunk {
@@ -87,29 +88,72 @@ class Chunk {
 
     fun indexToXYZ(index: Int): Vector3i = Vector3i(index % 16, (index / 16) % 16, (index / (16 * 16)) % 16) + this.position
 
+    private fun easeInOutQuint(x: Float): Float {
+        return if (x < 0.5) { 16f * x * x * x * x * x } else { 1f - (-2f * x + 2f).toDouble().pow(5.0).toFloat() / 2f }
+    }
+
     private fun getType(x: Int, y: Int, z: Int): BlockType {
-        val noise = FastNoiseLite()
-        noise.SetSeed(World.seed)
+        val base = FastNoiseLite()
+        base.SetSeed(World.seed)
 
-        noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin)
+        base.SetNoiseType(FastNoiseLite.NoiseType.Perlin)
 
-        noise.SetFrequency(0.01f)
+        base.SetFrequency(0.01f)
 
-        noise.SetFractalLacunarity(2f)
-        noise.SetFractalGain(0.5f)
-        noise.SetFractalOctaves(6)
-        noise.SetFractalType(FastNoiseLite.FractalType.FBm)
+        base.SetFractalLacunarity(2f)
+        base.SetFractalGain(0.5f)
+        base.SetFractalOctaves(5)
+        base.SetFractalType(FastNoiseLite.FractalType.FBm)
 
-        noise.SetDomainWarpType(FastNoiseLite.DomainWarpType.OpenSimplex2)
-        noise.SetDomainWarpAmp(50000f)
+        val mountain = FastNoiseLite()
+        mountain.SetSeed(World.seed)
 
-        val height = round(noise.GetNoise(x*0.25f, z*0.25f) * 100).toInt() + 10
+        mountain.SetNoiseType(FastNoiseLite.NoiseType.Perlin)
 
-        return if (y == height && height < 2) BlockType.SAND
-        //else if (y == height + 1 && Random.nextInt(500) == 0 && height >= 2) BlockType.OAK_LOG
+        mountain.SetFrequency(0.01f)
+
+        mountain.SetFractalLacunarity(2f)
+        mountain.SetFractalGain(0.5f)
+        mountain.SetFractalOctaves(2)
+        mountain.SetFractalType(FastNoiseLite.FractalType.FBm)
+
+        val spike = FastNoiseLite()
+        spike.SetSeed(World.seed)
+
+        spike.SetNoiseType(FastNoiseLite.NoiseType.Perlin)
+
+        spike.SetFrequency(0.01f)
+
+        spike.SetFractalLacunarity(4f)
+        spike.SetFractalGain(0.5f)
+        spike.SetFractalOctaves(3)
+        spike.SetFractalType(FastNoiseLite.FractalType.FBm)
+
+        val elevation = FastNoiseLite()
+        elevation.SetSeed(World.seed)
+
+        elevation.SetNoiseType(FastNoiseLite.NoiseType.Perlin)
+
+        elevation.SetFrequency(0.01f)
+
+        elevation.SetFractalLacunarity(2f)
+        elevation.SetFractalGain(0.5f)
+        elevation.SetFractalOctaves(1)
+        elevation.SetFractalType(FastNoiseLite.FractalType.FBm)
+
+
+        val height = round(
+            (base.GetNoise(x*0.25f, z*0.25f) * 50) +
+                abs(easeInOutQuint(mountain.GetNoise(x*0.2f, z*0.2f))) * 70 +
+                abs(easeInOutQuint(spike.GetNoise(x*0.4f, z*0.4f))) * 50 +
+                elevation.GetNoise(x*0.005f, z*0.005f) * 500
+        ).toInt()
+
+        return if ((y == height || y == height -1 || y == height -2 || y == height -3) && height > 30) BlockType.STONE
+        else if (y == height && height < 2) BlockType.SAND
         else if (y == height) BlockType.GRASS
         else if (y < height - 3) BlockType.STONE
-        else if (y > height && y < 0) BlockType.WATER
+        else if (y in (height + 1)..-1) BlockType.WATER
         else if (y > height) BlockType.AIR
         else BlockType.DIRT
     }
