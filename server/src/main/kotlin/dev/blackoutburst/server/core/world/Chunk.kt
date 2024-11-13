@@ -162,7 +162,8 @@ class Chunk {
                 elevation.GetNoise(x*0.005f, z*0.005f) * 500
         ).toInt()
 
-        return if ((y == height || y == height -1 || y == height -2 || y == height -3) && height > 30) BlockType.STONE
+        return if ((y == height || y == height -1 || y == height -2 || y == height -3) && height > 50) BlockType.SNOW
+        else if ((y == height || y == height -1 || y == height -2 || y == height -3) && height > 30) BlockType.STONE
         else if (y == height && height < 2) BlockType.SAND
         else if (y == height) BlockType.GRASS
         else if (y < height - 3) BlockType.STONE

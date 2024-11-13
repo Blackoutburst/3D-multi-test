@@ -10,7 +10,8 @@ enum class BlockType(val id: Byte, val transparent: Boolean) {
     OAK_LEAVES(5, true),
     GLASS(6, true),
     WATER(7, true),
-    SAND(8, false);
+    SAND(8, false),
+    SNOW(9, false);
 
     companion object {
         fun getByID(id: Byte): BlockType {

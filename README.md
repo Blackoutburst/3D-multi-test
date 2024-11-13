@@ -94,6 +94,7 @@ Client metadata: `0x04`
 | 6  | Glass      |
 | 7  | Water      |
 | 8  | Sand       |
+| 9  | Snow       |
 
 
 ### Information
