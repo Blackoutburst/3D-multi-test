@@ -153,8 +153,10 @@ object World {
         }
 
         val chunk = Chunk(position)
-        if (force || !chunk.isEmpty())
+        if (force || !chunk.isEmpty()) {
             chunks[position.toString()] = chunk
+            chunk.genTree()
+        }
 
         return chunk
     }

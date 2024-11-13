@@ -5,6 +5,7 @@ import dev.blackoutburst.server.utils.FastNoiseLite
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.round
+import kotlin.random.Random
 
 
 class Chunk {
@@ -39,29 +40,9 @@ class Chunk {
         this.position = position
         this.blocks = Array(4096) { BlockType.AIR.id }
 
-        val logs = mutableListOf<Vector3i>()
-
         for (i in 0 until 4096) {
-            val type = getType(position.x + i % 16, position.y + (i / 16) % 16, position.z + (i / (16 * 16)) % 16).id
-            if (type == BlockType.OAK_LOG.id)
-                logs.add(Vector3i(position.x + i % 16, position.y + (i / 16) % 16, position.z + (i / (16 * 16)) % 16))
-            this.blocks[i] = type
+            this.blocks[i] = getType(position.x + i % 16, position.y + (i / 16) % 16, position.z + (i / (16 * 16)) % 16).id
         }
-
-        /*for (log in logs) {
-            for (x in log.x - 2 .. log.x + 2)
-                for (z in log.z - 2 .. log.z + 2)
-                    for (y in log.y + 2 .. log.y + 4)
-                        World.updateChunk(Vector3i(x, y, z), BlockType.OAK_LEAVES.id)
-
-            for (x in log.x - 1 .. log.x + 1)
-                for (z in log.z - 1 .. log.z + 1)
-                    for (y in log.y + 4 .. log.y + 5)
-                        World.updateChunk(Vector3i(x, y, z), BlockType.OAK_LEAVES.id)
-
-            for (y in log.y .. log.y + 3)
-                World.updateChunk(Vector3i(log.x, y, log.z), BlockType.OAK_LOG.id)
-        }*/
     }
 
     fun isEmpty(): Boolean {
@@ -90,6 +71,38 @@ class Chunk {
 
     private fun easeInOutQuint(x: Float): Float {
         return if (x < 0.5) { 16f * x * x * x * x * x } else { 1f - (-2f * x + 2f).toDouble().pow(5.0).toFloat() / 2f }
+    }
+
+    fun genTree() {
+        var index = -1
+        for (block in this.blocks) {
+            index++
+            if (block != BlockType.GRASS.id) continue
+            if (Random.nextInt(200) != 0) continue
+            val position = indexToXYZ(index)
+            val treeHeight = Random.nextInt(3) + 3
+
+            for (x in position.x -2 .. position.x + 2) {
+                for (z in position.z - 2..position.z + 2) {
+                    for (y in position.y .. position.y + 1) {
+                        World.updateChunk(Vector3i(x, treeHeight - 1 + y, z), BlockType.OAK_LEAVES.id, false)
+                    }
+                }
+            }
+
+            for (x in position.x -1 .. position.x + 1) {
+                for (z in position.z - 1..position.z + 1) {
+                    for (y in position.y .. position.y + 1) {
+                        World.updateChunk(Vector3i(x, treeHeight + 1 + y, z), BlockType.OAK_LEAVES.id, false)
+                    }
+                }
+            }
+
+            for (y in position.y + 1 .. position.y + treeHeight) {
+                World.updateChunk(Vector3i(position.x, y, position.z), BlockType.OAK_LOG.id, false)
+            }
+
+        }
     }
 
     private fun getType(x: Int, y: Int, z: Int): BlockType {
