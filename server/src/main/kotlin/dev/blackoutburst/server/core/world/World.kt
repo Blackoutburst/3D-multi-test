@@ -109,7 +109,8 @@ object World {
         )
 
         val blockId = chunk.xyzToIndex(positionInChunk.x, positionInChunk.y, positionInChunk.z)
-        chunk.blocks[blockId] = blockType
+        if (chunk.blocks.size == 4096)
+            chunk.blocks[blockId] = blockType
 
         if (write) {
             val playerSize = chunk.players.size
@@ -153,10 +154,10 @@ object World {
         }
 
         val chunk = Chunk(position)
-        if (force || !chunk.isEmpty()) {
+        if (!chunk.isEmpty())
             chunks[position.toString()] = chunk
-            chunk.genTree()
-        }
+        chunk.genTree()
+        io {saveChunk(chunk) }
 
         return chunk
     }
