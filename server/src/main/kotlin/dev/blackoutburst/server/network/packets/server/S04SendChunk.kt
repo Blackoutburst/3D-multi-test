@@ -9,7 +9,7 @@ private const val ID: Byte = 0x04
 
 class S04SendChunk(
     private val position: Vector3i,
-    private val blockData: Array<Byte>
+    private val blockData: ByteArray
 ): PacketPlayOut() {
 
     init {

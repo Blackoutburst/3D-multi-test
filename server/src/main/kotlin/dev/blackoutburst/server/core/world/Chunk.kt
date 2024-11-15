@@ -2,18 +2,74 @@ package dev.blackoutburst.server.core.world
 
 import dev.blackoutburst.server.maths.Vector3i
 import dev.blackoutburst.server.utils.FastNoiseLite
+import kotlinx.coroutines.*
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.round
 import kotlin.random.Random
 
-
 class Chunk {
     var position: Vector3i
-    var blocks: Array<Byte>
+    var blocks: ByteArray
     var players: MutableList<Int>
 
     companion object {
+        val base = FastNoiseLite()
+        val mountain = FastNoiseLite()
+        val spike = FastNoiseLite()
+        val elevation = FastNoiseLite()
+
+        const val SCALE_BASE = 0.25f
+        const val SCALE_MOUNTAIN = 0.2f
+        const val SCALE_SPIKE = 0.4f
+        const val SCALE_ELEVATION = 0.005f
+
+        init {
+            base.SetSeed(World.seed)
+
+            base.SetNoiseType(FastNoiseLite.NoiseType.Perlin)
+
+            base.SetFrequency(0.01f)
+
+            base.SetFractalLacunarity(2f)
+            base.SetFractalGain(0.5f)
+            base.SetFractalOctaves(5)
+            base.SetFractalType(FastNoiseLite.FractalType.FBm)
+
+            mountain.SetSeed(World.seed)
+
+            mountain.SetNoiseType(FastNoiseLite.NoiseType.Perlin)
+
+            mountain.SetFrequency(0.01f)
+
+            mountain.SetFractalLacunarity(2f)
+            mountain.SetFractalGain(0.5f)
+            mountain.SetFractalOctaves(2)
+            mountain.SetFractalType(FastNoiseLite.FractalType.FBm)
+
+            spike.SetSeed(World.seed)
+
+            spike.SetNoiseType(FastNoiseLite.NoiseType.Perlin)
+
+            spike.SetFrequency(0.01f)
+
+            spike.SetFractalLacunarity(4f)
+            spike.SetFractalGain(0.5f)
+            spike.SetFractalOctaves(3)
+            spike.SetFractalType(FastNoiseLite.FractalType.FBm)
+
+            elevation.SetSeed(World.seed)
+
+            elevation.SetNoiseType(FastNoiseLite.NoiseType.Perlin)
+
+            elevation.SetFrequency(0.01f)
+
+            elevation.SetFractalLacunarity(2f)
+            elevation.SetFractalGain(0.5f)
+            elevation.SetFractalOctaves(1)
+            elevation.SetFractalType(FastNoiseLite.FractalType.FBm)
+        }
+
         fun getIndex(position: Vector3i): Vector3i {
             return Vector3i(
                 (if (position.x < 0) (position.x + 1) / World.CHUNK_SIZE - 1 else position.x / World.CHUNK_SIZE) * World.CHUNK_SIZE,
@@ -26,10 +82,10 @@ class Chunk {
     constructor() {
         this.players = mutableListOf()
         this.position = Vector3i()
-        this.blocks = Array(4096) { BlockType.AIR.id }
+        this.blocks = ByteArray(4096)
     }
 
-    constructor(position: Vector3i, blocks: Array<Byte>) {
+    constructor(position: Vector3i, blocks: ByteArray) {
         this.players = mutableListOf()
         this.position = position
         this.blocks = blocks
@@ -38,17 +94,33 @@ class Chunk {
     constructor(position: Vector3i) {
         this.players = mutableListOf()
         this.position = position
-        this.blocks = Array(4096) { BlockType.AIR.id }
+        this.blocks = ByteArray(4096)
+    }
 
-        for (i in 0 until 4096) {
-            this.blocks[i] = getType(position.x + i % 16, position.y + (i / 16) % 16, position.z + (i / (16 * 16)) % 16).id
+    suspend fun fillBlocksAsync(chunkSize: Int = 256) = withContext(Dispatchers.Default) {
+        val xOffsets = IntArray(16) { it }
+        val yOffsets = IntArray(16) { it }
+        val zOffsets = IntArray(16) { it }
+
+        for (chunkIndex in 0 until (blocks.size + chunkSize - 1) / chunkSize) {
+            val start = chunkIndex * chunkSize
+            val end = minOf(start + chunkSize, blocks.size)
+
+            for (i in start until end) {
+                val x = position.x + xOffsets[i % 16]
+                val y = position.y + yOffsets[(i / 16) % 16]
+                val z = position.z + zOffsets[(i / (16 * 16)) % 16]
+
+                blocks[i] = getType(x, y, z).id
+            }
         }
     }
+
 
     fun isEmpty(): Boolean {
         if (this.blocks.isEmpty()) return true
 
-        for (i in 1 until 4096) {
+        for (i in 0 until 4096) {
             if (this.blocks[i] != BlockType.AIR.id) return false
         }
 
@@ -69,11 +141,13 @@ class Chunk {
 
     fun indexToXYZ(index: Int): Vector3i = Vector3i(index % 16, (index / 16) % 16, (index / (16 * 16)) % 16) + this.position
 
-    private fun easeInOutQuint(x: Float): Float {
-        return if (x < 0.5) { 16f * x * x * x * x * x } else { 1f - (-2f * x + 2f).toDouble().pow(5.0).toFloat() / 2f }
+    private fun easeInOutQuint(value: Float): Float {
+        val v = if (value < 0.5f) 16 * value * value * value * value * value
+        else 1 - (-2 * value + 2).pow(5) / 2
+        return v
     }
 
-    fun genTree() {
+    suspend fun genTree() {
         var index = -1
         for (block in this.blocks) {
             index++
@@ -106,60 +180,16 @@ class Chunk {
     }
 
     private fun getType(x: Int, y: Int, z: Int): BlockType {
-        val base = FastNoiseLite()
-        base.SetSeed(World.seed)
-
-        base.SetNoiseType(FastNoiseLite.NoiseType.Perlin)
-
-        base.SetFrequency(0.01f)
-
-        base.SetFractalLacunarity(2f)
-        base.SetFractalGain(0.5f)
-        base.SetFractalOctaves(5)
-        base.SetFractalType(FastNoiseLite.FractalType.FBm)
-
-        val mountain = FastNoiseLite()
-        mountain.SetSeed(World.seed)
-
-        mountain.SetNoiseType(FastNoiseLite.NoiseType.Perlin)
-
-        mountain.SetFrequency(0.01f)
-
-        mountain.SetFractalLacunarity(2f)
-        mountain.SetFractalGain(0.5f)
-        mountain.SetFractalOctaves(2)
-        mountain.SetFractalType(FastNoiseLite.FractalType.FBm)
-
-        val spike = FastNoiseLite()
-        spike.SetSeed(World.seed)
-
-        spike.SetNoiseType(FastNoiseLite.NoiseType.Perlin)
-
-        spike.SetFrequency(0.01f)
-
-        spike.SetFractalLacunarity(4f)
-        spike.SetFractalGain(0.5f)
-        spike.SetFractalOctaves(3)
-        spike.SetFractalType(FastNoiseLite.FractalType.FBm)
-
-        val elevation = FastNoiseLite()
-        elevation.SetSeed(World.seed)
-
-        elevation.SetNoiseType(FastNoiseLite.NoiseType.Perlin)
-
-        elevation.SetFrequency(0.01f)
-
-        elevation.SetFractalLacunarity(2f)
-        elevation.SetFractalGain(0.5f)
-        elevation.SetFractalOctaves(1)
-        elevation.SetFractalType(FastNoiseLite.FractalType.FBm)
-
+        val baseNoise = base.GetNoise(x * SCALE_BASE, z * SCALE_BASE)
+        val mountainNoise = mountain.GetNoise(x * SCALE_MOUNTAIN, z * SCALE_MOUNTAIN)
+        val spikeNoise = spike.GetNoise(x * SCALE_SPIKE, z * SCALE_SPIKE)
+        val elevationNoise = elevation.GetNoise(x * SCALE_ELEVATION, z * SCALE_ELEVATION)
 
         val height = round(
-            (base.GetNoise(x*0.25f, z*0.25f) * 50) +
-                abs(easeInOutQuint(mountain.GetNoise(x*0.2f, z*0.2f))) * 70 +
-                abs(easeInOutQuint(spike.GetNoise(x*0.4f, z*0.4f))) * 50 +
-                elevation.GetNoise(x*0.005f, z*0.005f) * 500
+            baseNoise * 50 +
+                abs(easeInOutQuint(mountainNoise)) * 70 +
+                abs(easeInOutQuint(spikeNoise)) * 50 +
+                elevationNoise * 500
         ).toInt()
 
         return if ((y == height || y == height -1 || y == height -2 || y == height -3) && height > 50) BlockType.SNOW

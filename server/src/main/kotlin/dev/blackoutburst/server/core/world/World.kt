@@ -5,9 +5,8 @@ import dev.blackoutburst.server.network.Server
 import dev.blackoutburst.server.network.packets.server.S04SendChunk
 import dev.blackoutburst.server.network.packets.server.S05SendMonoTypeChunk
 import dev.blackoutburst.server.utils.io
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import dev.blackoutburst.server.utils.default
+import kotlinx.coroutines.*
 import java.io.File
 import java.util.*
 import kotlin.random.Random
@@ -44,40 +43,54 @@ object World {
 
     fun loadChunk(distance: Int) = runBlocking {
         val indexes = mutableSetOf<String>()
-
         val size = Server.clients.size
-        coroutineScope {
-            for (i in 0 until size) {
-                val client = try { Server.clients[i] } catch (ignored: Exception) { null } ?: continue
-                val player = try { Server.entityManger.getEntity(client.entityId) } catch (ignored: Exception) { null } ?: continue
+
+        for (i in 0 until size) {
+            coroutineScope {
+                val deferredChunks = mutableListOf<Deferred<Unit>>()
+
+                val client = try { Server.clients[i] } catch (ignored: Exception) { null } ?: return@coroutineScope
+                val player = try { Server.entityManger.getEntity(client.entityId) } catch (ignored: Exception) { null } ?: return@coroutineScope
                 val playerPosition = Chunk.getIndex(player.position.toInt())
                 val renderDistance = (if (client.renderDistance < distance) client.renderDistance else distance) * 16
 
+                val chunksToLoad = mutableListOf<Pair<Int, Vector3i>>()
                 for (x in playerPosition.x - renderDistance until playerPosition.x + renderDistance step CHUNK_SIZE) {
                     for (y in playerPosition.y - renderDistance until playerPosition.y + renderDistance step CHUNK_SIZE) {
                         for (z in playerPosition.z - renderDistance until playerPosition.z + renderDistance step CHUNK_SIZE) {
-                            launch {
-                                if (y < -32) return@launch
-                                val chunk = getChunkAt(x, y, z)
-                                indexes.add(chunk.position.toString())
-
-                                if (chunk.players.contains(client.entityId)) return@launch
-                                chunk.players.add(client.entityId)
-
-                                if (chunk.isEmpty()) return@launch
-
-                                if (chunk.isMonoType())
-                                    client.write(S05SendMonoTypeChunk(Vector3i(x, y, z), chunk.blocks.first()))
-                                else
-                                    client.write(S04SendChunk(Vector3i(x, y, z), chunk.blocks))
-                            }
+                            if (y < -32) continue
+                            val chunkPosition = Vector3i(x, y, z)
+                            chunksToLoad.add(playerPosition.distanceTo(chunkPosition) to chunkPosition)
                         }
                     }
                 }
+
+                chunksToLoad.sortBy { it.first }
+
+                for ((_, chunkPosition) in chunksToLoad) {
+                    deferredChunks.add(async {
+                        val chunk = getChunkAt(chunkPosition.x, chunkPosition.y, chunkPosition.z)
+                        indexes.add(chunk.position.toString())
+
+                        if (!chunk.players.contains(client.entityId)) {
+                            chunk.players.add(client.entityId)
+
+                            if (!chunk.isEmpty()) {
+                                if (chunk.isMonoType())
+                                    client.write(S05SendMonoTypeChunk(chunkPosition, chunk.blocks.first()))
+                                else
+                                    client.write(S04SendChunk(chunkPosition, chunk.blocks))
+                            }
+                        }
+                    })
+                }
+                deferredChunks.awaitAll()
             }
         }
         validIndex = indexes
+        unloadChunk()
     }
+
 
     fun unloadChunk() = runBlocking {
         val deadIndexes = mutableSetOf<String>()
@@ -98,7 +111,7 @@ object World {
         }
     }
 
-    fun updateChunk(position: Vector3i, blockType: Byte, write: Boolean = true): Chunk {
+    suspend fun updateChunk(position: Vector3i, blockType: Byte, write: Boolean = true): Chunk {
         val index = Chunk.getIndex(position)
         val chunk = chunks[index.toString()] ?: getChunkAt(index.x, index.y, index.z, true)
 
@@ -129,25 +142,25 @@ object World {
 
     fun saveChunk(chunk: Chunk) {
         val file = File("./world/c_${chunk.position.x}_${chunk.position.y}_${chunk.position.z}.dat")
-        file.writeBytes(chunk.blocks.toByteArray())
+        file.writeBytes(chunk.blocks)
 
         chunkFiles["${chunk.position.x}_${chunk.position.y}_${chunk.position.z}"] = file
     }
 
     fun save() {
         chunks.values.forEach {
-            File("./world/c_${it.position.x}_${it.position.y}_${it.position.z}.dat").writeBytes(it.blocks.toByteArray())
+            File("./world/c_${it.position.x}_${it.position.y}_${it.position.z}.dat").writeBytes(it.blocks)
         }
     }
 
-    fun getChunkAt(x: Int, y: Int, z: Int, force: Boolean = false): Chunk {
+    suspend fun getChunkAt(x: Int, y: Int, z: Int, force: Boolean = false): Chunk {
         val position = Vector3i(x, y, z)
 
         chunks[position.toString()]?.let { return it }
 
         val chunkFile = chunkFiles["${x}_${y}_${z}"]
         if (chunkFile != null) {
-            val chunk = Chunk(position, chunkFile.readBytes().toTypedArray())
+            val chunk = Chunk(position, chunkFile.readBytes())
             if (force || !chunk.isEmpty())
                 chunks[position.toString()] = chunk
             return chunk
@@ -156,8 +169,9 @@ object World {
         val chunk = Chunk(position)
         if (!chunk.isEmpty())
             chunks[position.toString()] = chunk
+        chunk.fillBlocksAsync()
         chunk.genTree()
-        io {saveChunk(chunk) }
+        io { saveChunk(chunk) }
 
         return chunk
     }

@@ -70,6 +70,13 @@ class Vector3i {
     }
 
 
+    fun distanceTo(other: Vector3i): Int {
+        val dx = (other.x - this.x)
+        val dy = (other.y - this.y)
+        val dz = (other.z - this.z)
+        return dx * dx + dy * dy + dz * dz
+    }
+
     operator fun plus(other: Vector3i) = Vector3i(x + other.x, y + other.y, z + other.z)
     operator fun minus(other: Vector3i) = Vector3i(x - other.x, y - other.y, z - other.z)
     operator fun div(scalar: Int) = Vector3i(x / scalar, y / scalar, z / scalar)

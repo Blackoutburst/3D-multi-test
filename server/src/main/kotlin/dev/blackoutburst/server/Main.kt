@@ -22,12 +22,6 @@ fun main(args: Array<String>) {
     }
 
     io {
-        timer.schedule(0, 500) {
-            World.unloadChunk()
-        }
-    }
-
-    io {
         while(true) {
             Server.addClient()
         }
