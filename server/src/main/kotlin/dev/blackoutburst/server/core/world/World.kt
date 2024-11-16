@@ -21,20 +21,10 @@ object World {
     var seed = Random.nextInt()
     val chunks = ConcurrentHashMap<String, Chunk>()
 
-    val chunkFiles = ConcurrentHashMap<String, File>()
-
     var validIndex =  ConcurrentSet<String>()
 
     init {
         File("./world").mkdir()
-
-        val worldFolder = File("./world")
-        if (worldFolder.exists()) {
-            worldFolder.listFiles()?.forEach {
-                if (it.nameWithoutExtension.startsWith("c_"))
-                    chunkFiles[it.nameWithoutExtension.replace("c_", "")] = it
-            }
-        }
 
         val seedFile = File("./world/seed.dat")
         if (seedFile.exists()) {
@@ -69,23 +59,19 @@ object World {
 
             chunksToLoad.sortBy { it.first }
 
-            val chunkBatches = chunksToLoad.chunked(optimalBatchSize(chunksToLoad.size))
+            async {
+                for ((_, chunkPosition) in chunksToLoad) {
+                    val chunk = getChunkAt(chunkPosition.x, chunkPosition.y, chunkPosition.z)
+                    indexes.add(chunk.position.toString())
 
-            for (batch in chunkBatches) {
-                async {
-                    for ((_, chunkPosition) in batch) {
-                        val chunk = getChunkAt(chunkPosition.x, chunkPosition.y, chunkPosition.z)
-                        indexes.add(chunk.position.toString())
+                    if (!chunk.players.contains(client.entityId)) {
+                        chunk.players.add(client.entityId)
 
-                        if (!chunk.players.contains(client.entityId)) {
-                            chunk.players.add(client.entityId)
-
-                            if (!chunk.isEmpty()) {
-                                if (chunk.isMonoType())
-                                    client.write(S05SendMonoTypeChunk(chunkPosition, chunk.blocks.first()))
-                                else
-                                    client.write(S04SendChunk(chunkPosition, chunk.blocks))
-                            }
+                        if (!chunk.isEmpty()) {
+                            if (chunk.isMonoType())
+                                client.write(S05SendMonoTypeChunk(chunkPosition, chunk.blocks.first()))
+                            else
+                                client.write(S04SendChunk(chunkPosition, chunk.blocks))
                         }
                     }
                 }
@@ -147,8 +133,6 @@ object World {
     fun saveChunk(chunk: Chunk) {
         val file = File("./world/c_${chunk.position.x}_${chunk.position.y}_${chunk.position.z}.dat")
         file.writeBytes(chunk.blocks)
-
-        chunkFiles["${chunk.position.x}_${chunk.position.y}_${chunk.position.z}"] = file
     }
 
     fun save() {
@@ -162,8 +146,8 @@ object World {
 
         chunks[position.toString()]?.let { return it }
 
-        val chunkFile = chunkFiles["${x}_${y}_${z}"]
-        if (chunkFile != null) {
+        val chunkFile = File("./world/c_${x}_${y}_${z}.dat")
+        if (chunkFile.exists()) {
             val chunk = Chunk(position, chunkFile.readBytes())
             if (force || !chunk.isEmpty())
                 chunks[position.toString()] = chunk
