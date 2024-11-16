@@ -4,11 +4,14 @@ import dev.blackoutburst.server.maths.Vector3i
 import dev.blackoutburst.server.network.Server
 import dev.blackoutburst.server.network.packets.server.S04SendChunk
 import dev.blackoutburst.server.network.packets.server.S05SendMonoTypeChunk
+import dev.blackoutburst.server.optimalBatchSize
 import dev.blackoutburst.server.utils.io
 import dev.blackoutburst.server.utils.default
+import io.ktor.util.collections.ConcurrentSet
 import kotlinx.coroutines.*
 import java.io.File
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.random.Random
 
 object World {
@@ -16,11 +19,11 @@ object World {
     val CHUNK_SIZE = 16
 
     var seed = Random.nextInt()
-    val chunks: MutableMap<String, Chunk> = Collections.synchronizedMap(LinkedHashMap())
+    val chunks = ConcurrentHashMap<String, Chunk>()
 
-    val chunkFiles = mutableMapOf<String, File>()
+    val chunkFiles = ConcurrentHashMap<String, File>()
 
-    var validIndex = setOf<String>()
+    var validIndex =  ConcurrentSet<String>()
 
     init {
         File("./world").mkdir()
@@ -46,29 +49,31 @@ object World {
         val size = Server.clients.size
 
         for (i in 0 until size) {
-            coroutineScope {
-                val deferredChunks = mutableListOf<Deferred<Unit>>()
+            val deferredChunks = mutableListOf<Deferred<Unit>>()
 
-                val client = try { Server.clients[i] } catch (ignored: Exception) { null } ?: return@coroutineScope
-                val player = try { Server.entityManger.getEntity(client.entityId) } catch (ignored: Exception) { null } ?: return@coroutineScope
-                val playerPosition = Chunk.getIndex(player.position.toInt())
-                val renderDistance = (if (client.renderDistance < distance) client.renderDistance else distance) * 16
+            val client = try { Server.clients[i] } catch (ignored: Exception) { null } ?: continue
+            val player = try { Server.entityManger.getEntity(client.entityId) } catch (ignored: Exception) { null } ?:continue
+            val playerPosition = Chunk.getIndex(player.position.toInt())
+            val renderDistance = (if (client.renderDistance < distance) client.renderDistance else distance) * 16
 
-                val chunksToLoad = mutableListOf<Pair<Int, Vector3i>>()
-                for (x in playerPosition.x - renderDistance until playerPosition.x + renderDistance step CHUNK_SIZE) {
-                    for (y in playerPosition.y - renderDistance until playerPosition.y + renderDistance step CHUNK_SIZE) {
-                        for (z in playerPosition.z - renderDistance until playerPosition.z + renderDistance step CHUNK_SIZE) {
-                            if (y < -32) continue
-                            val chunkPosition = Vector3i(x, y, z)
-                            chunksToLoad.add(playerPosition.distanceTo(chunkPosition) to chunkPosition)
-                        }
+            val chunksToLoad = mutableListOf<Pair<Int, Vector3i>>()
+            for (x in playerPosition.x - renderDistance until playerPosition.x + renderDistance step CHUNK_SIZE) {
+                for (y in playerPosition.y - renderDistance until playerPosition.y + renderDistance step CHUNK_SIZE) {
+                    for (z in playerPosition.z - renderDistance until playerPosition.z + renderDistance step CHUNK_SIZE) {
+                        if (y < -32) continue
+                        val chunkPosition = Vector3i(x, y, z)
+                        chunksToLoad.add(playerPosition.distanceTo(chunkPosition) to chunkPosition)
                     }
                 }
+            }
 
-                chunksToLoad.sortBy { it.first }
+            chunksToLoad.sortBy { it.first }
 
-                for ((_, chunkPosition) in chunksToLoad) {
-                    deferredChunks.add(async {
+            val chunkBatches = chunksToLoad.chunked(optimalBatchSize(chunksToLoad.size))
+
+            for (batch in chunkBatches) {
+                async {
+                    for ((_, chunkPosition) in batch) {
                         val chunk = getChunkAt(chunkPosition.x, chunkPosition.y, chunkPosition.z)
                         indexes.add(chunk.position.toString())
 
@@ -82,10 +87,10 @@ object World {
                                     client.write(S04SendChunk(chunkPosition, chunk.blocks))
                             }
                         }
-                    })
+                    }
                 }
-                deferredChunks.awaitAll()
             }
+            deferredChunks.awaitAll()
         }
         validIndex = indexes
         unloadChunk()
@@ -136,7 +141,6 @@ object World {
                     client.write(S04SendChunk(index, chunk.blocks))
             }
         }
-
         return chunk
     }
 
@@ -167,10 +171,10 @@ object World {
         }
 
         val chunk = Chunk(position)
-        if (!chunk.isEmpty())
-            chunks[position.toString()] = chunk
         chunk.fillBlocksAsync()
-        chunk.genTree()
+        if (!chunk.isEmpty()) {
+            chunks[position.toString()] = chunk
+        }
         io { saveChunk(chunk) }
 
         return chunk

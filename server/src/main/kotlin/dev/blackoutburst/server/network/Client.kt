@@ -6,7 +6,6 @@ import io.ktor.websocket.*
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.Socket
-import kotlin.random.Random
 
 class Client(
     val socket: Socket? = null,
@@ -15,7 +14,7 @@ class Client(
     val output: OutputStream? = null,
     val entityId: Int,
     var renderDistance: Int = 2,
-    var name: String = "Jeff$entityId"
+    var name: String = "Jeff$entityId",
 ) {
 
     fun read(frame: Frame? = null) {

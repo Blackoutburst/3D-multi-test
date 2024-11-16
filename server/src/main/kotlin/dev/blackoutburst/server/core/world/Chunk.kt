@@ -1,6 +1,7 @@
 package dev.blackoutburst.server.core.world
 
 import dev.blackoutburst.server.maths.Vector3i
+import dev.blackoutburst.server.optimalBatchSize
 import dev.blackoutburst.server.utils.FastNoiseLite
 import kotlinx.coroutines.*
 import kotlin.math.abs
@@ -10,7 +11,7 @@ import kotlin.random.Random
 
 class Chunk {
     var position: Vector3i
-    var blocks: ByteArray
+    var blocks = ByteArray(4096)
     var players: MutableList<Int>
 
     companion object {
@@ -97,23 +98,27 @@ class Chunk {
         this.blocks = ByteArray(4096)
     }
 
-    suspend fun fillBlocksAsync(chunkSize: Int = 256) = withContext(Dispatchers.Default) {
-        val xOffsets = IntArray(16) { it }
-        val yOffsets = IntArray(16) { it }
-        val zOffsets = IntArray(16) { it }
+    suspend fun fillBlocksAsync() = withContext(Dispatchers.Default) {
+        val blockIndices = blocks.indices.toList()
+        val chunks = blockIndices.chunked(optimalBatchSize(blocks.size))
 
-        for (chunkIndex in 0 until (blocks.size + chunkSize - 1) / chunkSize) {
-            val start = chunkIndex * chunkSize
-            val end = minOf(start + chunkSize, blocks.size)
+        val deferred = chunks.map { chunk ->
+            async {
+                for (i in chunk) {
+                    val xOffset = i % 16
+                    val yOffset = (i / 16) % 16
+                    val zOffset = i / (16 * 16)
 
-            for (i in start until end) {
-                val x = position.x + xOffsets[i % 16]
-                val y = position.y + yOffsets[(i / 16) % 16]
-                val z = position.z + zOffsets[(i / (16 * 16)) % 16]
+                    val x = position.x + xOffset
+                    val y = position.y + yOffset
+                    val z = position.z + zOffset
 
-                blocks[i] = getType(x, y, z).id
+                    blocks[i] = getType(x, y, z).id
+                }
             }
         }
+
+        deferred.awaitAll()
     }
 
 
