@@ -39,7 +39,7 @@ class C02BlockBulkEdit(override val size: Int) : PacketPlayIn() {
                 for (i in 0 until playerSize) {
                     val player = Server.getClientByEntityId(v.players[i]) ?: continue
 
-                    if (v.isMonoType())
+                    if (v.isMonoType)
                         player.write(S05SendMonoTypeChunk(v.position, v.blocks.first()))
                     else
                         player.write(S04SendChunk(v.position, v.blocks))

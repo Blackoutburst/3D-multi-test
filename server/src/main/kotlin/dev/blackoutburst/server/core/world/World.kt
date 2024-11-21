@@ -67,8 +67,8 @@ object World {
                         if (!chunk.players.contains(client.entityId)) {
                             chunk.players.add(client.entityId)
 
-                            if (!chunk.isEmpty()) {
-                                if (chunk.isMonoType())
+                            if (!chunk.isEmpty) {
+                                if (chunk.isMonoType)
                                     client.write(S05SendMonoTypeChunk(chunkPosition, chunk.blocks.first()))
                                 else
                                     client.write(S04SendChunk(chunkPosition, chunk.blocks))
@@ -111,15 +111,16 @@ object World {
         )
 
         val blockId = chunk.xyzToIndex(positionInChunk.x, positionInChunk.y, positionInChunk.z)
-        if (chunk.blocks.size == 4096)
-            chunk.blocks[blockId] = blockType
+        chunk.blocks[blockId] = blockType
+        chunk.isEmpty = chunk._isEmpty()
+        chunk.isMonoType = chunk._isMonoType()
 
         if (write) {
             val playerSize = chunk.players.size
             for (i in 0 until playerSize) {
                 val client = Server.getClientByEntityId(chunk.players[i]) ?: continue
 
-                if (chunk.isMonoType())
+                if (chunk.isMonoType)
                     client.write(S05SendMonoTypeChunk(index, chunk.blocks.first()))
                 else
                     client.write(S04SendChunk(index, chunk.blocks))
@@ -147,14 +148,14 @@ object World {
         val chunkFile = File("./world/c_${x}_${y}_${z}.dat")
         if (chunkFile.exists()) {
             val chunk = Chunk(position, chunkFile.readBytes())
-            if (force || !chunk.isEmpty())
+            if (force || !chunk.isEmpty)
                 chunks[position.toString()] = chunk
             return chunk
         }
 
         val chunk = Chunk(position)
         chunk.fillBlocksAsync()
-        if (!chunk.isEmpty()) {
+        if (!chunk.isEmpty) {
             chunks[position.toString()] = chunk
         }
         io { saveChunk(chunk) }

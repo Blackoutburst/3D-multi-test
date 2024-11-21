@@ -13,6 +13,8 @@ class Chunk {
     var position: Vector3i
     var blocks = ByteArray(4096)
     var players: MutableList<Int>
+    var isEmpty: Boolean = false
+    var isMonoType: Boolean = false
 
     companion object {
         val base = FastNoiseLite()
@@ -90,6 +92,8 @@ class Chunk {
         this.players = mutableListOf()
         this.position = position
         this.blocks = blocks
+        isEmpty = _isEmpty()
+        isMonoType = _isMonoType()
     }
 
     constructor(position: Vector3i) {
@@ -119,10 +123,12 @@ class Chunk {
         }
 
         deferred.awaitAll()
+        isEmpty = _isEmpty()
+        isMonoType = _isMonoType()
     }
 
 
-    fun isEmpty(): Boolean {
+    fun _isEmpty(): Boolean {
         if (this.blocks.isEmpty()) return true
 
         for (i in 0 until 4096) {
@@ -132,7 +138,7 @@ class Chunk {
         return true
     }
 
-    fun isMonoType(): Boolean {
+    fun _isMonoType(): Boolean {
         var previous = this.blocks[0]
         for (i in 1 until 4096) {
             val current = this.blocks[i]
