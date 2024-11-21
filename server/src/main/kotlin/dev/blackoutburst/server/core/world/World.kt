@@ -39,8 +39,6 @@ object World {
         val size = Server.clients.size
 
         for (i in 0 until size) {
-            val deferredChunks = mutableListOf<Deferred<Unit>>()
-
             val client = try { Server.clients[i] } catch (ignored: Exception) { null } ?: continue
             val player = try { Server.entityManger.getEntity(client.entityId) } catch (ignored: Exception) { null } ?:continue
             val playerPosition = Chunk.getIndex(player.position.toInt())
@@ -58,38 +56,38 @@ object World {
             }
 
             chunksToLoad.sortBy { it.first }
+            val batches = chunksToLoad.chunked(optimalBatchSize(chunksToLoad.size))
+            val deferredProcess = mutableListOf<Deferred<Unit>>()
+            for (batch in batches) {
+                deferredProcess.add(async {
+                    for ((_, chunkPosition) in batch) {
+                        val chunk = getChunkAt(chunkPosition.x, chunkPosition.y, chunkPosition.z)
+                        indexes.add(chunk.position.toString())
 
-            async {
-                for ((_, chunkPosition) in chunksToLoad) {
-                    val chunk = getChunkAt(chunkPosition.x, chunkPosition.y, chunkPosition.z)
-                    indexes.add(chunk.position.toString())
+                        if (!chunk.players.contains(client.entityId)) {
+                            chunk.players.add(client.entityId)
 
-                    if (!chunk.players.contains(client.entityId)) {
-                        chunk.players.add(client.entityId)
-
-                        if (!chunk.isEmpty()) {
-                            if (chunk.isMonoType())
-                                client.write(S05SendMonoTypeChunk(chunkPosition, chunk.blocks.first()))
-                            else
-                                client.write(S04SendChunk(chunkPosition, chunk.blocks))
+                            if (!chunk.isEmpty()) {
+                                if (chunk.isMonoType())
+                                    client.write(S05SendMonoTypeChunk(chunkPosition, chunk.blocks.first()))
+                                else
+                                    client.write(S04SendChunk(chunkPosition, chunk.blocks))
+                            }
                         }
                     }
-                }
+                })
             }
-            deferredChunks.awaitAll()
+            deferredProcess.awaitAll()
         }
         validIndex = indexes
         unloadChunk()
     }
 
 
-    fun unloadChunk() = runBlocking {
+    private fun unloadChunk() = runBlocking {
         val deadIndexes = mutableSetOf<String>()
-        val chunkSize = chunks.size
-        val chunkList = chunks.values.toList()
 
-        for (i in 0 until chunkSize) {
-            val chunk = try { chunkList[i] } catch (ignored: Exception) { null } ?: continue
+        for (chunk in chunks.values) {
             if (!validIndex.contains(chunk.position.toString())) {
                 chunk.players.clear()
                 deadIndexes.add(chunk.position.toString())
