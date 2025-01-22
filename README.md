@@ -83,18 +83,26 @@ Client metadata: `0x04`
 
 
 ### BlockType
-| id | Name       |
-|----|------------|
-| 0  | Air        |
-| 1  | Grass      |
-| 2  | Dirt       |
-| 3  | Stone      |
-| 4  | Oak Log    |
-| 5  | Oak Leaves |
-| 6  | Glass      |
-| 7  | Water      |
-| 8  | Sand       |
-| 9  | Snow       |
+| id | Name         |
+|----|--------------|
+| 0  | Air          |
+| 1  | Grass        |
+| 2  | Dirt         |
+| 3  | Stone        |
+| 4  | Oak Log      |
+| 5  | Oak Leaves   |
+| 6  | Glass        |
+| 7  | Water        |
+| 8  | Sand         |
+| 9  | Snow         |
+| 10 | Oak Planks   |
+| 11 | Stone Bricks |
+| 12 | Netherrack   |
+| 13 | Gold Block   |
+| 14 | Packed Ice   |
+| 15 | Lava         |
+| 16 | Barrel       |
+| 17 | Bookshelf    |
 
 
 ### Information
