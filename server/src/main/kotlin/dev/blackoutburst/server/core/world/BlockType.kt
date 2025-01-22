@@ -11,7 +11,15 @@ enum class BlockType(val id: Byte, val transparent: Boolean) {
     GLASS(6, true),
     WATER(7, true),
     SAND(8, false),
-    SNOW(9, false);
+    SNOW(9, false),
+    OAK_PLANKS(10, false),
+    STONE_BRICKS(11, false),
+    NETHERRACK(12, false),
+    GOLD_BLOCKS(13, false),
+    PACKED_ICE(14, false),
+    LAVA(15, false),
+    BARREL(16, false),
+    BOOKSHELF(17, false);
 
     companion object {
         fun getByID(id: Byte): BlockType {
