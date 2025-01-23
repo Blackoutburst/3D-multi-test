@@ -139,6 +139,8 @@ class Chunk {
     }
 
     fun _isMonoType(): Boolean {
+        if (this.blocks.isEmpty()) return false
+
         var previous = this.blocks[0]
         for (i in 1 until 4096) {
             val current = this.blocks[i]
